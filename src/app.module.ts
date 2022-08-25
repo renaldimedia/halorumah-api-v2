@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,18 +8,34 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { PropertiesModule } from './properties/properties.module';
 import * as dotenv from 'dotenv';
+import { APP_PIPE } from '@nestjs/core';
+import { ValidationPipe } from './validation.pipe';
+import { CountriesModule } from './countries/countries.module';
+import { ProvincesModule } from './provinces/provinces.module';
+import { CitiesModule } from './cities/cities.module';
+import { SubdistrictsModule } from './subdistricts/subdistricts.module';
+import { FilesModule } from './files/files.module';
+import {SpacesModule} from './spacesmodule/spaces.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+
+
 
 dotenv.config();
 
 const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
 
+console.log(process.env)
+
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: join(process.cwd(), `.env.${env}`),
       isGlobal: true,
     }),
+    // ConfigModule.forFeature(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -37,6 +53,7 @@ const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_DATABASE'),
+        schema: 'public',
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
         logging: env === 'development' ? true : false,
@@ -45,8 +62,18 @@ const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
     }),
     UsersModule,
     AuthModule,
+    PropertiesModule,
+    CountriesModule,
+    ProvincesModule,
+    CitiesModule,
+    SubdistrictsModule,
+    FilesModule,
+    SpacesModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,  {
+    provide: APP_PIPE,
+    useClass: ValidationPipe,
+  },],
 })
-export class AppModule {}
+export class AppModule{}

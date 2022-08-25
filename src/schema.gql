@@ -2,14 +2,117 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type City {
+  city_code: String!
+  city_name: String!
+  id: Int!
+  province: Province
+}
+
+type Country {
+  country_code: String!
+  country_name: String!
+  id: Int!
+}
+
+input CreateCityInput {
+  city_code: String
+  city_name: String!
+  id: Float
+  province_id: Float!
+}
+
+input CreateCountryInput {
+  country_code: String
+  country_name: String!
+  id: Float
+}
+
+input CreateFileInput {
+  filename: String
+  filepath: String
+  id: String
+  mimetype: String
+  rendered_url: String
+  size: Float
+  uniquekey: String
+  uploaded_by: String
+}
+
+input CreatePropertyInput {
+  metas: [PropertyMetaInput!]
+  property: PropertyInput!
+}
+
+input CreateProvinceInput {
+  country_id: Float!
+  id: Float
+  province_code: String
+  province_name: String!
+}
+
+input CreateSubdistrictInput {
+  city_id: Float!
+  id: Float
+  subdistrict_code: String
+  subdistrict_name: String!
+}
+
 input CreateUserInput {
+  confirm_password: String!
   email: String!
+  id: String
   password: String!
-  username: String!
+  phone: String!
+  profile_info_: CreateUserProfileInput!
+  role: String!
+}
+
+input CreateUserProfileInput {
+  account_discord: String
+  account_lamudi: String
+  account_olx: String
+  account_rumah123: String
+  account_rumahcom: String
+  account_whatsapp_number: Float
+  agent_id: String
+  city: Float
+  country: Float
+  display_name: String
+  full_address: String
+  full_name: String!
+  photo_profile: String
+  property_count: Float
+  province: Float
+  subdistrict: Float
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type File {
+  filename: String!
+  filepath: String!
+  id: String!
+  mimetype: String!
+  optimize_config: String
+  rendered_url: String
+  rendered_urls: String
+  size: Float!
+  updated_by: String
+  uploaded_by: String!
+}
+
+type GlobalMutationResponse {
+  affected: Float
+  errors: [String!]
+  message: String
 }
 
 type LoginResponse {
-  access_token: String!
+  accessToken: String!
   user: User!
 }
 
@@ -18,21 +121,303 @@ input LoginUserInput {
   password: String!
 }
 
+input MetaQuery {
+  fields: [String!]
+  from: String
+  page: Int = 1
+  relations: Boolean = true
+  sortBy: [OrderByQuery!]
+  take: Int = 10
+  to: String
+  where: [WhereQuery!]
+}
+
 type Mutation {
-  create(createUserInput: CreateUserInput!): User!
+  createCity(createCityInput: CreateCityInput!): City!
+  createCountry(createCountryInput: CreateCountryInput!): Country!
+  createFile(createFileInput: CreateFileInput!): File!
+  createProperty(createPropertyInput: CreatePropertyInput!): Property!
+  createProvince(createProvinceInput: CreateProvinceInput!): Province!
+  createSubdistrict(createSubdistrictInput: CreateSubdistrictInput!): Subdistrict!
+  createUser(createUserInput: CreateUserInput!): User!
+  deleteUser(userid: String!): User!
   login(loginUserInput: LoginUserInput!): LoginResponse!
+  profile(profileData: UpdateUserInput!): User!
+  removeCity(id: Int!): GlobalMutationResponse!
+  removeCountry(id: Int!): Country!
+  removeFile(id: String!): File!
+  removeProperty(id: Int!): Property!
+  removeProvince(id: Int!): GlobalMutationResponse!
+  removeSubdistrict(id: Int!): GlobalMutationResponse!
   signup(signupUserInput: CreateUserInput!): User!
+  updateCity(updateCityInput: UpdateCityInput!): GlobalMutationResponse!
+  updateCountry(updateCountryInput: UpdateCountryInput!): Country!
+  updateFile(updateFileInput: UpdateFileInput!): File!
+  updateProperty(updatePropertyInput: UpdatePropertyInput!): Property!
+  updateProvince(updateProvinceInput: UpdateProvinceInput!): GlobalMutationResponse!
+  updateSubdistrict(updateSubdistrictInput: UpdateSubdistrictInput!): GlobalMutationResponse!
+  updateUser(profileData: UpdateUserInput!): User!
+}
+
+input OrderByQuery {
+  isAsc: Boolean
+  key: String!
+}
+
+type Profile {
+  account_discord: String
+  account_lamudi: String
+  account_olx: String
+  account_rumah123: String
+  account_rumahcom: String
+  account_whatsapp_number: Float
+  agent_id: String
+  city: Float
+  country: Float
+  display_name: String
+  full_address: String
+  full_name: String
+  photo_profile: String
+  property_count: Float
+  province: Float
+  subdistrict: Float
+}
+
+type Property {
+  call_to_user: String!
+  city: Float
+  country: Float
+  created_by_user: String!
+  id: Int!
+  property_area_size: Float!
+  property_bathroom_count: Int!
+  property_bedroom_count: Int!
+  property_build_years: Float!
+  property_building_size: Float!
+  property_certificate_type: String!
+  property_code: String
+  property_condition: String!
+  property_desc: String!
+  property_featured_image: String!
+  property_full_address: String!
+  property_garage_count: Int
+  property_price: Int!
+  property_price_second: Int
+  property_title: String!
+  property_type: String!
+  province: Float
+  purchase_type: String
+  sales_status: String!
+  sales_type: String!
+  subdistrict: Float
+  total_leads: Float!
+  total_messages: Float!
+  total_star: Float!
+  total_views: Float!
+}
+
+input PropertyInput {
+  call_to_user: String
+  city: Float
+  country: Float
+  created_by_user: String
+  property_bathroom_count: Int!
+  property_bedroom_count: Int!
+  property_build_years: Int!
+  property_building_size: Float
+  property_certificate_type: String!
+  property_code: String
+  property_condition: String!
+  property_desc: String!
+  property_featured_image: String!
+  property_full_address: String!
+  property_garage_count: Int = 0
+  property_land_size: Float
+  property_list_images: [String!]!
+  property_price: Int!
+  property_price_second: Int
+  property_title: String!
+  property_type: String!
+  province: Float
+  purchase_type: String = "ONCE"
+  sales_status: String = "ACTIVE"
+  sales_type: String = "SALE"
+  subdistrict: Float
+}
+
+input PropertyMetaInput {
+  master: String!
+  property_constant_value: String!
+}
+
+type PropertyMetaMaster {
+  display_name: String!
+  icon: String
+  id: Int!
+  property_constant: String!
+}
+
+type PropertyMetaResponse {
+  id: Float!
+  master: PropertyMetaMaster!
+  property: Property!
+}
+
+type PropertyResponse {
+  call_to_user: User!
+  city: City
+  country: Country
+  created_at: DateTime!
+  created_by_user: User!
+  deleted_at: DateTime!
+  id: Int!
+  list_images: [File!]!
+  metas: [PropertyMetaResponse!]
+  property_area_size: String!
+  property_bathroom_count: Int!
+  property_bedroom_count: Int!
+  property_build_years: Float!
+  property_building_size: String!
+  property_certificate_type: String!
+  property_code: String
+  property_condition: String!
+  property_desc: String!
+  property_featured_image: File!
+  property_full_address: String!
+  property_garage_count: Int
+  property_price: Int!
+  property_price_second: Int
+  property_title: String!
+  property_type: String!
+  province: Province
+  purchase_type: String
+  sales_status: String!
+  sales_type: String!
+  subdistrict: Subdistrict
+  total_leads: Float!
+  total_messages: Float!
+  total_star: Float!
+  total_views: Float!
+  updated_at: DateTime!
+}
+
+type Province {
+  country: Country!
+  country_id: Float!
+  id: Int!
+  province_code: String!
+  province_name: String!
 }
 
 type Query {
-  user(email: String!): User!
+  cities(keyword: String, province_id: Float): [City!]!
+  city(id: Int!): City!
+  countries(keyword: String): [Country!]!
+  country(id: Int!): Country!
+  file(id: String!): File!
+  files(userid: String): [File!]!
+  profile: User!
+  properties(option: MetaQuery): [PropertyResponse!]!
+  property(id: Int!): Property!
+  province(id: Int!): Province!
+  provinces(country_id: Float, keyword: String): [Province!]!
+  subdistrict(id: Int!): Subdistrict!
+  subdistricts(city_id: Float, keyword: String): [Subdistrict!]!
+  user(userid: String!): User!
+  userByEmail(email: String!): User!
   users: [User!]!
 }
 
-type User {
-  email: String!
+type Subdistrict {
+  city: City
+  city_id: Float!
   id: Int!
-  password: String!
+  subdistrict_code: String!
+  subdistrict_name: String!
+}
+
+input UpdateCityInput {
+  city_code: String
+  city_name: String
+  id: Int!
+  province_id: Float
+}
+
+input UpdateCountryInput {
+  country_code: String
+  country_name: String
+  id: Int!
+}
+
+input UpdateFileInput {
+  filename: String
+  filepath: String
+  id: String!
+  mimetype: String
+  rendered_url: String
+  size: Float
+  uniquekey: String
+  uploaded_by: String
+}
+
+input UpdatePropertyInput {
+  id: Int!
+  metas: [PropertyMetaInput!]
+  property: PropertyInput
+}
+
+input UpdateProvinceInput {
+  country_id: Float
+  id: Int!
+  province_code: String
+  province_name: String
+}
+
+input UpdateSubdistrictInput {
+  city_id: Float
+  id: Int!
+  subdistrict_code: String
+  subdistrict_name: String
+}
+
+input UpdateUserInput {
+  capabilities: String
+  confirm_password: String
+  device_id: String
+  email: String
+  email_confirmed_at: DateTime
+  extra: String
+  id: String
+  notification_id: String
+  password: String
+  phone: String
+  phone_confirmed_at: DateTime
+  profile_info_: CreateUserProfileInput
+  resetpasswordkey: String
+  role: String
+}
+
+type User {
+  created_at: DateTime!
+  device_id: String!
+  email: String!
+  email_confirmed_at: DateTime!
+  errors: [String!]
+  extra: String
+  id: String!
+  messages: String
+  notification_id: String!
+  phone: String!
+  phone_confirmed_at: DateTime!
+  profile_info_: Profile
+  resetpasswordkey: String
   role: String!
-  username: String!
+  updated_at: DateTime!
+}
+
+input WhereQuery {
+  key: String!
+  nextOperator: String
+  operator: String
+  value: String!
 }

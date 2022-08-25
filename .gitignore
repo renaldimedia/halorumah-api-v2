@@ -37,3 +37,6 @@ lerna-debug.log*
 # .env
 .env
 .env.*
+package-lock.json
+src/properties-old.rar
+src/schema.gql

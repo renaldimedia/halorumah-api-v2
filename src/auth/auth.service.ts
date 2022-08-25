@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findOne(email);
+    const user = await this.usersService.findOneBy({email: email});
     const valid = user && (await bcrypt.compare(password, user?.password));
 
     if (user && valid) {
@@ -25,11 +25,11 @@ export class AuthService {
   }
 
   async login(loginUserInput: LoginUserInput) {
-    const user = await this.usersService.findOne(loginUserInput.email);
+    const user = await this.usersService.findOneBy({email: loginUserInput.email});
     const { password, ...result } = user;
-
+    // console.log(user);
     return {
-      access_token: this.jwtService.sign({
+      accessToken: this.jwtService.sign({
         email: user.email,
         sub: user.id,
         role: user.role,
@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   async signup(signupUserInput: CreateUserInput) {
-    const user = await this.usersService.findOne(signupUserInput.email);
+    const user = await this.usersService.findOneBy({email: signupUserInput.email});
 
     if (user) {
       throw new Error('User already exists');
