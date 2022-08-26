@@ -318,7 +318,7 @@ type Query {
   files(userid: String): [File!]!
   profile: User!
   properties(option: MetaQuery): [PropertyResponse!]!
-  property(id: Int!): Property!
+  property(id: Int!): PropertyResponse!
   province(id: Int!): Province!
   provinces(country_id: Float, keyword: String): [Province!]!
   subdistrict(id: Int!): Subdistrict!

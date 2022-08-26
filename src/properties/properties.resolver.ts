@@ -40,7 +40,7 @@ export class PropertiesResolver {
     return this.propertiesService.findAll(opt,fields);
   }
 
-  @Query(() => Property, { name: 'property' })
+  @Query(() => PropertyResponse, { name: 'property' })
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.propertiesService.findOne(id);
   }
