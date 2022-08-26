@@ -118,8 +118,8 @@ export class PropertiesService {
     return await query.getMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} property`;
+  findOne(id: number): Promise<Property> {
+    return this.repos.findOneBy({id:id});
   }
 
   update(id: number, updatePropertyInput: UpdatePropertyInput) {
