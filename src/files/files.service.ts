@@ -17,8 +17,40 @@ export class FilesService {
     return this.filesRespository.insert(flc);
   }
 
-  async findFileList(list: string[]): Promise<File[]>{
-    return await this.datasource.getRepository(File).createQueryBuilder().whereInIds(list).getMany();
+  // async findFileList(list: string[], flat: boolean = false): Promise<any>{
+  //   // console.log(list);
+  //   const res = await this.datasource.getRepository(File).createQueryBuilder().whereInIds(list).getMany();
+  //   console.log(res)
+  //   if(flat){
+  //     let result = [];
+  //     res.forEach(r => {
+  //       result.push(r.rendered_url);
+  //     });
+
+  //     return  result;
+  //   }
+
+  //   return res;
+  // }
+  async findFileList(list: string[], flat: boolean = false): Promise<any>{
+    // console.log(list);
+    if(list.length == 0){
+      return [];
+    }
+    const result = [];
+    for(let i = 0 ; i < list.length ; i++){
+      const res = await this.findOne(list[i]);
+      if(res != null){
+        if(flat){
+          result.push(res['rendered_url']);
+        }else{
+          result.push(res)
+        }
+      }
+    }
+    return result;
+
+    // return [];
   }
 
   findAll(userid: string = null): Promise<File[]> {
@@ -30,8 +62,8 @@ export class FilesService {
     return this.filesRespository.find(py);
   }
 
-  findOne(id: string): Promise<File> {
-    return this.filesRespository.findOneBy({id: id});
+  async findOne(id: string): Promise<File> {
+    return await this.filesRespository.findOneBy({id: id});
   }
 
   update(id: string, updateFileInput: UpdateFileInput) {

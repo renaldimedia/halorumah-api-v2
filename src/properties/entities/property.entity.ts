@@ -12,7 +12,6 @@ import propAgeConstants from 'src/enums/propAgeConstans.enum';
 import purchaseTypes from 'src/enums/purchaseType.enum';
 import propPurchaseStatus from 'src/enums/propPurchaseStatus.enum';
 import saleTypes from 'src/enums/saleTypes.enum';
-import { PropertyListImages } from './property-list-images.entity';
 
 @Entity()
 @ObjectType()
@@ -21,6 +20,9 @@ export class Property {
   @Field(() => Int)
   id: number;
 
+  @Column({nullable: true})
+  @Field(() => Int, {nullable: true})
+  old_id: number;
   // Required fields
   @Column({nullable: true, unique: true})
   @Index({unique: true})
@@ -78,10 +80,9 @@ export class Property {
   @Field({nullable: false})
   property_featured_image: string
 
-  // @Column()
-  // @ManyToOne(() => File)
-  // @Field({nullable: false})
-  // resolve_property_featured_image: string
+  @Column({type: 'json'})
+  @Field(type => [String], {nullable: false})
+  property_list_images: string[]
 
 
   @Column({nullable: true})
@@ -108,13 +109,14 @@ export class Property {
   @Field(type => String, {nullable: false})
   property_full_address: string
 
-  @Column()
-  @Field(type => String)
-  created_by_user: String
+  @Column({type: 'uuid'})
+  @Field(type => User)
+  created_by_user: string
 
-  @Column()
-  @Field(type => String)
-  call_to_user: String
+  @Column({type: 'uuid'})
+  @ManyToOne(() => User)
+  @Field(type => User)
+  call_to_user: string
 
   @OneToMany(() => PropertyMeta, (pm) => pm.property)
   metas: PropertyMeta[]

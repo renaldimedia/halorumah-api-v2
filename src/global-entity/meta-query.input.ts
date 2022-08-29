@@ -53,6 +53,9 @@ class RelationQuery{
 
 @InputType()
 class WhereQuery{
+  @Field({nullable: true})
+  table: string
+
   @Field({nullable: false})
   key: string
 

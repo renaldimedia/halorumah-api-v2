@@ -64,6 +64,9 @@ export class Profile {
   @JoinColumn()
   province: number
 
+  @Field(type => Province, {nullable: true})
+  province_resolve: Province
+
   @Column({nullable: true})
   @Field({nullable: true})
   @ManyToOne(() => City, (city) => city.id)
@@ -75,6 +78,7 @@ export class Profile {
   @ManyToOne(() => Subdistrict, (subd) => subd.id)
   @JoinColumn()
   subdistrict: number
+  
 
   @Column({nullable: true, type: 'text'})
   @Field(type => String, {nullable: true})

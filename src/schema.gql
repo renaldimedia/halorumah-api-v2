@@ -137,6 +137,7 @@ type Mutation {
   createCountry(createCountryInput: CreateCountryInput!): Country!
   createFile(createFileInput: CreateFileInput!): File!
   createProperty(createPropertyInput: CreatePropertyInput!): Property!
+  createPropertyMeta(propertyMaster: PropertyMetaMasterInput!): PropertyMetaMaster!
   createProvince(createProvinceInput: CreateProvinceInput!): Province!
   createSubdistrict(createSubdistrictInput: CreateSubdistrictInput!): Subdistrict!
   createUser(createUserInput: CreateUserInput!): User!
@@ -180,15 +181,18 @@ type Profile {
   photo_profile: String
   property_count: Float
   province: Float
+  province_resolve: Province
   subdistrict: Float
 }
 
 type Property {
-  call_to_user: String!
+  call_to_user: User!
   city: Float
   country: Float
-  created_by_user: String!
+  created_by_user: User!
   id: Int!
+  metas: [PropertyMetaResponse!]!
+  old_id: Int
   property_area_size: Float!
   property_bathroom_count: Int!
   property_bedroom_count: Int!
@@ -201,6 +205,8 @@ type Property {
   property_featured_image: String!
   property_full_address: String!
   property_garage_count: Int
+  property_list_images: [String!]!
+  property_list_images_file: [File!]!
   property_price: Int!
   property_price_second: Int
   property_title: String!
@@ -257,10 +263,22 @@ type PropertyMetaMaster {
   property_constant: String!
 }
 
+input PropertyMetaMasterInput {
+  display_name: String
+  icon: String
+  property_constant: String!
+}
+
 type PropertyMetaResponse {
   id: Float!
-  master: PropertyMetaMaster!
-  property: Property!
+  master: String!
+  property: Float!
+  property_constant_value: String!
+}
+
+input PropertyMetaUpdate {
+  master: String!
+  property_constant_value: String!
 }
 
 type PropertyResponse {
@@ -271,20 +289,23 @@ type PropertyResponse {
   created_by_user: User!
   deleted_at: DateTime!
   id: Int!
-  list_images: [File!]!
   metas: [PropertyMetaResponse!]
-  property_area_size: String!
+  metas_field: [PropertyMetaResponse!]
+  property_area_size: Float!
   property_bathroom_count: Int!
   property_bedroom_count: Int!
   property_build_years: Float!
-  property_building_size: String!
+  property_building_size: Float!
   property_certificate_type: String!
   property_code: String
   property_condition: String!
   property_desc: String!
   property_featured_image: File!
+  property_featured_image_url: String!
   property_full_address: String!
   property_garage_count: Int
+  property_list_images: [String!]!
+  property_list_images_url: [String!]!
   property_price: Int!
   property_price_second: Int
   property_title: String!
@@ -360,10 +381,39 @@ input UpdateFileInput {
   uploaded_by: String
 }
 
+input UpdateProperty {
+  call_to_user: String
+  city: Float
+  country: Float
+  created_by_user: String
+  property_bathroom_count: Int
+  property_bedroom_count: Int
+  property_build_years: Int
+  property_building_size: Float
+  property_certificate_type: String
+  property_code: String
+  property_condition: String
+  property_desc: String
+  property_featured_image: String
+  property_full_address: String
+  property_garage_count: Int = 0
+  property_land_size: Float
+  property_list_images: [String!]
+  property_price: Int
+  property_price_second: Int
+  property_title: String
+  property_type: String
+  province: Float
+  purchase_type: String = "ONCE"
+  sales_status: String = "ACTIVE"
+  sales_type: String = "SALE"
+  subdistrict: Float
+}
+
 input UpdatePropertyInput {
   id: Int!
-  metas: [PropertyMetaInput!]
-  property: PropertyInput
+  metas: [PropertyMetaUpdate!]
+  property: UpdateProperty!
 }
 
 input UpdateProvinceInput {
@@ -410,6 +460,7 @@ type User {
   phone: String!
   phone_confirmed_at: DateTime!
   profile_info_: Profile
+  province_resolve: Province!
   resetpasswordkey: String
   role: String!
   updated_at: DateTime!
@@ -419,5 +470,6 @@ input WhereQuery {
   key: String!
   nextOperator: String
   operator: String
+  table: String
   value: String!
 }

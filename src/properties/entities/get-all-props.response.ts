@@ -12,8 +12,7 @@ import propAgeConstants from 'src/enums/propAgeConstans.enum';
 import purchaseTypes from 'src/enums/purchaseType.enum';
 import propPurchaseStatus from 'src/enums/propPurchaseStatus.enum';
 import saleTypes from 'src/enums/saleTypes.enum';
-import { PropertyListImages } from './property-list-images.entity';
-import { PropertyMetaResponse } from './propmeta.response';
+import { PropertyMetaResponse } from './property-meta.entity';
 
 @ObjectType()
 export class PropertyResponse {
@@ -50,11 +49,11 @@ export class PropertyResponse {
 
   
   @Field()
-  property_area_size: string;
+  property_area_size: number;
 
   
   @Field()
-  property_building_size: string;
+  property_building_size: number;
 
   
   @Field(type => Int, {nullable: false})
@@ -77,13 +76,14 @@ export class PropertyResponse {
   @Field(type => File, {nullable: false})
   property_featured_image: File
 
-  // @Column()
-  // @ManyToOne(() => File)
-  // @Field({nullable: false})
-  // resolve_property_featured_image: string
-  @Field(type => [File], {nullable: false})
-  list_images: File[]
+  @Field(type => String, {nullable: false})
+  property_featured_image_url: string
 
+  @Field(type => [String], {nullable: false})
+  property_list_images: string[]
+
+  @Field(type => [String], {nullable: false})
+  property_list_images_url: string[]
   
   @Field(type => Country, {nullable: true})
   country: Country
@@ -114,6 +114,9 @@ export class PropertyResponse {
 
   @Field(type => [PropertyMetaResponse], {nullable: true})
   metas: PropertyMetaResponse[]
+
+  @Field(type => [PropertyMetaResponse], {nullable: true})
+  metas_field: PropertyMetaResponse[]
 
   @Field()
   property_build_years: number

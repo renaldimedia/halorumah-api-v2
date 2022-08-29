@@ -9,6 +9,7 @@ export class PropertyListImages {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
   @Field()
   property: number
 

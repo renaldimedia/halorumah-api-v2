@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
@@ -9,16 +9,23 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { CurrentUser } from 'src/decorators/currentUser.decorator';
 import { UpdateUserInput } from './dto/update-user.input';
+import { ProvincesService } from 'src/provinces/provinces.service';
+import { Province } from 'src/provinces/entities/province.entity';
 
 @Resolver(() => User)
 @UseGuards(JwtAuthGuard)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService, private readonly provincesService: ProvincesService) {}
 
   @Query(() => User, {name: 'profile'})
   myProfile(@CurrentUser() user: any): Promise<User>{
     // console.log(user)
     return this.usersService.findById(user.userId);
+  }
+
+  @ResolveField(() => Province)
+  province_resolve(@Parent() user: User): Promise<Province>{
+    return this.provincesService.findOne(user.profile_info_.province);
   }
 
   @Mutation(() => User, {name: 'profile'})

@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
+import { ObjectType, Field, Int, Float, InputType } from '@nestjs/graphql';
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PropertyMeta } from './property-meta.entity';
 
@@ -14,7 +14,7 @@ export class PropertyMetaMaster {
   @Field()
   property_constant: string
 
-  @Column()
+  @Column({nullable: true})
   @Field()
   display_name: string
 
@@ -29,11 +29,23 @@ export class PropertyMetaMasterResponse {
   @Field(() => Int)
   id: number;
 
-
   @Field()
   property_constant: string
 
   @Field()
+  display_name: string
+
+  @Field({nullable: true})
+  icon: string
+}
+
+@InputType()
+export class PropertyMetaMasterInput {
+
+  @Field()
+  property_constant: string
+
+  @Field({nullable: true})
   display_name: string
 
   @Field({nullable: true})
