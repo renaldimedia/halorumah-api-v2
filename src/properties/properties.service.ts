@@ -272,8 +272,16 @@ export class PropertiesService {
           case 'call_to_user':
             query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
             break;
-          case 'property_price_rendered':
-            break;
+            case 'property_price_rendered':
+              break;
+            case 'full_address_rendered':
+              break;
+            case 'property_building_size_rendered':
+              break;
+            case 'property_area_size_rendered':
+              break;
+            case 'property_type_rendered':
+              break;
           case 'id':
             break;
           case 'metas':
@@ -304,6 +312,42 @@ export class PropertiesService {
       //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
     });
     if (res != null) {
+      let e = res;
+      if (e.property_price != null) {
+        e['property_price_rendered'] = formatter.format(e.property_price);
+      }
+      if (e.property_price_second != null) {
+        e['property_price_second_rendered'] = formatter.format(e.property_price_second);
+      }
+      if(e.property_area_size != null){
+        e['property_area_size_rendered'] = e.property_area_size + "m<sup>2</sup>";
+      }
+      if(e.property_building_size != null){
+        e['property_building_size_rendered'] = e.property_building_size + "m<sup>2</sup>";
+      }
+
+      let addr = "";
+      if(e.property_full_address != null){
+        addr += e.property_full_address;
+      }
+      // console.log(e.subdistrict['subdistrict_name'])
+      if(e.subdistrict != null){
+        // let sub = await this.subdistrictsService.findOne(e.subdistrict);
+        addr += " " + e.subdistrict['subdistrict_name'];
+      }
+      if(e.city != null){
+        // let city = await this.citiesService.findOne(e.city);
+        addr += " " + e.city['city_name'];
+      }
+      if(e.province != null){
+        // let prov = await this.provincesService.findOne(e.province);
+        addr += " " + e.province['province_name']
+      }
+      if(e.country != null){
+        // let ct = await this.countryService.findOne(e.country);
+        addr += " " + e.country['country_name']
+      }
+      e['full_address_rendered'] = addr.trim();
       if (res.property_price != null) {
         res['property_price_rendered'] = formatter.format(res.property_price);
       }
