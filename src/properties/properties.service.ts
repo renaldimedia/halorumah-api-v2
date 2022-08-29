@@ -209,6 +209,9 @@ export class PropertiesService {
           case 'subdistrict':
             query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
             break;
+            case 'call_to_user':
+              query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
+              break;
           case 'id':
             break;
           case 'metas':
