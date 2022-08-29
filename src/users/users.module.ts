@@ -5,9 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
 import { ProvincesModule } from 'src/provinces/provinces.module';
+import { CountriesModule } from 'src/countries/countries.module';
+import { CitiesModule } from 'src/cities/cities.module';
+import { SubdistrictsModule } from 'src/subdistricts/subdistricts.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Profile]), ProvincesModule],
+  imports: [TypeOrmModule.forFeature([User, Profile]), ProvincesModule,  CountriesModule, CitiesModule, SubdistrictsModule, FilesModule],
   providers: [UsersResolver, UsersService],
   exports: [UsersService],
 })

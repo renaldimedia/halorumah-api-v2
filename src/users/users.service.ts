@@ -2,15 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserInput } from './dto/create-user.input';
-import { User } from './entities/user.entity';
+import { User, UsersResponse } from './entities/user.entity';
 import Role from '../enums/roles.enum';
 import { UpdateUserInput } from './dto/update-user.input';
+import { FilesService } from 'src/files/files.service';
+import { CountriesService } from 'src/countries/countries.service';
+import { ProvincesService } from 'src/provinces/provinces.service';
+import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
+import { CitiesService } from 'src/cities/cities.service';
 
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRespository: Repository<User>
+    @InjectRepository(User) private usersRespository: Repository<User>, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService
   ) {}
 
   findAll(): Promise<User[]> {
@@ -21,10 +26,13 @@ export class UsersService {
     return this.usersRespository.findOne({ where: {email: email} });
   }
 
-  async findById(id: string): Promise<User>{
-    const result = await this.usersRespository.findOneBy({id:id});
-    console.log(result);
-    return result;
+  async findById(id: string, fields: any = []): Promise<User>{
+    // const result = await this.usersRespository.findOneBy({id:id});
+    // console.log(result);
+    const users = await this.usersRespository.findOneBy({id:id});
+
+    console.log(users);
+    return users;
   }
 
   findOneBy(search: any): Promise<User>{

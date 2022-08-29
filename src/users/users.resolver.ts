@@ -23,10 +23,10 @@ export class UsersResolver {
     return this.usersService.findById(user.userId);
   }
 
-  @ResolveField(() => Province)
-  province(@Parent() user: User): Promise<Province>{
+  @ResolveField(() => Province, {name: 'province'})
+  province(@Parent() user: User){
     // console.log('xx')
-    return this.provincesService.findOne(user.profile_info_.province);
+    return this.provincesService.findOne(user.province);
   }
 
   @Mutation(() => User, {name: 'profile'})
@@ -56,10 +56,10 @@ export class UsersResolver {
     return this.usersService.findByEmail(email);
   }
 
-  @Query(() => UsersResponse, { name: 'user' })
+  @Query(() => User, { name: 'user' })
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  findOne(@Args('userid') userid: string): Promise<UsersResponse> {
+  findOne(@Args('userid') userid: string): Promise<User> {
     return this.usersService.findById(userid);
   }
 

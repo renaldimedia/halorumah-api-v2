@@ -90,3 +90,64 @@ export class Profile {
   @Field(type => String, {nullable: true})
   agent_id: string
 }
+
+@ObjectType()
+export class ProfileResponse {
+  @Field({nullable: true})
+  @OneToOne(() => File, (file) => file.id)
+  photo_profile: File
+
+  
+  @Field({nullable: true})
+  display_name: string
+
+  
+  @Field({nullable: true})
+  full_name: string
+  
+  
+  @Field({nullable: true})
+  account_whatsapp_number: string
+
+  
+  @Field({nullable: true})
+  account_rumah123: string
+
+  
+  @Field({nullable: true})
+  account_rumahcom: string
+
+  
+  @Field({nullable: true})
+  account_olx: string
+
+  
+  @Field({nullable: true})
+  account_lamudi: string
+
+  
+  @Field({nullable: true})
+  account_discord: string
+
+  
+  @Field({nullable: true})
+  property_count: number
+
+  
+  @Field(type => Country, {nullable: true})
+  country: Country
+
+  @Field(type => Province, {nullable: true})
+  province: Province
+
+  @Field(type => City, {nullable: true})
+  city: City
+
+  @Field(type => Subdistrict, {nullable: true})
+  subdistrict: Subdistrict
+  
+
+  @Column({nullable: true, type: 'text'})
+  @Field(type => String, {nullable: true})
+  full_address: string
+}

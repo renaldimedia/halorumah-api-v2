@@ -53,6 +53,10 @@ export class PropertyResponse {
   @Field(type => String, {nullable: false})
   property_type: string
 
+  @Field(type => String, {nullable: false})
+  property_type_rendered: string
+
+
   
   @Field()
   property_area_size: number;
@@ -60,6 +64,22 @@ export class PropertyResponse {
   
   @Field()
   property_building_size: number;
+
+  @Field({nullable: true})
+  property_area_size_rendered: string;
+
+  
+  @Field({nullable: true})
+  property_building_size_rendered: string;
+
+  @Field(type => String, {nullable: true})
+  full_address_rendered: string
+
+  @Field({nullable: true})
+  listing_type_rendered: string
+
+  @Field(type => User, {nullable: true})
+  agent_rendered: User
 
   
   @Field(type => Int, {nullable: false})

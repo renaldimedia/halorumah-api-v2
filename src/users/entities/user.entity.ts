@@ -1,10 +1,15 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import Role from 'src/enums/roles.enum';
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { IsEmail, IsInt, IsOptional, IsPhoneNumber, IsUUID } from 'class-validator';
 import { capabilities_default } from 'src/enums/capabilities.enum';
-import { Profile } from './profile.entity';
+import { Profile, ProfileResponse } from './profile.entity';
 import * as bcrypt from 'bcrypt';
+import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
+import { Province } from 'src/provinces/entities/province.entity';
+import { City } from 'src/cities/entities/city.entity';
+import { Country } from 'src/countries/entities/country.entity';
+import { File } from 'src/files/entities/file.entity';
 
 @Entity()
 @Unique('user_unique',['email', 'phone'])
@@ -71,10 +76,6 @@ export class User {
   @Column({nullable: true, type: 'text', default: JSON.stringify(capabilities_default)})
   capabilities: string
 
-  @Column(() => Profile)
-  @Field({nullable: true})
-  profile_info_: Profile
-
   @Field(type => [String], {nullable: true})
   @IsOptional()
   errors: string[]
@@ -82,31 +83,99 @@ export class User {
   @Field({nullable: true})
   @IsOptional()
   messages: string
+
+  @Column({nullable: true, type: 'uuid'})
+  @Field({nullable: true})
+  @ManyToOne(() => File, (file) => file.id)
+  @JoinColumn()
+  photo_profile: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  display_name: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  full_name: string
+  
+  @Column({nullable: true})
+  @Field({nullable: true})
+  account_whatsapp_number: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  account_rumah123: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  account_rumahcom: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  account_olx: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  account_lamudi: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  account_discord: string
+
+  @Column({nullable: true, type: 'int', default: 0})
+  @Field({nullable: true})
+  property_count: number
+
+  @Column({nullable: true})
+  @ManyToOne(() => Country, (country) => country.id)
+  @Field(type => Country, {nullable: true})
+  country: number
+
+  @Column({nullable: true})
+  @ManyToOne(() => Province, (province) => province.id)
+  @Field(type => Province, {nullable: true})
+  province: number
+
+  @Column({nullable: true})
+  @ManyToOne(() => City, (city) => city.id)
+  @Field(type => City, {nullable: true})
+  city: number
+
+  @Column({nullable: true})
+  @ManyToOne(() => Subdistrict, (subd) => subd.id)
+  @Field(type => Subdistrict, {nullable: true})
+  subdistrict: number
+  
+
+  @Column({nullable: true, type: 'text'})
+  @Field(type => String, {nullable: true})
+  full_address: string
+
+  @Column({nullable: true, type: 'varchar', length: 30})
+  @Field(type => String, {nullable: true})
+  agent_id: string
 }
 
 @ObjectType()
 export class UsersResponse{
-  @Field()
+  @Field({nullable: true})
   id: string;
 
-  @Field()
+  @Field({nullable: true})
   email: string;
 
-  @Field()
+  @Field({nullable: true})
   phone: string;
 
-  @Field()
+  @Field({nullable: true})
   role: string;
 
-  @Field()
+  @Field({nullable: true})
   public created_at: Date;
 
   @Field({nullable: true})
   extra: string
 
-  @Field({nullable: true})
-  profile_info_: Profile
-
   @Field(type => [String], {nullable: true})
   @IsOptional()
   errors: string[]
@@ -114,4 +183,66 @@ export class UsersResponse{
   @Field({nullable: true})
   @IsOptional()
   messages: string
+
+  @Field({nullable: true})
+  @OneToOne(() => File, (file) => file.id)
+  photo_profile: File
+
+  
+  @Field({nullable: true})
+  display_name: string
+
+  
+  @Field({nullable: true})
+  full_name: string
+  
+  
+  @Field({nullable: true})
+  account_whatsapp_number: string
+
+  
+  @Field({nullable: true})
+  account_rumah123: string
+
+  
+  @Field({nullable: true})
+  account_rumahcom: string
+
+  
+  @Field({nullable: true})
+  account_olx: string
+
+  
+  @Field({nullable: true})
+  account_lamudi: string
+
+  
+  @Field({nullable: true})
+  account_discord: string
+
+  
+  @Field({nullable: true})
+  property_count: number
+
+  
+  @Field(type => Country, {nullable: true})
+  country: Country
+
+  @Field(type => Province, {nullable: true})
+  @ManyToOne(() => Province)
+  province: number
+
+  @Field(type => Province, {nullable: true})
+  province_resolve: Province
+  
+
+  @Field(type => City, {nullable: true})
+  city: City
+
+  @Field(type => Subdistrict, {nullable: true})
+  subdistrict: Subdistrict
+  
+
+  @Field(type => String, {nullable: true})
+  full_address: string
 }

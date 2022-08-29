@@ -11,10 +11,14 @@ import { PropertyMetaResponse } from './entities/property-meta.entity';
 import { PropertyResponse } from './entities/get-all-props.response';
 import { FilesService } from 'src/files/files.service';
 import { PropertyListImages } from './entities/property-list-images.entity';
+import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
+import { CountriesService } from 'src/countries/countries.service';
+import { ProvincesService } from 'src/provinces/provinces.service';
+import { CitiesService } from 'src/cities/cities.service';
 
 @Injectable()
 export class PropertiesService {
-  constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>) { }
+  constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>,private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService) { }
 
   async createMeta(input: PropertyMetaMasterInput) {
     const pr = this.metaMasterRepos.create(input);
@@ -89,8 +93,16 @@ export class PropertiesService {
           case 'call_to_user':
             query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
             break;
-            case 'property_price_rendered':
-              break;
+          case 'property_price_rendered':
+            break;
+          case 'full_address_rendered':
+            break;
+          case 'property_building_size_rendered':
+            break;
+          case 'property_area_size_rendered':
+            break;
+          case 'property_type_rendered':
+            break;
           case 'id':
             break;
           case 'metas':
@@ -125,7 +137,7 @@ export class PropertiesService {
           // console.log(option.where[index].operator);
           let obj = {};
           let tbl = "prop";
-          if(typeof option.where[index].table != 'undefined'){
+          if (typeof option.where[index].table != 'undefined') {
             tbl = option.where[index].table;
           }
           if (option.where[index].operator == 'LIKE') {
@@ -136,7 +148,7 @@ export class PropertiesService {
 
           if (index == 0) {
             query.where(`${tbl}.${option.where[index].key} ${obj[option.where[index].key]}`);
-          } else if(index > 0) {
+          } else if (index > 0) {
             if (option.where[index].nextOperator == 'OR') {
               query.orWhere(`${tbl}.${option.where[index].key} ${obj[option.where[index].key]}`);
             } else {
@@ -159,34 +171,70 @@ export class PropertiesService {
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    
+
       // These options are needed to round to whole numbers if that's what you want.
       //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+      maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
     });
     if (res.length > 0) {
       const result = [];
-      res.forEach(e => {
-        // console.log(e.id)
-        // console.log()
-        if(e.property_price != null){
-          e['property_price_rendered'] = formatter.format(e.property_price);
-        }
-        if (e.property_list_images != null && e.property_list_images.length > 0) {
-          const images = this.fileService.findFileList(e.property_list_images, true);
-          e['property_list_images_url'] = images;
-          // result.push(e);
-        } else {
-          e['property_list_images_url'] = [];
-        }
-        if (e.property_featured_image != null) {
-          e['property_featured_image_url'] = e.property_featured_image['rendered_url'];
-        }
-        // let mt = this.findAllMeta(e.id);
-        const metas = this.findAllMeta(e.id);
-        e['metas_field'] = metas;
-        result.push(e)
-      });
+      for(let i = 0 ; i < res.length ; i++){
+        let e = res[i];
+        // res.forEach(e => {
+          // console.log(e.id)
+          // console.log()
+          if (e.property_price != null) {
+            e['property_price_rendered'] = formatter.format(e.property_price);
+          }
+          if (e.property_price_second != null) {
+            e['property_price_second_rendered'] = formatter.format(e.property_price_second);
+          }
+          if(e.property_area_size != null){
+            e['property_area_size_rendered'] = e.property_area_size + "m<sup>2</sup>";
+          }
+          if(e.property_building_size != null){
+            e['property_building_size_rendered'] = e.property_building_size + "m<sup>2</sup>";
+          }
+  
+          let addr = "";
+          if(e.property_full_address != null){
+            addr += e.property_full_address;
+          }
+          // console.log(e.subdistrict['subdistrict_name'])
+          if(e.subdistrict != null){
+            // let sub = await this.subdistrictsService.findOne(e.subdistrict);
+            addr += " " + e.subdistrict['subdistrict_name'];
+          }
+          if(e.city != null){
+            // let city = await this.citiesService.findOne(e.city);
+            addr += " " + e.city['city_name'];
+          }
+          if(e.province != null){
+            // let prov = await this.provincesService.findOne(e.province);
+            addr += " " + e.province['province_name']
+          }
+          if(e.country != null){
+            // let ct = await this.countryService.findOne(e.country);
+            addr += " " + e.country['country_name']
+          }
+          e['full_address_rendered'] = addr.trim();
+          if (e.property_list_images != null && e.property_list_images.length > 0) {
+            const images = this.fileService.findFileList(e.property_list_images, true);
+            e['property_list_images_url'] = images;
+            // result.push(e);
+          } else {
+            e['property_list_images_url'] = [];
+          }
+          if (e.property_featured_image != null) {
+            e['property_featured_image_url'] = e.property_featured_image['rendered_url'];
+          }
+          // let mt = this.findAllMeta(e.id);
+          const metas = this.findAllMeta(e.id);
+          e['metas_field'] = metas;
+          result.push(e)
+        // });
+      }
+      
       // console.log(result)
       return result;
     }
@@ -222,8 +270,8 @@ export class PropertiesService {
             query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
             break;
           case 'call_to_user':
-              query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
-              break;
+            query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
+            break;
           case 'property_price_rendered':
             break;
           case 'id':
@@ -250,13 +298,13 @@ export class PropertiesService {
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    
+
       // These options are needed to round to whole numbers if that's what you want.
       //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
       //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
     });
     if (res != null) {
-      if(res.property_price != null){
+      if (res.property_price != null) {
         res['property_price_rendered'] = formatter.format(res.property_price);
       }
       if (res['property_featured_image'] != null) {
