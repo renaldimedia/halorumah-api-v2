@@ -19,6 +19,7 @@ import { SubdistrictsModule } from './subdistricts/subdistricts.module';
 import { FilesModule } from './files/files.module';
 import {SpacesModule} from './spacesmodule/spaces.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TestResModule } from './test-res/test-res.module';
 
 
 
@@ -68,7 +69,8 @@ console.log(process.env)
     CitiesModule,
     SubdistrictsModule,
     FilesModule,
-    SpacesModule
+    SpacesModule,
+    TestResModule
   ],
   controllers: [AppController],
   providers: [AppService,  {

@@ -89,6 +89,8 @@ export class PropertiesService {
           case 'call_to_user':
             query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
             break;
+            case 'property_price_rendered':
+              break;
           case 'id':
             break;
           case 'metas':
@@ -154,12 +156,22 @@ export class PropertiesService {
     // console.log(query)
     const res = await query.getMany();
     // console.log(res);
+    var formatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    
+      // These options are needed to round to whole numbers if that's what you want.
+      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+    });
     if (res.length > 0) {
       const result = [];
       res.forEach(e => {
         // console.log(e.id)
         // console.log()
-        
+        if(e.property_price != null){
+          e['property_price_rendered'] = formatter.format(e.property_price);
+        }
         if (e.property_list_images != null && e.property_list_images.length > 0) {
           const images = this.fileService.findFileList(e.property_list_images, true);
           e['property_list_images_url'] = images;
@@ -209,9 +221,11 @@ export class PropertiesService {
           case 'subdistrict':
             query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
             break;
-            case 'call_to_user':
+          case 'call_to_user':
               query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
               break;
+          case 'property_price_rendered':
+            break;
           case 'id':
             break;
           case 'metas':
@@ -233,7 +247,18 @@ export class PropertiesService {
     }
     const res = await query.getOneOrFail();
     // console.log(res);
+    var formatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    
+      // These options are needed to round to whole numbers if that's what you want.
+      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+    });
     if (res != null) {
+      if(res.property_price != null){
+        res['property_price_rendered'] = formatter.format(res.property_price);
+      }
       if (res['property_featured_image'] != null) {
         res['property_featured_image_url'] = res.property_featured_image['rendered_url']
       }

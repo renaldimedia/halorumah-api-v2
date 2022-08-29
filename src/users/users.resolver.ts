@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { UsersService } from './users.service';
-import { User } from './entities/user.entity';
+import { User, UsersResponse } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import Role from 'src/enums/roles.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -24,7 +24,8 @@ export class UsersResolver {
   }
 
   @ResolveField(() => Province)
-  province_resolve(@Parent() user: User): Promise<Province>{
+  province(@Parent() user: User): Promise<Province>{
+    // console.log('xx')
     return this.provincesService.findOne(user.profile_info_.province);
   }
 
@@ -55,10 +56,10 @@ export class UsersResolver {
     return this.usersService.findByEmail(email);
   }
 
-  @Query(() => User, { name: 'user' })
+  @Query(() => UsersResponse, { name: 'user' })
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  findOne(@Args('userid') userid: string): Promise<User> {
+  findOne(@Args('userid') userid: string): Promise<UsersResponse> {
     return this.usersService.findById(userid);
   }
 

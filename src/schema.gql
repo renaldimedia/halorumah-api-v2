@@ -74,7 +74,7 @@ input CreateUserProfileInput {
   account_olx: String
   account_rumah123: String
   account_rumahcom: String
-  account_whatsapp_number: Float
+  account_whatsapp_number: String
   agent_id: String
   city: Float
   country: Float
@@ -171,7 +171,7 @@ type Profile {
   account_olx: String
   account_rumah123: String
   account_rumahcom: String
-  account_whatsapp_number: Float
+  account_whatsapp_number: String
   agent_id: String
   city: Float
   country: Float
@@ -307,7 +307,9 @@ type PropertyResponse {
   property_list_images: [String!]!
   property_list_images_url: [String!]!
   property_price: Int!
+  property_price_rendered: String
   property_price_second: Int
+  property_price_second_rendered: String
   property_title: String!
   property_type: String!
   province: Province
@@ -344,7 +346,7 @@ type Query {
   provinces(country_id: Float, keyword: String): [Province!]!
   subdistrict(id: Int!): Subdistrict!
   subdistricts(city_id: Float, keyword: String): [Subdistrict!]!
-  user(userid: String!): User!
+  user(userid: String!): UsersResponse!
   userByEmail(email: String!): User!
   users: [User!]!
 }
@@ -460,10 +462,22 @@ type User {
   phone: String!
   phone_confirmed_at: DateTime!
   profile_info_: Profile
-  province_resolve: Province!
+  province: Province!
   resetpasswordkey: String
   role: String!
   updated_at: DateTime!
+}
+
+type UsersResponse {
+  created_at: DateTime!
+  email: String!
+  errors: [String!]
+  extra: String
+  id: String!
+  messages: String
+  phone: String!
+  profile_info_: Profile
+  role: String!
 }
 
 input WhereQuery {

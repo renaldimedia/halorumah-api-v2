@@ -38,10 +38,16 @@ export class PropertyResponse {
   @Field(type => Int)
   property_price: number
 
+  @Field(type => String, {nullable: true})
+  property_price_rendered: string
+
   
   @Field(type => Int, {nullable: true})
   @IsOptional()
   property_price_second: number
+
+  @Field(type => String, {nullable: true})
+  property_price_second_rendered: string
 
   
   @Field(type => String, {nullable: false})

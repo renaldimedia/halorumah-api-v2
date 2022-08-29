@@ -65,6 +65,8 @@ export class Profile {
   province: number
 
   @Field(type => Province, {nullable: true})
+  @ManyToOne(() => Province, (province) => province.id)
+  @JoinColumn()
   province_resolve: Province
 
   @Column({nullable: true})

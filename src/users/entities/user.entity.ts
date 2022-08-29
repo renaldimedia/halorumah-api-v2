@@ -83,3 +83,35 @@ export class User {
   @IsOptional()
   messages: string
 }
+
+@ObjectType()
+export class UsersResponse{
+  @Field()
+  id: string;
+
+  @Field()
+  email: string;
+
+  @Field()
+  phone: string;
+
+  @Field()
+  role: string;
+
+  @Field()
+  public created_at: Date;
+
+  @Field({nullable: true})
+  extra: string
+
+  @Field({nullable: true})
+  profile_info_: Profile
+
+  @Field(type => [String], {nullable: true})
+  @IsOptional()
+  errors: string[]
+
+  @Field({nullable: true})
+  @IsOptional()
+  messages: string
+}
