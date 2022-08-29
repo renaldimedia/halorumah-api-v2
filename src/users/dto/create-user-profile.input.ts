@@ -1,5 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsEmail, IsMobilePhone } from 'class-validator';
+import { IsEmail, IsMobilePhone, IsOptional, IsPhoneNumber } from 'class-validator';
 import { Profile } from '../entities/profile.entity';
 
 @InputType()
@@ -18,7 +18,9 @@ export class CreateUserProfileInput {
     
     
     @Field({nullable: true})
-    account_whatsapp_number: number
+    @IsOptional()
+    @IsPhoneNumber('ID')
+    account_whatsapp_number: string
   
     
     @Field({nullable: true})

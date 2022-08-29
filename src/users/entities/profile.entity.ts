@@ -26,7 +26,7 @@ export class Profile {
   
   @Column({nullable: true})
   @Field({nullable: true})
-  account_whatsapp_number: number
+  account_whatsapp_number: string
 
   @Column({nullable: true})
   @Field({nullable: true})
