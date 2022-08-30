@@ -35,28 +35,28 @@ export class UsersResolver {
     return this.usersService.update(profileData, user.userId);
   }
 
-  @Mutation(() => User, {name: 'updateUser'})
+  @Mutation(() => UsersResponse, {name: 'updateUser'})
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   async updateUser(@Args('profileData') profileData: UpdateUserInput, @CurrentUser() user: any){
     return this.usersService.update(profileData, user.userId);
   }
   // Example of a query that requires a JWT token and a role of ADMIN
-  @Query(() => [User], { name: 'users' })
+  @Query(() => [UsersResponse], { name: 'users' })
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  @Query(() => User, { name: 'userByEmail' })
+  @Query(() => UsersResponse, { name: 'userByEmail' })
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   findByEmail(@Args('email') email: string): Promise<User> {
     return this.usersService.findByEmail(email);
   }
 
-  @Query(() => User, { name: 'user' })
+  @Query(() => UsersResponse, { name: 'user' })
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   findOne(@Args('userid') userid: string): Promise<User> {

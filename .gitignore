@@ -42,4 +42,3 @@ lerna-debug.log*
 package-lock.json
 src/properties-old.rar
 src/schema.gql
-src/schema.gql

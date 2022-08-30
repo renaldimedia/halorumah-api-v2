@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PropertyResponse } from './entities/get-all-props.response';
 import { PropertiesService } from './properties.service';
 
@@ -12,7 +12,7 @@ export class PropertiesController {
 //   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<PropertyResponse> {
+  findOne(@Query('id') id: number): Promise<PropertyResponse> {
     const fields = ['*'];
     return this.service.findOne(id, fields, true);
   }
