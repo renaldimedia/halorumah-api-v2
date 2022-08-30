@@ -42,7 +42,7 @@ export class FilesService {
       const res = await this.findOne(list[i]);
       if(res != null){
         if(flat){
-          result.push(res['rendered_url']);
+          result.push({url : res['rendered_url']});
         }else{
           result.push(res)
         }

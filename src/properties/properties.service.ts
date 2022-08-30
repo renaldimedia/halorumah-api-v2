@@ -409,7 +409,7 @@ export class PropertiesService {
         res['property_featured_image_url'] = res.property_featured_image['rendered_url']
       }
       if (res.property_list_images != null && res.property_list_images.length > 0) {
-        const images = await this.fileService.findFileList(res.property_list_images, true);
+        const images = await this.fileService.findFileList(res.property_list_images);
 
         res['property_list_images_url'] = images;
       } else {
