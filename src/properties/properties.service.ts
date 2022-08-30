@@ -18,7 +18,7 @@ import { CitiesService } from 'src/cities/cities.service';
 
 @Injectable()
 export class PropertiesService {
-  constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>,private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService) { }
+  constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService) { }
 
   async createMeta(input: PropertyMetaMasterInput) {
     const pr = this.metaMasterRepos.create(input);
@@ -178,63 +178,63 @@ export class PropertiesService {
     });
     if (res.length > 0) {
       const result = [];
-      for(let i = 0 ; i < res.length ; i++){
+      for (let i = 0; i < res.length; i++) {
         let e = res[i];
         // res.forEach(e => {
-          // console.log(e.id)
-          // console.log()
-          if (e.property_price != null) {
-            e['property_price_rendered'] = formatter.format(e.property_price);
-          }
-          if (e.property_price_second != null) {
-            e['property_price_second_rendered'] = formatter.format(e.property_price_second);
-          }
-          if(e.property_area_size != null){
-            e['property_area_size_rendered'] = e.property_area_size + "m<sup>2</sup>";
-          }
-          if(e.property_building_size != null){
-            e['property_building_size_rendered'] = e.property_building_size + "m<sup>2</sup>";
-          }
-  
-          let addr = "";
-          if(e.property_full_address != null){
-            addr += e.property_full_address;
-          }
-          // console.log(e.subdistrict['subdistrict_name'])
-          if(e.subdistrict != null){
-            // let sub = await this.subdistrictsService.findOne(e.subdistrict);
-            addr += " " + e.subdistrict['subdistrict_name'];
-          }
-          if(e.city != null){
-            // let city = await this.citiesService.findOne(e.city);
-            addr += " " + e.city['city_name'];
-          }
-          if(e.province != null){
-            // let prov = await this.provincesService.findOne(e.province);
-            addr += " " + e.province['province_name']
-          }
-          if(e.country != null){
-            // let ct = await this.countryService.findOne(e.country);
-            addr += " " + e.country['country_name']
-          }
-          e['full_address_rendered'] = addr.trim();
-          if (e.property_list_images != null && e.property_list_images.length > 0) {
-            const images = this.fileService.findFileList(e.property_list_images, true);
-            e['property_list_images_url'] = images;
-            // result.push(e);
-          } else {
-            e['property_list_images_url'] = [];
-          }
-          if (e.property_featured_image != null) {
-            e['property_featured_image_url'] = e.property_featured_image['rendered_url'];
-          }
-          // let mt = this.findAllMeta(e.id);
-          const metas = this.findAllMeta(e.id);
-          e['metas_field'] = metas;
-          result.push(e)
+        // console.log(e.id)
+        // console.log()
+        if (e.property_price != null) {
+          e['property_price_rendered'] = formatter.format(e.property_price);
+        }
+        if (e.property_price_second != null) {
+          e['property_price_second_rendered'] = formatter.format(e.property_price_second);
+        }
+        if (e.property_area_size != null) {
+          e['property_area_size_rendered'] = e.property_area_size + "m<sup>2</sup>";
+        }
+        if (e.property_building_size != null) {
+          e['property_building_size_rendered'] = e.property_building_size + "m<sup>2</sup>";
+        }
+
+        let addr = "";
+        if (e.property_full_address != null) {
+          addr += e.property_full_address;
+        }
+        // console.log(e.subdistrict['subdistrict_name'])
+        if (e.subdistrict != null) {
+          // let sub = await this.subdistrictsService.findOne(e.subdistrict);
+          addr += " " + e.subdistrict['subdistrict_name'];
+        }
+        if (e.city != null) {
+          // let city = await this.citiesService.findOne(e.city);
+          addr += " " + e.city['city_name'];
+        }
+        if (e.province != null) {
+          // let prov = await this.provincesService.findOne(e.province);
+          addr += " " + e.province['province_name']
+        }
+        if (e.country != null) {
+          // let ct = await this.countryService.findOne(e.country);
+          addr += " " + e.country['country_name']
+        }
+        e['full_address_rendered'] = addr.trim();
+        if (e.property_list_images != null && e.property_list_images.length > 0) {
+          const images = this.fileService.findFileList(e.property_list_images, true);
+          e['property_list_images_url'] = images;
+          // result.push(e);
+        } else {
+          e['property_list_images_url'] = [];
+        }
+        if (e.property_featured_image != null) {
+          e['property_featured_image_url'] = e.property_featured_image['rendered_url'];
+        }
+        // let mt = this.findAllMeta(e.id);
+        const metas = this.findAllMeta(e.id);
+        e['metas_field'] = metas;
+        result.push(e)
         // });
       }
-      
+
       // console.log(result)
       return result;
     }
@@ -244,11 +244,11 @@ export class PropertiesService {
 
 
 
-  async findOne(id: number, fields: string[] = null): Promise<any> {
-    const query = this.repos.createQueryBuilder('prop').select("prop.id", "prop_id").where({ id: id });
+  async findOne(id: number, fields: string[] = null, restApi: boolean = false): Promise<any> {
+    const query = this.repos.createQueryBuilder('prop').addSelect("prop.id", "prop_id").where({ id: id });
     let select = [];
 
-    if (fields != null && fields.length > 0) {
+    if (fields != null && fields.length > 0 && !restApi) {
       fields.forEach(val => {
         switch (val) {
           case 'property_featured_image':
@@ -270,18 +270,20 @@ export class PropertiesService {
             query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
             break;
           case 'call_to_user':
-            query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
+            query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`*`]);
             break;
-            case 'property_price_rendered':
-              break;
-            case 'full_address_rendered':
-              break;
-            case 'property_building_size_rendered':
-              break;
-            case 'property_area_size_rendered':
-              break;
-            case 'property_type_rendered':
-              break;
+          case 'property_price_rendered':
+            break;
+          case 'full_address_rendered':
+            break;
+          case 'property_building_size_rendered':
+            break;
+          case 'property_area_size_rendered':
+            break;
+          case 'property_type_rendered':
+            break;
+          case 'property_type_rendered':
+            break;
           case 'id':
             break;
           case 'metas':
@@ -300,9 +302,18 @@ export class PropertiesService {
       if (select.length > 0) {
         query.addSelect(select);
       }
+    } else if (restApi) {
+      query.addSelect(['prop.*']);
+      query.leftJoinAndSelect(`prop.property_featured_image`, `prop_property_featured_image`).addSelect([`prop_property_featured_image.*`]);
+      query.leftJoinAndSelect(`prop.country`, `prop_country`).addSelect([`prop_country.*`]);
+      query.leftJoinAndSelect(`prop.province`, `prop_province`).addSelect([`prop_province.*`]);
+      query.leftJoinAndSelect(`prop.city`, `prop_city`).addSelect([`prop_city.*`]);
+      query.leftJoinAndSelect(`prop.subdistrict`, `prop_subdistrict`).addSelect([`prop_subdistrict.*`]);
+      query.leftJoinAndSelect(`prop.call_to_user`, `prop_call_to_user`).addSelect([`prop_call_to_user.*`]);
+      // query.leftJoinAndSelect(`prop_call_to_user.province`, 'agent_prov').addSelect([`agent_prov.province_name`]);
     }
     const res = await query.getOneOrFail();
-    // console.log(res);
+    console.log(res);
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
@@ -313,39 +324,82 @@ export class PropertiesService {
     });
     if (res != null) {
       let e = res;
+      // console.log(e.subdistrict);
+      // e.call_to_user['']
+      if(e.call_to_user['full_address'] == null){
+        e.call_to_user['full_address'] = ""; 
+      }
+      if(typeof e.call_to_user['subdistrict'] == 'number'){
+        let sub = await this.subdistrictsService.findOne(e.call_to_user['subdistrict']);
+        e.call_to_user['full_address'] += " " + sub.subdistrict_name;
+      }
+      if(typeof e.call_to_user['city'] == 'number'){
+        let city = await this.citiesService.findOne(e.call_to_user['city']);
+        e.call_to_user['full_address'] += " " + city.city_name;
+      }
+      if(typeof e.call_to_user['province'] == 'number'){
+        let prov = await this.provincesService.findOne(e.call_to_user['province']);
+        e.call_to_user['full_address'] += " " + prov.province_name;
+      }
+      if(typeof e.call_to_user['country'] == 'number'){
+        let sub = await this.countryService.findOne(e.call_to_user['country']);
+        e.call_to_user['full_address'] += " " + sub.country_name;
+      }
+      e.call_to_user['full_address'] = e.call_to_user['full_address'].trim();
       if (e.property_price != null) {
         e['property_price_rendered'] = formatter.format(e.property_price);
       }
       if (e.property_price_second != null) {
         e['property_price_second_rendered'] = formatter.format(e.property_price_second);
       }
-      if(e.property_area_size != null){
+      if (e.property_area_size != null) {
         e['property_area_size_rendered'] = e.property_area_size + "m<sup>2</sup>";
       }
-      if(e.property_building_size != null){
+      if (e.property_building_size != null) {
         e['property_building_size_rendered'] = e.property_building_size + "m<sup>2</sup>";
       }
 
       let addr = "";
-      if(e.property_full_address != null){
+      if (e.property_full_address != null) {
         addr += e.property_full_address;
       }
       // console.log(e.subdistrict['subdistrict_name'])
-      if(e.subdistrict != null){
-        // let sub = await this.subdistrictsService.findOne(e.subdistrict);
-        addr += " " + e.subdistrict['subdistrict_name'];
+      if (e.subdistrict != null) {
+        // if(restApi){
+        //   let sub = await this.subdistrictsService.findOne(e.subdistrict);
+        //   console.log(sub)
+        //   addr += " " + sub['subdistrict_name'];
+        // }else{
+          addr += " " + e.subdistrict['subdistrict_name'];
+
+        // }
+        
       }
-      if(e.city != null){
-        // let city = await this.citiesService.findOne(e.city);
-        addr += " " + e.city['city_name'];
+      if (e.city != null) {
+        // if(restApi){
+        //   let city = await this.citiesService.findOne(e.city);
+        //   addr += " " + city['city_name'];
+        // }else{
+          addr += " " + e.city['city_name'];
+        // }
+        
       }
-      if(e.province != null){
-        // let prov = await this.provincesService.findOne(e.province);
-        addr += " " + e.province['province_name']
+      if (e.province != null) {
+        // if(restApi){
+        //   let prov = await this.provincesService.findOne(e.province);
+        //   addr += " " + prov['province_name']
+        // }else{
+          addr += " " + e.province['province_name']
+        // }
+        
       }
-      if(e.country != null){
-        // let ct = await this.countryService.findOne(e.country);
-        addr += " " + e.country['country_name']
+      if (e.country != null) {
+        // if(restApi){
+        //   let ct = await this.countryService.findOne(e.country);
+        //   addr += " " + ct['country_name']
+        // }else{
+          addr += " " + e.country['country_name']
+        // }
       }
       e['full_address_rendered'] = addr.trim();
       if (res.property_price != null) {

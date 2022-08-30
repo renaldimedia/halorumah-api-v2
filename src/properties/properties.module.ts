@@ -14,8 +14,10 @@ import { PropertyCreatedListener } from './listener/aftercreate_property.listene
 import { PropertyMeta } from './entities/property-meta.entity';
 import { PropertyMetaMaster } from './entities/property-meta-master.entity';
 import { PropertyListImages } from './entities/property-list-images.entity';
+import { PropertiesController } from './properties.controller';
 @Module({
   imports: [TypeOrmModule.forFeature([Property, PropertyMeta, PropertyMetaMaster, PropertyListImages]), CountriesModule, SpacesModule, ProvincesModule, CitiesModule, SubdistrictsModule, FilesModule, UsersModule],
-  providers: [PropertiesResolver, PropertiesService, PropertyCreatedListener]
+  providers: [PropertiesResolver, PropertiesService, PropertyCreatedListener],
+  controllers: [PropertiesController],
 })
 export class PropertiesModule {}

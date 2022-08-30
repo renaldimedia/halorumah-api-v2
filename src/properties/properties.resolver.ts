@@ -35,7 +35,6 @@ export class PropertiesResolver {
   @Mutation(() => PropertyMetaMaster)
   @UseGuards(JwtAuthGuard)
   createPropertyMeta(@Args('propertyMaster') createPropertyInput: PropertyMetaMasterInput) {
-    // console.log(user);
     return this.propertiesService.createMeta(createPropertyInput);
   }
 

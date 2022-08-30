@@ -5,7 +5,7 @@ import { Country } from 'src/countries/entities/country.entity';
 import { Province } from 'src/provinces/entities/province.entity';
 import { City } from 'src/cities/entities/city.entity';
 import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User, UsersResponse } from 'src/users/entities/user.entity';
 import { PropertyMeta } from './property-meta.entity';
 import { IsIn, IsOptional } from 'class-validator';
 import propAgeConstants from 'src/enums/propAgeConstans.enum';
@@ -131,12 +131,12 @@ export class PropertyResponse {
   property_full_address: string
 
   
-  @Field(type => User)
-  created_by_user: User
+  @Field(type => UsersResponse)
+  created_by_user: UsersResponse
 
   
-  @Field(type => User)
-  call_to_user: User
+  @Field(type => UsersResponse)
+  call_to_user: UsersResponse
 
   @Field(type => [PropertyMetaResponse], {nullable: true})
   metas: PropertyMetaResponse[]
