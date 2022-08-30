@@ -11,7 +11,7 @@ export class PropertiesController {
 //     return this.service.findAll();
 //   }
 
-  @Get(':id')
+  @Get('?')
   findOne(@Query('id') id: number): Promise<PropertyResponse> {
     const fields = ['*'];
     return this.service.findOne(id, fields, true);
