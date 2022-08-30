@@ -105,8 +105,8 @@ export class PropertyResponse {
   @Field(type => String, {nullable: false})
   property_featured_image_url: string
 
-  @Field(type => [String], {nullable: false})
-  property_list_images: string[]
+  @Field(type => [File], {nullable: false})
+  property_list_images: File[]
 
   @Field(type => [String], {nullable: false})
   property_list_images_url: string[]
