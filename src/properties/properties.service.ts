@@ -315,22 +315,15 @@ export class PropertiesService {
       query.leftJoinAndSelect(`prop.city`, `prop_city`).addSelect([`prop_city.*`]);
       query.leftJoinAndSelect(`prop.subdistrict`, `prop_subdistrict`).addSelect([`prop_subdistrict.*`]);
       query.leftJoinAndSelect(`prop.call_to_user`, `prop_call_to_user`).addSelect([`prop_call_to_user.*`]);
-      // query.leftJoinAndSelect(`prop_call_to_user.province`, 'agent_prov').addSelect([`agent_prov.province_name`]);
     }
     const res = await query.getOneOrFail();
     // console.log(res);
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-
-      // These options are needed to round to whole numbers if that's what you want.
-      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+      maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
     });
     if (res != null) {
-      let e = res;
-      // console.log(e.subdistrict);
-      // e.call_to_user['']
       if(res.call_to_user['full_address'] == null){
         res.call_to_user['full_address'] = ""; 
       }
@@ -352,16 +345,16 @@ export class PropertiesService {
       }
       res.call_to_user['full_address'] = res.call_to_user['full_address'].trim();
       if (res.property_price != null) {
-        e['property_price_rendered'] = formatter.format(res.property_price);
+        res['property_price_rendered'] = formatter.format(res.property_price);
       }
       if (res.property_price_second != null) {
-        e['property_price_second_rendered'] = formatter.format(res.property_price_second);
+        res['property_price_second_rendered'] = formatter.format(res.property_price_second);
       }
       if (res.property_area_size != null) {
-        e['property_area_size_rendered'] = res.property_area_size + "m<sup>2</sup>";
+        res['property_area_size_rendered'] = res.property_area_size + "m<sup>2</sup>";
       }
       if (res.property_building_size != null) {
-        e['property_building_size_rendered'] = res.property_building_size + "m<sup>2</sup>";
+        res['property_building_size_rendered'] = res.property_building_size + "m<sup>2</sup>";
       }
 
       let addr = "";
@@ -406,7 +399,7 @@ export class PropertiesService {
           addr += " " + res.country['country_name']
         // }
       }
-      e['full_address_rendered'] = addr.trim();
+      res['full_address_rendered'] = addr.trim();
       if (res.property_price != null) {
         res['property_price_rendered'] = formatter.format(res.property_price);
       }
@@ -422,6 +415,9 @@ export class PropertiesService {
       }
       const metas = await this.findAllMeta(res.id);
       res['features_extra'] = metas;
+      res['property_has_airconditioner_rendered'] = res.property_has_airconditioner ? "Tersedia" : "Tidak Tersedia";
+      res['property_has_garage_rendered'] = res.property_has_garage ? "Tersedia" : "Tidak Tersedia";
+      res['property_has_heater_rendered'] = res.property_has_heater ? "Tersedia" : "Tidak Tersedia";
       return res;
     }
 

@@ -21,13 +21,13 @@ class PropertyInput{
   property_desc: string
 
   // @Column({nullable: true})
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_floor_count: number
   
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_garage_bike_volume: number
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_garage_car_volume: number
 
   @Field(type => String, {nullable: true})

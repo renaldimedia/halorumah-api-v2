@@ -114,6 +114,18 @@ export class PropertyResponse {
   @Field(type => Boolean, {nullable: true, defaultValue: false})
   property_has_garage: boolean
 
+  @Field(type => String, {nullable: true, defaultValue: false})
+  property_has_heater_rendered: string
+
+  // @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => String, {nullable: true, defaultValue: false})
+  property_has_airconditioner_rendered: string
+
+
+  // @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => String, {nullable: true, defaultValue: false})
+  property_has_garage_rendered: string
+
   
   @Field(type => String, {nullable: false})
   property_certificate_type: string
