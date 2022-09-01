@@ -68,7 +68,7 @@ export class PropertiesResolver {
     return this.propertiesService.findAllMeta(prop.id);
   }
 
-  @Query(() => PropertyResponse, { name: 'properties' })
+  @Query(() => [PropertyResponse], { name: 'properties' })
   findAll(@Args('option', {nullable: true}) opt:MetaQuery = null, @Info() inf: any) {
     const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
     return this.propertiesService.findAll(opt,fields);
