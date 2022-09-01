@@ -60,7 +60,7 @@ export class PropertiesService {
   }
 
   async findAllMeta(propId: number): Promise<PropertyMeta[]> {
-    const res = await this.metasRepos.findBy({property: propId});
+    const res = await this.metasRepos.findBy({ property: propId });
     // console.log(res)
     return res;
   }
@@ -104,15 +104,6 @@ export class PropertiesService {
           case 'property_type_rendered':
             break;
           case 'id':
-            break;
-          case 'metas':
-            break;
-          case 'metas_field':
-            break;
-          case 'property_list_images_url':
-            select.push(`prop.property_list_images`);
-            break;
-          case 'features_extra':
             break;
           default:
             select.push(`prop.${val}`);
@@ -221,21 +212,10 @@ export class PropertiesService {
           addr += " " + e.country['country_name']
         }
         e['full_address_rendered'] = addr.trim();
-        if (e.property_list_images != null && e.property_list_images.length > 0) {
-          const images = this.fileService.findFileList(e.property_list_images, true);
-          e['property_list_images_url'] = images;
-          // result.push(e);
-        } else {
-          e['property_list_images_url'] = [];
-        }
         if (e.property_featured_image != null) {
           e['property_featured_image_url'] = e.property_featured_image['rendered_url'];
         }
-        // let mt = this.findAllMeta(e.id);
-        const metas = await this.findAllMeta(e.id);
-        e['features_extra'] = metas;
         result.push(e)
-        // });
       }
 
       // console.log(result)
@@ -287,7 +267,11 @@ export class PropertiesService {
             break;
           case 'property_type_rendered':
             break;
-          case 'property_type_rendered':
+          case 'property_has_airconditioner_rendered':
+            break;
+          case 'property_has_heater_rendered':
+            break;
+          case 'property_has_garage_rendered':
             break;
           case 'id':
             break;
@@ -324,24 +308,24 @@ export class PropertiesService {
       maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
     });
     if (res != null) {
-      if(res.call_to_user['full_address'] == null){
-        res.call_to_user['full_address'] = ""; 
+      if (res.call_to_user['full_address'] == null) {
+        res.call_to_user['full_address'] = "";
       }
-      if(typeof res.call_to_user['subdistrict'] == 'number'){
+      if (typeof res.call_to_user['subdistrict'] == 'number') {
         let sub = await this.subdistrictsService.findOne(res.call_to_user['subdistrict']);
         res.call_to_user['full_address'] += " " + sub.subdistrict_name;
       }
-      if(typeof res.call_to_user['city'] == 'number'){
+      if (typeof res.call_to_user['city'] == 'number') {
         let city = await this.citiesService.findOne(res.call_to_user['city']);
         res.call_to_user['full_address'] += " " + city.city_name;
       }
-      if(typeof res.call_to_user['province'] == 'number'){
+      if (typeof res.call_to_user['province'] == 'number') {
         let prov = await this.provincesService.findOne(res.call_to_user['province']);
         res.call_to_user['full_address'] += " " + prov.province_name;
       }
-      if(typeof res.call_to_user['country'] == 'number'){
+      if (typeof res.call_to_user['country'] == 'number') {
         let sub = await this.countryService.findOne(res.call_to_user['country']);
-        res.call_to_user['full_address'] += " " + sub.country_name;
+        res.call_to_user['full_address'] += " " + (typeof sub.country_name != 'undefined' ? sub.country_name : "")
       }
       res.call_to_user['full_address'] = res.call_to_user['full_address'].trim();
       if (res.property_price != null) {
@@ -359,52 +343,35 @@ export class PropertiesService {
 
       let addr = "";
       if (res.property_full_address != null) {
-        addr += res.property_full_address;
+        addr += res.property_full_address + " ";
       }
-      // consolres.log(res.subdistrict['subdistrict_name'])
       if (res.subdistrict != null) {
-        // if(restApi){
-        //   let sub = await this.subdistrictsService.findOne(e.subdistrict);
-        //   console.log(sub)
-        //   addr += " " + sub['subdistrict_name'];
-        // }else{
-          addr += " " + res.subdistrict['subdistrict_name'];
-
-        // }
-        
+        addr += typeof res.subdistrict['subdistrict_name'] != 'undefined' ? res.subdistrict['subdistrict_name'] + " " : ""
       }
       if (res.city != null) {
-        // if(restApi){
-        //   let city = await this.citiesServicres.findOne(res.city);
-        //   addr += " " + city['city_name'];
-        // }else{
-          addr += " " + res.city['city_name'];
-        // }
-        
+        addr += typeof res.city['city_name'] != 'undefined' ? res.city['city_name'] + " " : ""
       }
       if (res.province != null) {
-        // if(restApi){
-        //   let prov = await this.provincesService.findOne(e.province);
-        //   addr += " " + prov['province_name']
-        // }else{
-          addr += " " + res.province['province_name']
-        // }
-        
+        addr += typeof res.province['province_name'] != 'undefined' ? res.province['province_name'] + " " : ""
       }
       if (res.country != null) {
-        // if(restApi){
-        //   let ct = await this.countryServicres.findOne(res.country);
-        //   addr += " " + ct['country_name']
-        // }else{
-          addr += " " + res.country['country_name']
-        // }
+        addr += typeof res.country['country_name'] != 'undefined' ? res.country['country_name'] + " " : ""
       }
+      // console.log(addr)
+      res['full_address_rendered'] = "";
       res['full_address_rendered'] = addr.trim();
       if (res.property_price != null) {
         res['property_price_rendered'] = formatter.format(res.property_price);
       }
       if (res['property_featured_image'] != null) {
         res['property_featured_image_url'] = res.property_featured_image['rendered_url']
+      }
+      res['property_type_rendered'] = "";
+      if (res.property_type != null) {
+        res['property_type_rendered'] += res.property_type;
+      }
+      if (res.sales_type != null) {
+        res['property_type_rendered'] += (" " + res.sales_type);
       }
       if (res.property_list_images != null && res.property_list_images.length > 0) {
         const images = await this.fileService.findFileList(res.property_list_images);
@@ -425,7 +392,7 @@ export class PropertiesService {
     // return res;
   }
 
-  async getExtraFeatureList(): Promise<PropertyMetaMaster[]>{
+  async getExtraFeatureList(): Promise<PropertyMetaMaster[]> {
     const result = await this.metaMasterRepos.createQueryBuilder('meta').where(`property_constant ILike '%FEATURE%'`).getMany();
     // console.log(result)
     return result;
