@@ -1,5 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Any, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { PropertyMetaMaster, PropertyMetaMasterResponse } from './property-meta-master.entity';
+import { Property } from './property.entity';
 
 @Entity()
 export class PropertyMeta {
@@ -7,9 +9,11 @@ export class PropertyMeta {
   id: number;
 
   @Column()
+  @ManyToOne(() => Property)
   property: number
 
   @Column()
+  @ManyToOne(() => PropertyMetaMaster, (mast) => mast.property_constant)
   master: string
 
   @Column()
@@ -24,9 +28,21 @@ export class PropertyMetaResponse {
   @Field()
   property: number
 
-  @Field()
+  @Field(type => String)
   master: string
 
   @Field()
   property_constant_value: string
+}
+
+@ObjectType()
+export class PropertyFeatureResponse {
+  @Field()
+  feature_name: string
+
+  @Field()
+  feature_type: string
+
+  @Field(type => String)
+  feature_value: string
 }

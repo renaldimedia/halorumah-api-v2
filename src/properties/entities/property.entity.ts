@@ -63,13 +63,38 @@ export class Property {
   @Field(type => Int, {nullable: false})
   property_bathroom_count: number
 
+  @Column({nullable: true})
+  @Field(type => Int, {nullable: false})
+  property_floor_count: number
+
   @Column()
   @Field(type => Int, {nullable: false})
   property_bedroom_count: number
 
-  @Column()
-  @Field(type => Int, {nullable: true, defaultValue: 0})
-  property_garage_count: number
+  @Column({nullable: true})
+  @Field(type => Int, {nullable: false})
+  property_garage_bike_volume: number
+
+  @Column({nullable: true})
+  @Field(type => Int, {nullable: false})
+  property_garage_car_volume: number
+
+  @Column({nullable: true})
+  @Field(type => String, {nullable: true})
+  property_electricy: string
+
+  @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_heater: boolean
+
+  @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_airconditioner: boolean
+
+
+  @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_garage: boolean
 
   @Column()
   @Field(type => String, {nullable: false})
@@ -177,6 +202,13 @@ export class Property {
   @Field()
   @IsIn(Object.values(saleTypes))
   sales_type: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true
+  })
+  @Field({nullable: true})
+  property_building_type: string;
 
   @Column()
   @Field()

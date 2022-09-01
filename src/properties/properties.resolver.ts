@@ -7,7 +7,7 @@ import { CurrentUser } from 'src/decorators/currentUser.decorator';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FilesService } from 'src/files/files.service';
-import { PropertyResponse } from './entities/get-all-props.response';
+import { PropertyPaginationResponse, PropertyResponse } from './entities/get-all-props.response';
 import { File } from 'src/files/entities/file.entity';
 import { MetaQuery } from 'src/global-entity/meta-query.input';
 import { Country } from 'src/countries/entities/country.entity';
@@ -19,7 +19,7 @@ import { Province } from 'src/provinces/entities/province.entity';
 import { City } from 'src/cities/entities/city.entity';
 import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
 import { PropertyMetaMaster, PropertyMetaMasterInput } from './entities/property-meta-master.entity';
-import { PropertyMetaResponse } from './entities/property-meta.entity';
+import { PropertyMeta, PropertyMetaResponse } from './entities/property-meta.entity';
 
 @Resolver(() => Property)
 export class PropertiesResolver {
@@ -28,7 +28,7 @@ export class PropertiesResolver {
   @Mutation(() => Property)
   @UseGuards(JwtAuthGuard)
   createProperty(@Args('createPropertyInput') createPropertyInput: CreatePropertyInput, @CurrentUser() user: any) {
-    // console.log(user);
+ 
     return this.propertiesService.create(createPropertyInput, user.userId);
   }
 
@@ -64,15 +64,19 @@ export class PropertiesResolver {
     return this.fileService.findFileList(prop.property_list_images);
   }
   @ResolveField(() => [PropertyMetaResponse], {name: 'metas'})
-  metas(@Parent() prop: Property): Promise<PropertyMetaResponse[]>{
-    console.log('metas')
+  metas_field(@Parent() prop: Property): Promise<PropertyMeta[]>{
     return this.propertiesService.findAllMeta(prop.id);
   }
 
-  @Query(() => [PropertyResponse], { name: 'properties' })
+  @Query(() => PropertyPaginationResponse, { name: 'properties' })
   findAll(@Args('option', {nullable: true}) opt:MetaQuery = null, @Info() inf: any) {
     const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
     return this.propertiesService.findAll(opt,fields);
+  }
+
+  @Query(() => [PropertyMetaMaster], {name: 'propFeatures'})
+  getFeaturesList(): Promise<PropertyMetaMaster[]>{
+    return this.propertiesService.getExtraFeatureList();
   }
 
   @Query(() => PropertyResponse, { name: 'property' })

@@ -1,18 +1,21 @@
 import { ObjectType, Field, Int, Float, InputType } from '@nestjs/graphql';
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { PropertyMeta } from './property-meta.entity';
 
 @Entity()
 @ObjectType()
 export class PropertyMetaMaster {
-  @PrimaryGeneratedColumn()
-  @Field(() => Int)
-  id: number;
-
-  @Column()
-  @Index({unique: true})
+  @PrimaryColumn()
   @Field()
   property_constant: string
+
+  @Column({nullable: true, default: "GENERAL"})
+  @Field({nullable: true})
+  property_constant_group: string
+
+  @Column({nullable: true, default: "TEXT"})
+  @Field({nullable: true})
+  property_constant_type: string
 
   @Column({nullable: true})
   @Field()
@@ -31,6 +34,12 @@ export class PropertyMetaMasterResponse {
 
   @Field()
   property_constant: string
+
+  @Field()
+  property_constant_group: string
+
+  @Field({nullable: true, defaultValue: 'text'})
+  property_constant_type: string
 
   @Field()
   display_name: string

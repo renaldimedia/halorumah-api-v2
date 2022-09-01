@@ -20,6 +20,32 @@ class PropertyInput{
   @Field(type => String, {nullable: false})
   property_desc: string
 
+  // @Column({nullable: true})
+  @Field(type => Int, {nullable: false})
+  property_floor_count: number
+  
+  @Field(type => Int, {nullable: false})
+  property_garage_bike_volume: number
+
+  @Field(type => Int, {nullable: false})
+  property_garage_car_volume: number
+
+  @Field(type => String, {nullable: true})
+  property_electricy: string
+
+  // @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_heater: boolean
+
+  // @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_airconditioner: boolean
+
+
+  // @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_garage: boolean
+
   @Field(type => Int)
   property_price: number
 
@@ -40,9 +66,6 @@ class PropertyInput{
 
   @Field(type => Int, {nullable: false})
   property_bedroom_count: number
-
-  @Field(type => Int, {nullable: true, defaultValue: 0})
-  property_garage_count: number
 
   @Field(type => String, {nullable: false})
   property_certificate_type: string
@@ -78,6 +101,14 @@ class PropertyInput{
   @Field(type => Int)
   property_build_years: number
 
+  // @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0, nullable: true })
+  @Field()
+  property_area_size: number;
+
+  // @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0, nullable: true })
+  // @Field()
+  // property_building_size: number;
+
   @Field(type => String)
   @IsIn(Object.values(propAgeConstants))
   property_condition: string
@@ -100,10 +131,10 @@ class PropertyInput{
 
 @InputType()
 class PropertyMetaInput {
-  @Field()
+  @Field(type => String)
   property_constant_value: string
 
-  @Field()
+  @Field(type => String)
   master: string
 }
 

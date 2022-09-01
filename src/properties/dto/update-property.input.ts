@@ -41,9 +41,6 @@ class UpdateProperty{
   @Field(type => Int, {nullable: true})
   property_bedroom_count: number
 
-  @Field(type => Int, {nullable: true, defaultValue: 0})
-  property_garage_count: number
-
   @Field(type => String, {nullable: true})
   property_certificate_type: string
 
@@ -90,9 +87,31 @@ class UpdateProperty{
   @IsIn(Object.values(propPurchaseStatus))
   sales_status: string;
 
+  // @Column({nullable: true})
+  @Field(type => String, {nullable: true})
+  property_electricy: string
+
   @Field(type => String, {nullable: true, defaultValue: purchaseTypes.ONCE})
   @IsIn(Object.values(purchaseTypes))
   purchase_type: string;
+
+  @Field(type => Int, {nullable: false})
+  property_floor_count: number
+  
+  @Field(type => Int, {nullable: false})
+  property_garage_bike_volume: number
+
+  @Field(type => Int, {nullable: false})
+  property_garage_car_volume: number
+
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_heater: boolean
+
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_airconditioner: boolean
+
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_garage: boolean
 }
 
 

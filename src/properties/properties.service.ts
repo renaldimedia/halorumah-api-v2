@@ -59,8 +59,8 @@ export class PropertiesService {
     return { ...property };
   }
 
-  async findAllMeta(propId: number): Promise<PropertyMetaResponse[]> {
-    const res = await this.metasRepos.findBy({ property: propId });
+  async findAllMeta(propId: number): Promise<PropertyMeta[]> {
+    const res = await this.metasRepos.findBy({property: propId});
     // console.log(res)
     return res;
   }
@@ -111,6 +111,8 @@ export class PropertiesService {
             break;
           case 'property_list_images_url':
             select.push(`prop.property_list_images`);
+            break;
+          case 'features_extra':
             break;
           default:
             select.push(`prop.${val}`);
@@ -180,9 +182,10 @@ export class PropertiesService {
       const result = [];
       for (let i = 0; i < res.length; i++) {
         let e = res[i];
-        // res.forEach(e => {
-        // console.log(e.id)
-        // console.log()
+        let lt = "";
+        // if(e.property_type != null){
+        //   lt += e.property_type
+        // }
         if (e.property_price != null) {
           e['property_price_rendered'] = formatter.format(e.property_price);
         }
@@ -229,8 +232,8 @@ export class PropertiesService {
           e['property_featured_image_url'] = e.property_featured_image['rendered_url'];
         }
         // let mt = this.findAllMeta(e.id);
-        const metas = this.findAllMeta(e.id);
-        e['metas_field'] = metas;
+        const metas = await this.findAllMeta(e.id);
+        e['features_extra'] = metas;
         result.push(e)
         // });
       }
@@ -251,6 +254,8 @@ export class PropertiesService {
     if (fields != null && fields.length > 0 && !restApi) {
       fields.forEach(val => {
         switch (val) {
+          case 'features_extra':
+            break;
           case 'property_featured_image':
             query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
             break;
@@ -313,7 +318,7 @@ export class PropertiesService {
       // query.leftJoinAndSelect(`prop_call_to_user.province`, 'agent_prov').addSelect([`agent_prov.province_name`]);
     }
     const res = await query.getOneOrFail();
-    console.log(res);
+    // console.log(res);
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
@@ -326,79 +331,79 @@ export class PropertiesService {
       let e = res;
       // console.log(e.subdistrict);
       // e.call_to_user['']
-      if(e.call_to_user['full_address'] == null){
-        e.call_to_user['full_address'] = ""; 
+      if(res.call_to_user['full_address'] == null){
+        res.call_to_user['full_address'] = ""; 
       }
-      if(typeof e.call_to_user['subdistrict'] == 'number'){
-        let sub = await this.subdistrictsService.findOne(e.call_to_user['subdistrict']);
-        e.call_to_user['full_address'] += " " + sub.subdistrict_name;
+      if(typeof res.call_to_user['subdistrict'] == 'number'){
+        let sub = await this.subdistrictsService.findOne(res.call_to_user['subdistrict']);
+        res.call_to_user['full_address'] += " " + sub.subdistrict_name;
       }
-      if(typeof e.call_to_user['city'] == 'number'){
-        let city = await this.citiesService.findOne(e.call_to_user['city']);
-        e.call_to_user['full_address'] += " " + city.city_name;
+      if(typeof res.call_to_user['city'] == 'number'){
+        let city = await this.citiesService.findOne(res.call_to_user['city']);
+        res.call_to_user['full_address'] += " " + city.city_name;
       }
-      if(typeof e.call_to_user['province'] == 'number'){
-        let prov = await this.provincesService.findOne(e.call_to_user['province']);
-        e.call_to_user['full_address'] += " " + prov.province_name;
+      if(typeof res.call_to_user['province'] == 'number'){
+        let prov = await this.provincesService.findOne(res.call_to_user['province']);
+        res.call_to_user['full_address'] += " " + prov.province_name;
       }
-      if(typeof e.call_to_user['country'] == 'number'){
-        let sub = await this.countryService.findOne(e.call_to_user['country']);
-        e.call_to_user['full_address'] += " " + sub.country_name;
+      if(typeof res.call_to_user['country'] == 'number'){
+        let sub = await this.countryService.findOne(res.call_to_user['country']);
+        res.call_to_user['full_address'] += " " + sub.country_name;
       }
-      e.call_to_user['full_address'] = e.call_to_user['full_address'].trim();
-      if (e.property_price != null) {
-        e['property_price_rendered'] = formatter.format(e.property_price);
+      res.call_to_user['full_address'] = res.call_to_user['full_address'].trim();
+      if (res.property_price != null) {
+        e['property_price_rendered'] = formatter.format(res.property_price);
       }
-      if (e.property_price_second != null) {
-        e['property_price_second_rendered'] = formatter.format(e.property_price_second);
+      if (res.property_price_second != null) {
+        e['property_price_second_rendered'] = formatter.format(res.property_price_second);
       }
-      if (e.property_area_size != null) {
-        e['property_area_size_rendered'] = e.property_area_size + "m<sup>2</sup>";
+      if (res.property_area_size != null) {
+        e['property_area_size_rendered'] = res.property_area_size + "m<sup>2</sup>";
       }
-      if (e.property_building_size != null) {
-        e['property_building_size_rendered'] = e.property_building_size + "m<sup>2</sup>";
+      if (res.property_building_size != null) {
+        e['property_building_size_rendered'] = res.property_building_size + "m<sup>2</sup>";
       }
 
       let addr = "";
-      if (e.property_full_address != null) {
-        addr += e.property_full_address;
+      if (res.property_full_address != null) {
+        addr += res.property_full_address;
       }
-      // console.log(e.subdistrict['subdistrict_name'])
-      if (e.subdistrict != null) {
+      // consolres.log(res.subdistrict['subdistrict_name'])
+      if (res.subdistrict != null) {
         // if(restApi){
         //   let sub = await this.subdistrictsService.findOne(e.subdistrict);
         //   console.log(sub)
         //   addr += " " + sub['subdistrict_name'];
         // }else{
-          addr += " " + e.subdistrict['subdistrict_name'];
+          addr += " " + res.subdistrict['subdistrict_name'];
 
         // }
         
       }
-      if (e.city != null) {
+      if (res.city != null) {
         // if(restApi){
-        //   let city = await this.citiesService.findOne(e.city);
+        //   let city = await this.citiesServicres.findOne(res.city);
         //   addr += " " + city['city_name'];
         // }else{
-          addr += " " + e.city['city_name'];
+          addr += " " + res.city['city_name'];
         // }
         
       }
-      if (e.province != null) {
+      if (res.province != null) {
         // if(restApi){
         //   let prov = await this.provincesService.findOne(e.province);
         //   addr += " " + prov['province_name']
         // }else{
-          addr += " " + e.province['province_name']
+          addr += " " + res.province['province_name']
         // }
         
       }
-      if (e.country != null) {
+      if (res.country != null) {
         // if(restApi){
-        //   let ct = await this.countryService.findOne(e.country);
+        //   let ct = await this.countryServicres.findOne(res.country);
         //   addr += " " + ct['country_name']
         // }else{
-          addr += " " + e.country['country_name']
+          addr += " " + res.country['country_name']
         // }
       }
       e['full_address_rendered'] = addr.trim();
@@ -415,15 +420,19 @@ export class PropertiesService {
       } else {
         res['property_list_images_url'] = [];
       }
-      // let mt = this.findAllMeta(e.id);
       const metas = await this.findAllMeta(res.id);
-      res['metas_field'] = metas;
-      // console.log(res)
+      res['features_extra'] = metas;
       return res;
     }
 
     return null;
     // return res;
+  }
+
+  async getExtraFeatureList(): Promise<PropertyMetaMaster[]>{
+    const result = await this.metaMasterRepos.createQueryBuilder('meta').where(`property_constant ILike '%FEATURE%'`).getMany();
+    // console.log(result)
+    return result;
   }
 
   update(id: number, updatePropertyInput: UpdatePropertyInput) {

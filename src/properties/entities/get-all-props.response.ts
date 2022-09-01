@@ -89,9 +89,30 @@ export class PropertyResponse {
   @Field(type => Int, {nullable: false})
   property_bedroom_count: number
 
+  @Field(type => Int, {nullable: false})
+  property_floor_count: number
   
-  @Field(type => Int, {nullable: true, defaultValue: 0})
-  property_garage_count: number
+  @Field(type => Int, {nullable: false})
+  property_garage_bike_volume: number
+
+  @Field(type => Int, {nullable: false})
+  property_garage_car_volume: number
+
+  @Field(type => String, {nullable: true})
+  property_electricy: string
+
+  // @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_heater: boolean
+
+  // @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_airconditioner: boolean
+
+
+  // @Column({nullable: true, default: false, type: 'boolean'})
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  property_has_garage: boolean
 
   
   @Field(type => String, {nullable: false})
@@ -142,7 +163,7 @@ export class PropertyResponse {
   metas: PropertyMetaResponse[]
 
   @Field(type => [PropertyMetaResponse], {nullable: true})
-  metas_field: PropertyMetaResponse[]
+  features_extra: PropertyMetaResponse[]
 
   @Field()
   property_build_years: number
@@ -184,6 +205,35 @@ export class PropertyResponse {
 
   @Field({nullable: true})
   purchase_type: string;
+
+  @Field({nullable: true})
+  property_building_type: string;
 }
 
+@ObjectType()
+export class PropertyPaginationResponse {
+ @Field(type => [PropertyResponse])
+ data: PropertyResponse[]
+
+ @Field(type => Int)
+ total: number
+
+ @Field(type => Int, {defaultValue: 1})
+ page: number
+}
+
+@ObjectType()
+export class PropertyPaginationInfoResponse {
+ @Field(type => Int)
+ total: number
+
+ @Field(type => Int, {defaultValue: 1})
+ page: number
+
+ @Field(type => Int, {nullable: true, defaultValue: 10})
+ per_page: number
+
+ @Field(type => Int, {nullable: true, defaultValue: 10})
+ total_page: number
+}
 
