@@ -17,7 +17,7 @@ import { Province } from 'src/provinces/entities/province.entity';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService, private readonly provincesService: ProvincesService) {}
 
-  @Query(() => User, {name: 'profile'})
+  @Query(() => UsersResponse, {name: 'profile'})
   myProfile(@CurrentUser() user: any): Promise<User>{
     // console.log(user)
     return this.usersService.findById(user.userId);
@@ -27,6 +27,12 @@ export class UsersResolver {
   province(@Parent() user: User){
     // console.log('xx')
     return this.provincesService.findOne(user.province);
+  }
+
+  @ResolveField(() => String)
+  whatsapp_link(@Parent() user:User){
+    console.log('whatsapp link')
+    return user.account_whatsapp_number != null ? `https://wa.me/${user.account_whatsapp_number}` : "";
   }
 
   @Mutation(() => User, {name: 'profile'})
@@ -62,6 +68,8 @@ export class UsersResolver {
   findOne(@Args('userid') userid: string): Promise<User> {
     return this.usersService.findById(userid);
   }
+
+
 
   @Mutation(() => User, {name: 'createUser'})
   @UseGuards(RolesGuard)

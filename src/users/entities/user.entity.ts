@@ -90,6 +90,9 @@ export class User {
   @JoinColumn()
   photo_profile: string
 
+  @Field(type => File, {nullable: true})
+  photo_profile_file: File
+
   @Column({nullable: true})
   @Field({nullable: true})
   display_name: string
@@ -154,12 +157,38 @@ export class User {
   @Column({nullable: true, type: 'varchar', length: 30})
   @Field(type => String, {nullable: true})
   agent_id: string
+
+  @Field({nullable: true})
+  whatsapp_link: string
+
+  
+  @Field({nullable: true})
+  rumah123_link: string
+
+  
+  @Field({nullable: true})
+  rumahcom_link: string
+
+  
+  @Field({nullable: true})
+  olx_link: string
+
+  
+  @Field({nullable: true})
+  lamudi_link: string
+
+  
+  @Field({nullable: true})
+  discord_link: string
 }
 
 @ObjectType()
 export class UsersResponse{
   @Field({nullable: true})
   id: string;
+
+  @Field(type => File, {nullable: true})
+  photo_profile_file: File
 
   @Field({nullable: true})
   email: string;
@@ -169,9 +198,6 @@ export class UsersResponse{
 
   @Field({nullable: true})
   role: string;
-
-  @Field({nullable: true})
-  public created_at: Date;
 
   @Field({nullable: true})
   extra: string
@@ -184,8 +210,8 @@ export class UsersResponse{
   @IsOptional()
   messages: string
 
-  @Field({nullable: true})
-  @OneToOne(() => File, (file) => file.id)
+  @Field(type => File, {nullable: true})
+  // @ManyToOne(() => File, (file) => file.id)
   photo_profile: File
 
   
@@ -220,6 +246,29 @@ export class UsersResponse{
   @Field({nullable: true})
   account_discord: string
 
+  @Field({nullable: true})
+  whatsapp_link: string
+
+  
+  @Field({nullable: true})
+  rumah123_link: string
+
+  
+  @Field({nullable: true})
+  rumahcom_link: string
+
+  
+  @Field({nullable: true})
+  olx_link: string
+
+  
+  @Field({nullable: true})
+  lamudi_link: string
+
+  
+  @Field({nullable: true})
+  discord_link: string
+
   
   @Field({nullable: true})
   property_count: number
@@ -229,8 +278,8 @@ export class UsersResponse{
   country: Country
 
   @Field(type => Province, {nullable: true})
-  @ManyToOne(() => Province)
-  province: number
+  // @ManyToOne(() => Province)
+  province: Province
 
   @Field(type => Province, {nullable: true})
   province_resolve: Province

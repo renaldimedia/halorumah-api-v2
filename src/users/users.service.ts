@@ -23,19 +23,27 @@ export class UsersService {
   }
 
   findByEmail(email: string): Promise<User> {
+    console.log('findbyemail');
     return this.usersRespository.findOne({ where: {email: email} });
   }
 
   async findById(id: string, fields: any = []): Promise<User>{
     // const result = await this.usersRespository.findOneBy({id:id});
-    // console.log(result);
-    const users = await this.usersRespository.findOneBy({id:id});
+  
+    console.log('findbyid');
+    const users = await this.usersRespository.findOne({
+      where: {id:id},
+      relations: {
+        country: true,province:true,city:true,subdistrict:true,photo_profile: true
+      }
+    });
 
-    console.log(users);
+    // console.log(users);
     return users;
   }
 
   findOneBy(search: any): Promise<User>{
+    console.log('findby');
     return this.usersRespository.findOneBy(search);
   }
 
