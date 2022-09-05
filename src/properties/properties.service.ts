@@ -93,11 +93,11 @@ export class PropertiesService {
             query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
             break;
           case 'call_to_user':
-            query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
-            query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_province`).addSelect([`prop_${val}_province.id`]);
-            query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_country`).addSelect([`prop_${val}_country.id`]);
-            query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_city`).addSelect([`prop_${val}_city.id`]);
-            query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_subdistrict`).addSelect([`prop_${val}_subdistrict.id`]);
+            // query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
+            // query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_province`).addSelect([`prop_${val}_province.id`]);
+            // query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_country`).addSelect([`prop_${val}_country.id`]);
+            // query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_city`).addSelect([`prop_${val}_city.id`]);
+            // query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_subdistrict`).addSelect([`prop_${val}_subdistrict.id`]);
             break;
           case 'property_price_rendered':
             break;
