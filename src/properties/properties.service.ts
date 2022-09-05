@@ -7,14 +7,13 @@ import { UpdatePropertyInput } from './dto/update-property.input';
 import { PropertyMetaMaster, PropertyMetaMasterInput } from './entities/property-meta-master.entity';
 import { PropertyMeta } from './entities/property-meta.entity';
 import { Property } from './entities/property.entity';
-import { PropertyMetaResponse } from './entities/property-meta.entity';
-import { PropertyResponse } from './entities/get-all-props.response';
 import { FilesService } from 'src/files/files.service';
 import { PropertyListImages } from './entities/property-list-images.entity';
 import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
 import { CountriesService } from 'src/countries/countries.service';
 import { ProvincesService } from 'src/provinces/provinces.service';
 import { CitiesService } from 'src/cities/cities.service';
+import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 
 @Injectable()
 export class PropertiesService {
@@ -125,9 +124,6 @@ export class PropertiesService {
 
       if (typeof option.where != 'undefined' && option.where.length > 0) {
         for (let index = 0; index < option.where.length; index++) {
-          // const element = array[index];
-          // console.log(index + "+");
-          // console.log(option.where[index].operator);
           let obj = {};
           let tbl = "prop";
           if (typeof option.where[index].table != 'undefined') {
@@ -174,9 +170,13 @@ export class PropertiesService {
       for (let i = 0; i < res.length; i++) {
         let e = res[i];
         let lt = "";
-        // if(e.property_type != null){
-        //   lt += e.property_type
-        // }
+        if(e.property_type != null){
+          lt += " " + e.property_type
+        }
+        if(e.sales_type != null){
+          lt += " " + e.sales_type
+        }
+        e['property_type_rendered'] = lt.trim();
         if (e.property_price != null) {
           e['property_price_rendered'] = formatter.format(e.property_price);
         }
@@ -194,21 +194,16 @@ export class PropertiesService {
         if (e.property_full_address != null) {
           addr += e.property_full_address;
         }
-        // console.log(e.subdistrict['subdistrict_name'])
         if (e.subdistrict != null) {
-          // let sub = await this.subdistrictsService.findOne(e.subdistrict);
           addr += " " + e.subdistrict['subdistrict_name'];
         }
         if (e.city != null) {
-          // let city = await this.citiesService.findOne(e.city);
           addr += " " + e.city['city_name'];
         }
         if (e.province != null) {
-          // let prov = await this.provincesService.findOne(e.province);
           addr += " " + e.province['province_name']
         }
         if (e.country != null) {
-          // let ct = await this.countryService.findOne(e.country);
           addr += " " + e.country['country_name']
         }
         e['full_address_rendered'] = addr.trim();
@@ -217,8 +212,6 @@ export class PropertiesService {
         }
         result.push(e)
       }
-
-      // console.log(result)
       return result;
     }
 
@@ -277,6 +270,8 @@ export class PropertiesService {
             break;
           case 'metas':
             break;
+          case 'property_type_rendered':
+            break;
           case 'metas_field':
             break;
           case 'property_list_images_url':
@@ -308,6 +303,14 @@ export class PropertiesService {
       maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
     });
     if (res != null) {
+      let lt = "";
+      if(res.property_type != null){
+        lt += " " + res.property_type
+      }
+      if(res.sales_type != null){
+        lt += " " + res.sales_type
+      }
+      res['property_type_rendered'] = lt.trim();
       if (res.call_to_user['full_address'] == null) {
         res.call_to_user['full_address'] = "";
       }
@@ -398,11 +401,42 @@ export class PropertiesService {
     return result;
   }
 
-  update(id: number, updatePropertyInput: UpdatePropertyInput) {
-    return `This action updates a #${id} property`;
+  async update(id: number, updatePropertyInput: UpdatePropertyInput) {
+
+    const { property, metas } = updatePropertyInput;
+
+    const result = await this.repos.update({ id: id }, property);
+    const ret = new GlobalMutationResponse();
+    if (result.affected > 0) {
+
+      ret.affected = result.affected;
+      ret.message = "Berhasil mengupdate properti";
+      ret.errors = [];
+
+      return ret;
+    }
+    ret.affected = 0;
+    ret.message = "Gagal mengupdate properti";
+    ret.errors = [];
+
+    return ret;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} property`;
+  async remove(id: number) {
+    const res = await this.repos.delete({ id: id });
+    const ret = new GlobalMutationResponse();
+    if (typeof res.affected == 'undefined') {
+      ret.affected = 0;
+      ret.message = "Gagal menghapus properti";
+      ret.errors = [];
+
+      return ret;
+    }
+
+    ret.affected = res.affected;
+    ret.message = "Berhasil menghapus properti";
+    ret.errors = [];
+
+    return ret;
   }
 }

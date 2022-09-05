@@ -1,12 +1,9 @@
 import { InputType, Int, Field, Float } from '@nestjs/graphql';
 import { IsIn } from 'class-validator';
-import { CreateCityInput } from 'src/cities/dto/create-city.input';
-import { CreateCountryInput } from 'src/countries/dto/create-country.input';
 import propAgeConstants from 'src/enums/propAgeConstans.enum';
 import propPurchaseStatus from 'src/enums/propPurchaseStatus.enum';
 import purchaseTypes from 'src/enums/purchaseType.enum';
 import saleTypes from 'src/enums/saleTypes.enum';
-import Decimal from 'decimal.js';
 
 
 @InputType()
@@ -95,13 +92,13 @@ class UpdateProperty{
   @IsIn(Object.values(purchaseTypes))
   purchase_type: string;
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_floor_count: number
   
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_garage_bike_volume: number
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_garage_car_volume: number
 
   @Field(type => Boolean, {nullable: true, defaultValue: false})
@@ -113,9 +110,6 @@ class UpdateProperty{
   @Field(type => Boolean, {nullable: true, defaultValue: false})
   property_has_garage: boolean
 }
-
-
-
 
 @InputType()
 class PropertyMetaUpdate {

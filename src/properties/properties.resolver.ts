@@ -20,6 +20,7 @@ import { City } from 'src/cities/entities/city.entity';
 import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
 import { PropertyMetaMaster, PropertyMetaMasterInput } from './entities/property-meta-master.entity';
 import { PropertyMeta, PropertyMetaResponse } from './entities/property-meta.entity';
+import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 
 @Resolver(() => Property)
 export class PropertiesResolver {
@@ -86,12 +87,12 @@ export class PropertiesResolver {
     return this.propertiesService.findOne(id,fields);
   }
 
-  @Mutation(() => Property)
+  @Mutation(() => GlobalMutationResponse)
   updateProperty(@Args('updatePropertyInput') updatePropertyInput: UpdatePropertyInput) {
     return this.propertiesService.update(updatePropertyInput.id, updatePropertyInput);
   }
 
-  @Mutation(() => Property)
+  @Mutation(() => GlobalMutationResponse)
   removeProperty(@Args('id', { type: () => Int }) id: number) {
     return this.propertiesService.remove(id);
   }
