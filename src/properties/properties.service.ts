@@ -65,6 +65,8 @@ export class PropertiesService {
     return res;
   }
 
+  
+
   async findAll(option: MetaQuery = null, fields: string[] = null): Promise<any> {
     const query = this.repos.createQueryBuilder('prop').select("prop.id", "prop_id");
     let select = [];
@@ -91,7 +93,11 @@ export class PropertiesService {
             query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
             break;
           case 'call_to_user':
-            query.leftJoinAndSelect(`prop.${val}`, `user`).addSelect([`*`]);
+            query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
+            query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_province`).addSelect([`prop_${val}_province.id`]);
+            query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_country`).addSelect([`prop_${val}_country.id`]);
+            query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_city`).addSelect([`prop_${val}_city.id`]);
+            query.leftJoinAndSelect(`prop_${val}`, `prop_${val}_subdistrict`).addSelect([`prop_${val}_subdistrict.id`]);
             break;
           case 'property_price_rendered':
             break;
@@ -211,6 +217,21 @@ export class PropertiesService {
         if (e.property_featured_image != null) {
           e['property_featured_image_url'] = e.property_featured_image['rendered_url'];
         }
+        // if (e.call_to_user.photo_profile != null && typeof e.call_to_user.photo_profile == 'string') {
+        //   e.call_to_user.photo_profile = await this.fileService.findOne(e.call_to_user.photo_profile);
+        // }
+        // if(e.call_to_user.province != null && typeof e.call_to_user.province == 'number'){
+        //   e.call_to_user.province = await this.provincesService.findOne(e.call_to_user.province);
+        // }
+        // if(e.call_to_user.country != null && typeof e.call_to_user.country == 'number'){
+        //   e.call_to_user.country = await this.countryService.findOne(e.call_to_user.country);
+        // }
+        // if(e.call_to_user.city != null && typeof e.call_to_user.city == 'number'){
+        //   e.call_to_user.city = await this.citiesService.findOne(e.call_to_user.city);
+        // }
+        // if(e.call_to_user.subdistrict != null && typeof e.call_to_user.subdistrict == 'number'){
+        //   e.call_to_user.subdistrict = await this.subdistrictsService.findOne(e.call_to_user.subdistrict);
+        // }
         result.push(e)
       }
       return result;
@@ -224,16 +245,16 @@ export class PropertiesService {
     const res = new PropertyResponse();
     const fnd = await this.repos.findOne({
       where: { id: id },
-      relations: {
-        province: true, country: true, city: true, subdistrict: true, call_to_user: true
-      }
+      relations: [
+        'province', 'country', 'city', 'subdistrict', 'call_to_user'
+      ]
     });
 
     Object.entries(fnd).forEach(([key, val]) => {
       res[key] = val;
     });
 
-    // console.log(res)
+    console.log(res)
 
     let lt = "";
     if (res.property_type != null) {
@@ -299,12 +320,24 @@ export class PropertiesService {
     let wanum = res.call_to_user.account_whatsapp_number != null ? res.call_to_user.account_whatsapp_number : res.call_to_user.phone;
     res.call_to_user['whatsapp_link'] = `https://wa.me/${wanum}`;
 
-    console.log(res.property_featured_image)
+    // console.log(res.call_to_user.province)
     if (res.property_featured_image != null && typeof res.property_featured_image == 'string') {
       res.property_featured_image = await this.fileService.findOne(res.property_featured_image);
     }
     if (res.call_to_user.photo_profile != null && typeof res.call_to_user.photo_profile == 'string') {
       res.call_to_user.photo_profile = await this.fileService.findOne(res.call_to_user.photo_profile);
+    }
+    if(res.call_to_user.province != null && typeof res.call_to_user.province == 'number'){
+      res.call_to_user.province = await this.provincesService.findOne(res.call_to_user.province);
+    }
+    if(res.call_to_user.country != null && typeof res.call_to_user.country == 'number'){
+      res.call_to_user.country = await this.countryService.findOne(res.call_to_user.country);
+    }
+    if(res.call_to_user.city != null && typeof res.call_to_user.city == 'number'){
+      res.call_to_user.city = await this.citiesService.findOne(res.call_to_user.city);
+    }
+    if(res.call_to_user.subdistrict != null && typeof res.call_to_user.subdistrict == 'number'){
+      res.call_to_user.subdistrict = await this.subdistrictsService.findOne(res.call_to_user.subdistrict);
     }
 
     return res;
