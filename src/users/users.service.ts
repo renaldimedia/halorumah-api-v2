@@ -10,11 +10,7 @@ import { CountriesService } from 'src/countries/countries.service';
 import { ProvincesService } from 'src/provinces/provinces.service';
 import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
 import { CitiesService } from 'src/cities/cities.service';
-import { Province } from 'src/provinces/entities/province.entity';
-import { Country } from 'src/countries/entities/country.entity';
-import { City } from 'src/cities/entities/city.entity';
-import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
-import { File } from 'src/files/entities/file.entity';
+import roleDisplay from 'src/enums/roleDisplay';
 
 
 @Injectable()
@@ -72,10 +68,13 @@ export class UsersService {
     });
 
     let addr = "";
+
+    if(users.role != null){
+      response.role = roleDisplay[users.role];
+    }
     
     if (users.photo_profile != null && typeof users.photo_profile == 'string') {
       response.photo_profile = await this.fileService.findOne(users.photo_profile);
-      
     }
     if(typeof users.full_address != 'undefined' && users.full_address != null){
       addr += users.full_address.trim();
@@ -146,7 +145,9 @@ export class UsersService {
       });
   
       let addr = "";
-      
+      if(users.role != null){
+        response.role = roleDisplay[users.role];
+      }
       if (users.photo_profile != null && typeof users.photo_profile == 'string') {
         response.photo_profile = await this.fileService.findOne(users.photo_profile);
         
