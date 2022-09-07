@@ -294,4 +294,7 @@ export class UsersResponse{
 
   @Field(type => String, {nullable: true})
   full_address: string
+
+  @Field(type => String, {nullable: true})
+  full_address_rendered: string
 }

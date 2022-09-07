@@ -72,7 +72,7 @@ export class UpdateUserInput {
   display_name: string
 
   
-  @Field({nullable: false})
+  @Field({nullable: true})
   full_name: string
   
   

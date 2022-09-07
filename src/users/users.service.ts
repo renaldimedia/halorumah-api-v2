@@ -10,6 +10,11 @@ import { CountriesService } from 'src/countries/countries.service';
 import { ProvincesService } from 'src/provinces/provinces.service';
 import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
 import { CitiesService } from 'src/cities/cities.service';
+import { Province } from 'src/provinces/entities/province.entity';
+import { Country } from 'src/countries/entities/country.entity';
+import { City } from 'src/cities/entities/city.entity';
+import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
+import { File } from 'src/files/entities/file.entity';
 
 
 @Injectable()
@@ -23,23 +28,78 @@ export class UsersService {
   }
 
   findByEmail(email: string): Promise<User> {
-    console.log('findbyemail');
+    // console.log('findbyemail');
     return this.usersRespository.findOne({ where: {email: email} });
   }
 
-  async findById(id: string, fields: any = []): Promise<User>{
+  async findById(id: string, fields: any = []): Promise<UsersResponse>{
     // const result = await this.usersRespository.findOneBy({id:id});
   
-    console.log('findbyid');
+    // console.log('findbyid');
     const users = await this.usersRespository.findOne({
-      where: {id:id},
-      relations: {
-        country: true,province:true,city:true,subdistrict:true,photo_profile: true
+      where: {id:id}
+    });
+    const response = new UsersResponse();
+    // console.log(users);
+
+
+    Object.entries(users).forEach(([key,val]) => {
+      switch (key) {
+        // case 'photo_profile':
+        //   response[key] = new File()
+        // break;
+        // case 'province':
+        //   response[key] = new Province()
+        // break;
+        // case 'country':
+        //   response[key] = new Country()
+        // break;
+        // case 'city':
+        //   response[key] = new City()
+        // break;
+        // case 'subdistrict':
+        //   response[key] = val
+        // break;
+      
+        default:
+          response[key] = val;
+          break;
       }
     });
 
+    let addr = "";
+    
+    if (users.photo_profile != null && typeof users.photo_profile == 'string') {
+      response.photo_profile = await this.fileService.findOne(users.photo_profile);
+      
+    }
+    if(typeof users.full_address != 'undefined' && users.full_address != null){
+      addr += users.full_address.trim();
+    }
+    if(users.subdistrict != null && typeof users.subdistrict == 'number'){
+      response.subdistrict = await this.subdistrictsService.findOne(users.subdistrict);
+      addr += typeof response.subdistrict != 'undefined' ? " " + response.subdistrict.subdistrict_name : "";
+    }
+    if(users.city != null && typeof users.city == 'number'){
+      response.city = await this.citiesService.findOne(users.city);
+      addr += typeof response.city != 'undefined' ? " " + response.city.city_name : "";
+    }
+    if(users.province != null && typeof users.province == 'number'){
+      response.province = await this.provincesService.findOne(users.province);
+      addr += typeof response.province != 'undefined' ? " " + response.province.province_name : "";
+    }
+    if(users.country != null && typeof users.country == 'number'){
+      response.country = await this.countryService.findOne(users.country);
+      addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
+    }
+   
+    
+    response.full_address_rendered = addr.trim();
+
+
+   
     // console.log(users);
-    return users;
+    return response;
   }
 
   findOneBy(search: any): Promise<User>{
@@ -47,9 +107,71 @@ export class UsersService {
     return this.usersRespository.findOneBy(search);
   }
 
-  findByRole(rol: string): Promise<User[]> {
+  async findByRole(rol: string): Promise<UsersResponse[]> {
     // this.usersRespository.findBy()
-    return this.usersRespository.findBy({role: Role[rol.toUpperCase()] as keyof typeof Role})
+    let q = await this.usersRespository.findBy({role: Role[rol.toUpperCase()] as keyof typeof Role});
+    let responses = [];
+    for(let i = 0 ; i < q.length ; i++){
+      let users = q[i];
+      const response = new UsersResponse();
+      // console.log(users);
+  
+  
+      Object.entries(users).forEach(([key,val]) => {
+        switch (key) {
+          // case 'photo_profile':
+          //   response[key] = new File()
+          // break;
+          // case 'province':
+          //   response[key] = new Province()
+          // break;
+          // case 'country':
+          //   response[key] = new Country()
+          // break;
+          // case 'city':
+          //   response[key] = new City()
+          // break;
+          // case 'subdistrict':
+          //   response[key] = val
+          // break;
+        
+          default:
+            response[key] = val;
+            break;
+        }
+      });
+  
+      let addr = "";
+      
+      if (users.photo_profile != null && typeof users.photo_profile == 'string') {
+        response.photo_profile = await this.fileService.findOne(users.photo_profile);
+        
+      }
+      if(typeof users.full_address != 'undefined' && users.full_address != null){
+        addr += users.full_address.trim();
+      }
+      if(users.subdistrict != null && typeof users.subdistrict == 'number'){
+        response.subdistrict = await this.subdistrictsService.findOne(users.subdistrict);
+        addr += typeof response.subdistrict != 'undefined' ? " " + response.subdistrict.subdistrict_name : "";
+      }
+      if(users.city != null && typeof users.city == 'number'){
+        response.city = await this.citiesService.findOne(users.city);
+        addr += typeof response.city != 'undefined' ? " " + response.city.city_name : "";
+      }
+      if(users.province != null && typeof users.province == 'number'){
+        response.province = await this.provincesService.findOne(users.province);
+        addr += typeof response.province != 'undefined' ? " " + response.province.province_name : "";
+      }
+      if(users.country != null && typeof users.country == 'number'){
+        response.country = await this.countryService.findOne(users.country);
+        addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
+      }
+     
+      
+      response.full_address_rendered = addr.trim();
+      responses.push(response);
+    }
+    return responses;
   }
 
   async update(input: UpdateUserInput, id: string){

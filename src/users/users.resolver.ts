@@ -11,68 +11,83 @@ import { CurrentUser } from 'src/decorators/currentUser.decorator';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ProvincesService } from 'src/provinces/provinces.service';
 import { Province } from 'src/provinces/entities/province.entity';
+import { Country } from 'src/countries/entities/country.entity';
+import { FilesService } from 'src/files/files.service';
+import { CitiesService } from 'src/cities/cities.service';
+import { CountriesService } from 'src/countries/countries.service';
+import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
 
-@Resolver(() => User)
-@UseGuards(JwtAuthGuard)
+@Resolver(() => UsersResponse)
+
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService, private readonly provincesService: ProvincesService) {}
+  constructor(private readonly usersService: UsersService, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService) { }
 
-  @Query(() => UsersResponse, {name: 'profile'})
-  myProfile(@CurrentUser() user: any): Promise<User>{
+  @Query(() => UsersResponse, { name: 'profile' })
+  @UseGuards(JwtAuthGuard)
+  myProfile(@CurrentUser() user: any): Promise<UsersResponse> {
     // console.log(user)
     return this.usersService.findById(user.userId);
   }
 
-  @ResolveField(() => Province, {name: 'province'})
-  province(@Parent() user: User){
-    // console.log('xx')
-    return this.provincesService.findOne(user.province);
-  }
+  // @ResolveField(() => Province, { name: 'province' })
+  // async province(@Parent() user: User): Promise<Province> {
+  //   // console.log('xx')
+  //   return await this.provincesService.findOne(user.province);
+  // }
+
+  // @ResolveField(() => Country, { name: 'province' })
+  // country(@Parent() user: User) {
+  //   // console.log('xx')
+  //   return this.countryService.findOne(user.country);
+  // }
 
   @ResolveField(() => String)
-  whatsapp_link(@Parent() user:User){
+  whatsapp_link(@Parent() user: User) {
     console.log('whatsapp link')
     return user.account_whatsapp_number != null ? `https://wa.me/${user.account_whatsapp_number}` : "";
   }
 
-  @Mutation(() => User, {name: 'profile'})
-  // @UseGuards(JwtAuthGuard)
-  async updateMyProfile(@Args('profileData') profileData: UpdateUserInput, @CurrentUser() user: any){
+  @Mutation(() => User, { name: 'profile' })
+  @UseGuards(JwtAuthGuard)
+  async updateMyProfile(@Args('profileData') profileData: UpdateUserInput, @CurrentUser() user: any) {
     return this.usersService.update(profileData, user.userId);
   }
 
-  @Mutation(() => UsersResponse, {name: 'updateUser'})
-  @UseGuards(RolesGuard)
+  @Mutation(() => UsersResponse, { name: 'updateUser' })
+  @UseGuards(RolesGuard, JwtAuthGuard)
   @Roles(Role.ADMIN)
-  async updateUser(@Args('profileData') profileData: UpdateUserInput, @CurrentUser() user: any){
+  async updateUser(@Args('profileData') profileData: UpdateUserInput, @CurrentUser() user: any) {
     return this.usersService.update(profileData, user.userId);
   }
   // Example of a query that requires a JWT token and a role of ADMIN
   @Query(() => [UsersResponse], { name: 'users' })
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, JwtAuthGuard)
   @Roles(Role.ADMIN)
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Query(() => UsersResponse, { name: 'userByEmail' })
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, JwtAuthGuard)
   @Roles(Role.ADMIN)
   findByEmail(@Args('email') email: string): Promise<User> {
     return this.usersService.findByEmail(email);
   }
 
   @Query(() => UsersResponse, { name: 'user' })
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, JwtAuthGuard)
   @Roles(Role.ADMIN)
-  findOne(@Args('userid') userid: string): Promise<User> {
+  findOne(@Args('userid') userid: string): Promise<UsersResponse> {
     return this.usersService.findById(userid);
   }
 
+  @Query(() => [UsersResponse], { name: 'agents' })
+  findAgents(): Promise<UsersResponse[]> {
+    return this.usersService.findByRole('AGENT');
+  }
 
-
-  @Mutation(() => User, {name: 'createUser'})
-  @UseGuards(RolesGuard)
+  @Mutation(() => User, { name: 'createUser' })
+  @UseGuards(RolesGuard, JwtAuthGuard)
   @Roles(Role.ADMIN)
   create(
     @Args('createUserInput') createUserInput: CreateUserInput,
@@ -80,10 +95,10 @@ export class UsersResolver {
     return this.usersService.create(createUserInput);
   }
 
-  @Mutation(() => User, {name: 'deleteUser'})
-  @UseGuards(RolesGuard)
+  @Mutation(() => User, { name: 'deleteUser' })
+  @UseGuards(RolesGuard, JwtAuthGuard)
   @Roles(Role.ADMIN)
-  delete(@Args('userid') userid: string){
+  delete(@Args('userid') userid: string) {
     return this.usersService.delete(userid);
   }
 }

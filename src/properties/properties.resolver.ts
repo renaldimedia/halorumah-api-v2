@@ -42,7 +42,7 @@ export class PropertiesResolver {
   }
 
   @ResolveField(() => UsersResponse)
-  async call_to_user(@Parent() prop: Property): Promise<User>{
+  async call_to_user(@Parent() prop: Property): Promise<UsersResponse>{
     return await this.usersService.findById(prop.call_to_user);
   }
 
