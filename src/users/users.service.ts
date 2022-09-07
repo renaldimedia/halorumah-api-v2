@@ -32,10 +32,14 @@ export class UsersService {
     return this.usersRespository.findOne({ where: {email: email} });
   }
 
-  async findById(id: string, fields: any = []): Promise<UsersResponse>{
+  async findById(id: string, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse>{
     // const result = await this.usersRespository.findOneBy({id:id});
   
     // console.log('findbyid');
+    // let select = {};
+    // if(publicOnly){
+    //   select['province'] = false;
+    // }
     const users = await this.usersRespository.findOne({
       where: {id:id}
     });

@@ -18,7 +18,6 @@ import { CountriesService } from 'src/countries/countries.service';
 import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
 
 @Resolver(() => UsersResponse)
-
 export class UsersResolver {
   constructor(private readonly usersService: UsersService, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService) { }
 
@@ -27,6 +26,12 @@ export class UsersResolver {
   myProfile(@CurrentUser() user: any): Promise<UsersResponse> {
     // console.log(user)
     return this.usersService.findById(user.userId);
+  }
+
+  @Query(() => UsersResponse, { name: 'userdetail' })
+  userdetail(@Args('userid') userid: string): Promise<UsersResponse> {
+    // console.log(user)
+    return this.usersService.findById(userid, true);
   }
 
   // @ResolveField(() => Province, { name: 'province' })
@@ -84,6 +89,11 @@ export class UsersResolver {
   @Query(() => [UsersResponse], { name: 'agents' })
   findAgents(): Promise<UsersResponse[]> {
     return this.usersService.findByRole('AGENT');
+  }
+
+  @Query(() => [UsersResponse], { name: 'members' })
+  findByRole(@Args('role') role: string): Promise<UsersResponse[]> {
+    return this.usersService.findByRole(role);
   }
 
   @Mutation(() => User, { name: 'createUser' })

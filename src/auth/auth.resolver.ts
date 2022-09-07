@@ -14,6 +14,7 @@ export class AuthResolver {
   @Mutation(() => LoginResponse)
   @UseGuards(GqlAuthGuard)
   async login(@Args('loginUserInput') loginUserInput: LoginUserInput) {
+    // console.log('login')
     return this.authService.login(loginUserInput);
   }
 
