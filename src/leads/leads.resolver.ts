@@ -10,6 +10,8 @@ import { User, UsersResponse } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { UseGuards } from '@nestjs/common';
 import { ThrottlerProxyGuard } from 'src/global-guards/throttle-proxy.guard';
+import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
+import { LeadMutationResponse } from './response';
 
 @Resolver(() => Lead)
 // @UseGuards(ThrottlerProxyGuard)
@@ -17,7 +19,7 @@ export class LeadsResolver {
   constructor(private readonly leadsService: LeadsService, private readonly userService: UsersService) {}
 
 
-  @Mutation(() => LeadResponse)
+  @Mutation(() => LeadMutationResponse)
   @Throttle(5, 60)
   createLead(@Args('createLeadInput') createLeadInput: CreateLeadInput) {
     return this.leadsService.create(createLeadInput);

@@ -8,6 +8,10 @@ export class GlobalMutationResponse {
   @IsOptional()
   affected: number;
 
+  @Field(type => Boolean, {nullable: false, defaultValue: false})
+  @IsOptional()
+  ok: boolean;
+
   @Field(type => String, {nullable: true})
   @IsOptional()
   message: string

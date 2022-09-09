@@ -13,19 +13,32 @@ export class LeadsService {
 
   async create(createLeadInput: CreateLeadInput) {
     const lead = new Lead();
-    let extra = typeof createLeadInput.extra != 'undefined' ? createLeadInput.extra : null;
-    lead.extra = "";
-    Object.entries(createLeadInput).forEach(([key,val]) => {
-      if(key == 'extra' && extra != null){
-        lead.extra = JSON.stringify(extra);
-      }else{
-        lead[key] = val;
-      }
-    });
-    const pr = this.repos.create(lead);
-    const res = await this.repos.insert(pr);
+    const response = new GlobalMutationResponse();
 
-    return { ...createLeadInput };
+    try {
+      let extra = typeof createLeadInput.extra != 'undefined' ? createLeadInput.extra : null;
+      lead.extra = "";
+      Object.entries(createLeadInput).forEach(([key,val]) => {
+        if(key == 'extra' && extra != null){
+          lead.extra = JSON.stringify(extra);
+        }else{
+          lead[key] = val;
+        }
+      });
+      const pr = this.repos.create(lead);
+      const res = await this.repos.insert(pr);
+  
+      response.affected = res.identifiers.length;
+      response.errors = [];
+      response.ok = true;
+      return {...response, data: createLeadInput};
+    } catch (error) {
+      response.errors.push(error);
+    }
+    response.affected = 0;
+    response.ok = false;
+    
+    return {...response, data: createLeadInput};
   }
 
   async findAll(option: MetaQuery = null, fields: string[] = null): Promise<LeadResponse[]> {
