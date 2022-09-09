@@ -11,11 +11,11 @@ export class Lead {
   @Field(() => Int)
   id: number;
 
-  @Column({type: 'varchar', length: 255})
+  @Column({type: 'varchar', length: 255, nullable: false})
   @Field(type => String)
   full_name: string
 
-  @Column({type: 'varchar', length: 255})
+  @Column({type: 'varchar', length: 255, nullable: false})
   @Field(type => String)
   phone: string
 

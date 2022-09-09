@@ -3,10 +3,10 @@ import { IsJSON, IsOptional } from 'class-validator';
 
 @InputType()
 export class CreateLeadInput {
-  @Field(type => String)
+  @Field(type => String, {nullable: false, description: "Nama lengkap, required!"})
   full_name: string
 
-  @Field(type => String)
+  @Field(type => String, {nullable: false, description: "No Hp/Wa, required!"})
   phone: string
 
   @Field(type => String)
