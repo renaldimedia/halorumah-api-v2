@@ -11,12 +11,14 @@ import { ProvincesService } from 'src/provinces/provinces.service';
 import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
 import { CitiesService } from 'src/cities/cities.service';
 import roleDisplay from 'src/enums/roleDisplay';
+import { CompanyInput } from './dto/company.input';
+import { Company } from './entities/company.entity';
 
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRespository: Repository<User>, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService
+    @InjectRepository(User) private usersRespository: Repository<User>, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, @InjectRepository(Company) private companiesRepo: Repository<Company>
   ) {}
 
   findAll(): Promise<User[]> {
@@ -26,6 +28,13 @@ export class UsersService {
   findByEmail(email: string): Promise<User> {
     // console.log('findbyemail');
     return this.usersRespository.findOne({ where: {email: email} });
+  }
+
+  async createCompany(input: CompanyInput){
+    // const res = new Company();
+
+    const cp = this.companiesRepo.create(input);
+    return await this.companiesRepo.save(cp);
   }
 
   async findById(id: string, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse>{

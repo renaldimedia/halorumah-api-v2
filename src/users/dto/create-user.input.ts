@@ -8,6 +8,9 @@ export class CreateUserInput {
   @Field({nullable: true})
   id: string
 
+  @Field(type => String, {nullable: true})
+  company_id: string
+
   @Field()
   @IsEmail()
   email: string;

@@ -16,6 +16,8 @@ import { FilesService } from 'src/files/files.service';
 import { CitiesService } from 'src/cities/cities.service';
 import { CountriesService } from 'src/countries/countries.service';
 import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
+import { CompanyResponse } from './entities/company.entity';
+import { CompanyInput } from './dto/company.input';
 
 @Resolver(() => UsersResponse)
 export class UsersResolver {
@@ -103,6 +105,14 @@ export class UsersResolver {
     @Args('createUserInput') createUserInput: CreateUserInput,
   ): Promise<User> {
     return this.usersService.create(createUserInput);
+  }
+
+  @Mutation(() => CompanyResponse, { name: 'company' })
+  @UseGuards(JwtAuthGuard)
+  createCompany(
+    @Args('companyInput') companyInput: CompanyInput,
+  ): Promise<CompanyResponse> {
+    return this.usersService.createCompany(companyInput);
   }
 
   @Mutation(() => User, { name: 'deleteUser' })

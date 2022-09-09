@@ -74,6 +74,9 @@ export class UpdateUserInput {
   
   @Field({nullable: true})
   full_name: string
+
+  @Field(type => String, {nullable: true})
+  company_id: string
   
   
   @Field({nullable: true})

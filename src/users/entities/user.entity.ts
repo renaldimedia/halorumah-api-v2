@@ -10,6 +10,7 @@ import { Province } from 'src/provinces/entities/province.entity';
 import { City } from 'src/cities/entities/city.entity';
 import { Country } from 'src/countries/entities/country.entity';
 import { File } from 'src/files/entities/file.entity';
+import { Company, CompanyResponse } from './company.entity';
 
 @Entity()
 @Unique('user_unique',['email', 'phone'])
@@ -38,6 +39,12 @@ export class User {
   })
   @Field()
   role: string;
+
+  @Column({type: 'uuid', nullable: true})
+  @ManyToOne(() => Company)
+  @JoinColumn()
+  @Field(type => Company)
+  company: string
 
   @Column({
     nullable: true
@@ -149,7 +156,6 @@ export class User {
   @Field(type => Subdistrict, {nullable: true})
   subdistrict: number
   
-
   @Column({nullable: true, type: 'text'})
   @Field(type => String, {nullable: true})
   full_address: string
@@ -157,6 +163,10 @@ export class User {
   @Column({nullable: true, type: 'varchar', length: 30})
   @Field(type => String, {nullable: true})
   agent_id: string
+
+  @Column({nullable: true, type: 'varchar', length: 30})
+  @Field(type => String, {nullable: true})
+  company_id: string
 
   @Field({nullable: true})
   whatsapp_link: string
@@ -187,6 +197,9 @@ export class UsersResponse{
   @Field({nullable: true})
   id: string;
 
+  @Field(type => CompanyResponse, {nullable: true})
+  company: CompanyResponse
+
   @Field(type => File, {nullable: true})
   photo_profile_file: File
 
@@ -197,7 +210,7 @@ export class UsersResponse{
   phone: string;
 
   @Field({nullable: true})
-  role: string;
+  role: string; 
 
   @Field({nullable: true})
   extra: string

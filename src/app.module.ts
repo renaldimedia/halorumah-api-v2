@@ -20,6 +20,8 @@ import { FilesModule } from './files/files.module';
 import {SpacesModule} from './spacesmodule/spaces.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 // import { TestResModule } from './test-res/test-res.module';
+import { LeadsModule } from './leads/leads.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 
 
@@ -31,6 +33,10 @@ console.log(process.env)
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 30,
+    }),
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: join(process.cwd(), `.env.${env}`),
@@ -69,7 +75,8 @@ console.log(process.env)
     CitiesModule,
     SubdistrictsModule,
     FilesModule,
-    SpacesModule
+    SpacesModule,
+    LeadsModule
   ],
   controllers: [AppController],
   providers: [AppService,  {
