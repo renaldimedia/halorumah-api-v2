@@ -2,21 +2,39 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 import { MetaQuery } from 'src/global-entity/meta-query.input';
+import { Property } from 'src/properties/entities/property.entity';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateLeadInput } from './dto/create-lead.input';
 import { UpdateLeadInput } from './dto/update-lead.input';
 import { Lead, LeadResponse } from './entities/lead.entity';
+import { LeadMutationResponse } from './response';
 
 @Injectable()
 export class LeadsService {
-  constructor(@InjectRepository(Lead) private readonly repos: Repository<Lead>) { }
+  constructor(@InjectRepository(Lead) private readonly repos: Repository<Lead>, @InjectRepository(Property) private readonly propertyRepo: Repository<Property>, @InjectRepository(User) private readonly userRepo: Repository<User>) { }
 
   async create(createLeadInput: CreateLeadInput) {
     const lead = new Lead();
-    const response = new GlobalMutationResponse();
+    const response = new LeadMutationResponse();
 
     try {
       let extra = typeof createLeadInput.extra != 'undefined' ? createLeadInput.extra : null;
+      let prop = null;
+      let phone = null;
+      if(createLeadInput.lead_object_id != null && parseInt(createLeadInput.lead_object_id) > 0 && ((typeof createLeadInput.lead_type != 'undefined' && createLeadInput.lead_type == 'PROPERTY') || typeof createLeadInput.lead_type != 'undefined')){
+        let pr = await this.propertyRepo.findOneBy({id:parseInt(createLeadInput.lead_object_id)});
+        
+        if(pr != null){
+          let contact = await this.userRepo.findOneBy({id: pr.call_to_user});
+          if(contact != null){
+            phone = contact.account_whatsapp_number;
+          }
+          prop = pr.property_title;
+        }
+      }else{
+        prop = createLeadInput.source_url;
+      }
       lead.extra = "";
       Object.entries(createLeadInput).forEach(([key,val]) => {
         if(key == 'extra' && extra != null){
@@ -25,20 +43,33 @@ export class LeadsService {
           lead[key] = val;
         }
       });
+      if(typeof lead.source_url == 'undefined'){
+        lead.source_url = "/" + createLeadInput.lead_object_id;
+      }
       const pr = this.repos.create(lead);
       const res = await this.repos.insert(pr);
   
       response.affected = res.identifiers.length;
       response.errors = [];
       response.ok = true;
-      return {...response, data: createLeadInput};
+      let message = `Hai, Saya ${createLeadInput.full_name} tertarik dengan iklan properti anda *${prop}* , kontak saya di\nNo Hp: ${createLeadInput.phone}\nEmail: ${createLeadInput.email}`;
+      let walink = phone != null ? `https://wa.me/${phone}/` : null;
+      return {...response, data: {...createLeadInput, whatsapp_link: walink != null ? walink + encodeURI(message) : ""}};
     } catch (error) {
-      response.errors.push(error);
+      console.log({er: error.driverError.routine})
+      const response = new LeadMutationResponse();
+      response.affected = 0;
+      response.ok = false;
+      // console.log(typeof response.ok)
+      if(error.driverError.routine == '_bt_check_unique'){
+        response['message'] = "Tidak diizinkan untuk menginput lebih dar 2x!";
+      }
+      response['errors'].push(error.driverError.routine)
+      return {...response};
     }
-    response.affected = 0;
-    response.ok = false;
     
-    return {...response, data: createLeadInput};
+    return {...response, data: null}
+    
   }
 
   async findAll(option: MetaQuery = null, fields: string[] = null): Promise<LeadResponse[]> {

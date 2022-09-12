@@ -1,10 +1,12 @@
 import { ObjectType, Field, Int} from '@nestjs/graphql';
-import { IsJSON, IsOptional } from 'class-validator';
+import { IsJSON, IsNotEmpty, IsOptional } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-@Index(['phone', 'email', 'source_url', 'lead_object_id', 'lead_type'], {unique: true})
+@Index('fullunique',['phone', 'email', 'source_url', 'lead_object_id', 'lead_type'], {unique: true})
+// @Index('mobile_unique',['phone', 'email', 'lead_object_id', 'lead_type'], {unique: true})
+
 @ObjectType()
 export class Lead {
   @PrimaryGeneratedColumn()
@@ -13,10 +15,12 @@ export class Lead {
 
   @Column({type: 'varchar', length: 255, nullable: false})
   @Field(type => String)
+  @IsNotEmpty()
   full_name: string
 
   @Column({type: 'varchar', length: 255, nullable: false})
   @Field(type => String)
+  @IsNotEmpty()
   phone: string
 
   @Column({type: 'varchar', length: 255, nullable: true})
@@ -90,4 +94,7 @@ export class LeadResponse{
   // @Column({type: 'varchar', length: 255, nullable: true})
   @Field(type => String, {nullable: true})
   lead_object_id: string
+
+  @Field(type => String, {nullable: true})
+  whatsapp_link: string
 }

@@ -6,6 +6,6 @@ import { LeadResponse } from './entities/lead.entity';
 
 @ObjectType()
 export class LeadMutationResponse extends GlobalMutationResponse {
-    @Field(() => LeadResponse)
+    @Field(() => LeadResponse, {nullable: true})
     data: LeadResponse
 }

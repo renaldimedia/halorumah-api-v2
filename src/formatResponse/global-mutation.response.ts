@@ -4,7 +4,7 @@ import { Any } from 'typeorm';
 
 @ObjectType()
 export class GlobalMutationResponse {
-  @Field({nullable: true})
+  @Field({nullable: true, defaultValue: 0})
   @IsOptional()
   affected: number;
 
@@ -12,11 +12,11 @@ export class GlobalMutationResponse {
   @IsOptional()
   ok: boolean;
 
-  @Field(type => String, {nullable: true})
+  @Field(type => String, {nullable: true, defaultValue: ""})
   @IsOptional()
   message: string
 
-  @Field(type => [String], {nullable: true})
+  @Field(type => [String], {nullable: true, defaultValue: []})
   @IsOptional()
   errors: string[]
 }

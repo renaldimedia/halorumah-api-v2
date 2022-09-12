@@ -1,15 +1,19 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
-import { IsJSON, IsOptional } from 'class-validator';
+import { IsEmail, IsJSON, IsNotEmpty, IsOptional } from 'class-validator';
 
 @InputType()
 export class CreateLeadInput {
   @Field(type => String, {nullable: false, description: "Nama lengkap, required!"})
+  @IsNotEmpty()
   full_name: string
 
   @Field(type => String, {nullable: false, description: "No Hp/Wa, required!"})
+  @IsNotEmpty()
   phone: string
 
   @Field(type => String)
+  @IsOptional()
+  @IsEmail()
   email: string
 
   @Field(type => [CreateLeadExtraInput], {nullable: true, defaultValue: []})
