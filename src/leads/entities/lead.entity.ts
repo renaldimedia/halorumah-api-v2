@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int} from '@nestjs/graphql';
 import { IsJSON, IsNotEmpty, IsOptional } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 @Index('fullunique',['phone', 'email', 'source_url', 'lead_object_id', 'lead_type'], {unique: true})
@@ -17,6 +17,9 @@ export class Lead {
   @Field(type => String)
   @IsNotEmpty()
   full_name: string
+
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  created_at: Date;
 
   @Column({type: 'varchar', length: 255, nullable: false})
   @Field(type => String)
