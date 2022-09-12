@@ -59,11 +59,13 @@ export class LeadsService {
       console.log({er: error.driverError.routine})
       const response = new LeadMutationResponse();
       response.affected = 0;
+      // response.errors.push
       response.ok = false;
       // console.log(typeof response.ok)
       if(error.driverError.routine == '_bt_check_unique'){
         response['message'] = "Tidak diizinkan untuk menginput lebih dar 2x!";
       }
+      response.errors = [];
       response['errors'].push(error.driverError.routine)
       return {...response};
     }
