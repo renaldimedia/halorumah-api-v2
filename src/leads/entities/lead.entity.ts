@@ -72,6 +72,9 @@ export class LeadResponse{
   @Field(type => String, {nullable: true})
   full_name: string
 
+  @Field(type => Date, {nullable: true})
+  created_at: Date
+
   // @Column({type: 'varchar', length: 255})
   @Field(type => String, {nullable: true})
   phone: string
