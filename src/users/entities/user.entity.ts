@@ -19,7 +19,6 @@ export class User {
   @PrimaryGeneratedColumn("uuid")
   @Field()
   id: string;
-
   
   @Column()
   @Field()

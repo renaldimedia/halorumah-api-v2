@@ -19,7 +19,7 @@ export class CreateUserInput {
   device_id: string;
 
   @Field()
-  @IsMobilePhone('id-ID')
+  // @IsMobilePhone('id-ID')
   phone: string;
 
   @Field()
