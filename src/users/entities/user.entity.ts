@@ -13,7 +13,7 @@ import { File } from 'src/files/entities/file.entity';
 import { Company, CompanyResponse } from './company.entity';
 
 @Entity()
-@Unique('user_unique',['email', 'phone', 'deviceid'])
+@Unique('user_unique',['email', 'phone', 'device_id'])
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn("uuid")
