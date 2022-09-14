@@ -114,74 +114,81 @@ export class UsersService {
     return response;
   }
 
-  async findOneBy(search: any, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse>{
-    const users = await this.usersRespository.findOne({
-      where: search
-    });
-    const response = new UsersResponse();
-    // console.log(users);
+  findOneBy(search: any): Promise<User>{
+    console.log('findby');
+    return this.usersRespository.findOneBy(search);
+  }
 
-
-    Object.entries(users).forEach(([key,val]) => {
-      switch (key) {
-        // case 'photo_profile':
-        //   response[key] = new File()
-        // break;
-        // case 'province':
-        //   response[key] = new Province()
-        // break;
-        // case 'country':
-        //   response[key] = new Country()
-        // break;
-        // case 'city':
-        //   response[key] = new City()
-        // break;
-        // case 'subdistrict':
-        //   response[key] = val
-        // break;
-      
-        default:
-          response[key] = val;
-          break;
+  async findByDevice(deviceid: string): Promise<UsersResponse>{
+    // async findOneBy(search: any, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse>{
+      const users = await this.usersRespository.findOne({
+        where: {device_id: deviceid}
+      });
+      const response = new UsersResponse();
+      // console.log(users);
+  
+  
+      Object.entries(users).forEach(([key,val]) => {
+        switch (key) {
+          // case 'photo_profile':
+          //   response[key] = new File()
+          // break;
+          // case 'province':
+          //   response[key] = new Province()
+          // break;
+          // case 'country':
+          //   response[key] = new Country()
+          // break;
+          // case 'city':
+          //   response[key] = new City()
+          // break;
+          // case 'subdistrict':
+          //   response[key] = val
+          // break;
+        
+          default:
+            response[key] = val;
+            break;
+        }
+      });
+  
+      let addr = "";
+  
+      if(users.role != null){
+        response.role = roleDisplay[users.role];
       }
-    });
-
-    let addr = "";
-
-    if(users.role != null){
-      response.role = roleDisplay[users.role];
-    }
-    
-    if (users.photo_profile != null && typeof users.photo_profile == 'string') {
-      response.photo_profile = await this.fileService.findOne(users.photo_profile);
-    }
-    if(typeof users.full_address != 'undefined' && users.full_address != null){
-      addr += users.full_address.trim();
-    }
-    if(users.subdistrict != null && typeof users.subdistrict == 'number'){
-      response.subdistrict = await this.subdistrictsService.findOne(users.subdistrict);
-      addr += typeof response.subdistrict != 'undefined' ? " " + response.subdistrict.subdistrict_name : "";
-    }
-    if(users.city != null && typeof users.city == 'number'){
-      response.city = await this.citiesService.findOne(users.city);
-      addr += typeof response.city != 'undefined' ? " " + response.city.city_name : "";
-    }
-    if(users.province != null && typeof users.province == 'number'){
-      response.province = await this.provincesService.findOne(users.province);
-      addr += typeof response.province != 'undefined' ? " " + response.province.province_name : "";
-    }
-    if(users.country != null && typeof users.country == 'number'){
-      response.country = await this.countryService.findOne(users.country);
-      addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
-    }
-   
-    
-    response.full_address_rendered = addr.trim();
-
-
-   
-    // console.log(users);
-    return response;
+      
+      if (users.photo_profile != null && typeof users.photo_profile == 'string') {
+        response.photo_profile = await this.fileService.findOne(users.photo_profile);
+      }
+      if(typeof users.full_address != 'undefined' && users.full_address != null){
+        addr += users.full_address.trim();
+      }
+      if(users.subdistrict != null && typeof users.subdistrict == 'number'){
+        response.subdistrict = await this.subdistrictsService.findOne(users.subdistrict);
+        addr += typeof response.subdistrict != 'undefined' ? " " + response.subdistrict.subdistrict_name : "";
+      }
+      if(users.city != null && typeof users.city == 'number'){
+        response.city = await this.citiesService.findOne(users.city);
+        addr += typeof response.city != 'undefined' ? " " + response.city.city_name : "";
+      }
+      if(users.province != null && typeof users.province == 'number'){
+        response.province = await this.provincesService.findOne(users.province);
+        addr += typeof response.province != 'undefined' ? " " + response.province.province_name : "";
+      }
+      if(users.country != null && typeof users.country == 'number'){
+        response.country = await this.countryService.findOne(users.country);
+        addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
+      }
+     
+      
+      response.full_address_rendered = addr.trim();
+  
+  
+     
+      // console.log(users);
+      return response;
+    // }
   }
 
   async findByRole(rol: string): Promise<UsersResponse[]> {

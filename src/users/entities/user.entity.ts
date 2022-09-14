@@ -26,10 +26,6 @@ export class User {
   @IsEmail()
   email: string;
 
-  @Column({nullable: true})
-  @Field(type => String)
-  deviceid: string;
-
 
   @Column()
   @Field()

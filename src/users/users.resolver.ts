@@ -88,6 +88,11 @@ export class UsersResolver {
     return this.usersService.findById(userid);
   }
 
+  @Query(() => UsersResponse, { name: 'userByDevice' })
+  findByDevice(@Args('deviceid') deviceid: string): Promise<UsersResponse> {
+    return this.usersService.findByDevice(deviceid);
+  }
+
   @Query(() => [UsersResponse], { name: 'agents' })
   findAgents(): Promise<UsersResponse[]> {
     return this.usersService.findByRole('AGENT');
