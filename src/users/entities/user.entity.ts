@@ -13,17 +13,23 @@ import { File } from 'src/files/entities/file.entity';
 import { Company, CompanyResponse } from './company.entity';
 
 @Entity()
-@Unique('user_unique',['email', 'phone'])
+@Unique('user_unique',['email', 'phone', 'deviceid'])
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn("uuid")
   @Field()
   id: string;
 
-  @IsEmail()
+  
   @Column()
   @Field()
+  @IsEmail()
   email: string;
+
+  @Column({nullable: true})
+  @Field(type => String)
+  deviceid: string;
+
 
   @Column()
   @Field()

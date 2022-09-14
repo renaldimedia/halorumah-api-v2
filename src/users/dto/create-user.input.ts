@@ -15,6 +15,9 @@ export class CreateUserInput {
   @IsEmail()
   email: string;
 
+  @Field(type => String, {nullable: true})
+  deviceid: string;
+
   @Field()
   @IsMobilePhone('id-ID')
   phone: string;

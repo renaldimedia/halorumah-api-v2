@@ -27,6 +27,7 @@ export class LeadsService {
         
         if(pr != null){
           let contact = await this.userRepo.findOneBy({id: pr.call_to_user});
+          console.log(contact);
           if(contact != null){
             phone = contact.account_whatsapp_number;
           }
@@ -47,30 +48,24 @@ export class LeadsService {
         lead.source_url = "/" + createLeadInput.lead_object_id;
       }
       const pr = this.repos.create(lead);
-      const res = await this.repos.insert(pr);
+      const res = await this.repos.save(pr);
   
-      response.affected = res.identifiers.length;
+      response.affected = res.id ? 1 : 0;
       response.errors = [];
       response.ok = true;
-      let message = `Hai, Saya ${createLeadInput.full_name} tertarik dengan iklan properti anda *${prop}* , kontak saya di\nNo Hp: ${createLeadInput.phone}\nEmail: ${createLeadInput.email}`;
+      let message = `Hai, Saya ${res.full_name} tertarik dengan iklan properti anda *${prop}* , kontak saya di\nNo Hp: ${res.phone}\nEmail: ${res.email}`;
       let walink = phone != null ? `https://wa.me/${phone}/` : null;
-      return {...response, data: {...createLeadInput, whatsapp_link: walink != null ? walink + encodeURI(message) : ""}};
+      return {...response, data: {...res, whatsapp_link: walink != null ? walink + encodeURI(message) : ""}};
     } catch (error) {
-      console.log({er: error.driverError.routine})
+      
+      console.log({er: error});
       const response = new LeadMutationResponse();
       response.affected = 0;
-      // response.errors.push
       response.ok = false;
-      // console.log(typeof response.ok)
-      if(error.driverError.routine == '_bt_check_unique'){
-        response['message'] = "Tidak diizinkan untuk menginput lebih dar 2x!";
-      }
       response.errors = [];
-      response['errors'].push(error.driverError.routine)
+      response['errors'].push(error)
       return {...response};
     }
-    
-    return {...response, data: null}
     
   }
 
@@ -83,6 +78,7 @@ export class LeadsService {
         query.addSelect(fields[i]);
       }
     }
+    // query.relation('lead_object_id');
     if (option != null) {
       if (typeof option.take != 'undefined') {
         query.limit(option.take);
