@@ -311,4 +311,7 @@ export class UsersResponse{
 
   @Field(type => String, {nullable: true})
   full_address_rendered: string
+
+  @Field(type => String, {nullable: true})
+  device_id: string
 }
