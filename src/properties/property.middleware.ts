@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 export class PropertyMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     // console.log({request: {...req}});
-    console.log({response: {...res}});
+    // console.log({response: {...res}});
     next();
   }
 }

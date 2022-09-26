@@ -20,6 +20,7 @@ export class AuthResolver {
 
   @Mutation(() => User)
   signup(@Args('signupUserInput') signupUserInput: CreateUserInput) {
+    console.log(signupUserInput);
     try {
       const { password, confirm_password } = signupUserInput;
       console.log(`${password} - ${confirm_password}`);
