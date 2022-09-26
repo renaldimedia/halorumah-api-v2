@@ -295,6 +295,7 @@ export class UsersService {
       const user = this.usersRespository.create(createUserInput);
       return await this.usersRespository.save(user);
     } catch (error) {
+      console.log(error)
       throw new HttpException({
         message: "Confirm password harus sama!",
         status: HttpStatus.INTERNAL_SERVER_ERROR,
