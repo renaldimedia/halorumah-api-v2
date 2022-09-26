@@ -5,6 +5,7 @@ import { File } from "src/files/entities/file.entity";
 import { Province } from "src/provinces/entities/province.entity";
 import { Subdistrict } from "src/subdistricts/entities/subdistrict.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "./user.entity";
 
 @ObjectType()
 @Entity()
@@ -106,6 +107,10 @@ export class Company {
     @Column({ nullable: true, type: 'text' })
     @Field(type => String, { nullable: true })
     full_address: string
+
+    @ManyToOne(() => User, (usr) => usr.id)
+    @Field(() => User, {nullable: true})
+    owner: User
 }
 
 @ObjectType()
@@ -181,4 +186,7 @@ export class CompanyResponse {
     // @Column({ nullable: true, type: 'int', default: 0 })
     @Field({ nullable: true })
     property_count: number
+
+    @Field(() => User, {nullable: true})
+    owner: User
 }

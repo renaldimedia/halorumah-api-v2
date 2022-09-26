@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserInput } from './dto/create-user.input';
@@ -13,6 +13,7 @@ import { CitiesService } from 'src/cities/cities.service';
 import roleDisplay from 'src/enums/roleDisplay';
 import { CompanyInput } from './dto/company.input';
 import { Company } from './entities/company.entity';
+import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 
 
 @Injectable()
@@ -289,6 +290,13 @@ export class UsersService {
   }
   async create(createUserInput: CreateUserInput) {
     // console.log(createUserInput)
+    const {password, confirm_password} = createUserInput;
+    if(password !== confirm_password){
+      throw new HttpException({
+        message: "Confirm password harus sama!",
+        status: HttpStatus.FORBIDDEN
+      }, HttpStatus.FORBIDDEN);
+    }
     const user = this.usersRespository.create(createUserInput);
     return await this.usersRespository.save(user);
   }

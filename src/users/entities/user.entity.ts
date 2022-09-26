@@ -41,7 +41,7 @@ export class User {
   @Field()
   role: string;
 
-  @Column({type: 'uuid', nullable: true})
+  // @Column({type: 'uuid', nullable: true})
   @ManyToOne(() => Company)
   @JoinColumn()
   @Field(type => Company)
@@ -92,14 +92,14 @@ export class User {
   @IsOptional()
   messages: string
 
-  @Column({nullable: true, type: 'uuid'})
-  @Field({nullable: true})
+  // @Column({nullable: true, type: 'uuid'})
+  @Field(type => File, {nullable: true})
   @ManyToOne(() => File, (file) => file.id)
   @JoinColumn()
   photo_profile: string
 
-  @Field(type => File, {nullable: true})
-  photo_profile_file: File
+  // @Field(type => File, {nullable: true})
+  // photo_profile_file: File
 
   @Column({nullable: true})
   @Field({nullable: true})
@@ -137,23 +137,28 @@ export class User {
   @Field({nullable: true})
   property_count: number
 
-  @Column({nullable: true})
+  // @Column({nullable: true})
   @ManyToOne(() => Country, (country) => country.id)
+  @JoinColumn()
   @Field(type => Country, {nullable: true})
   country: number
 
-  @Column({nullable: true})
+  // @Column({nullable: true})
   @ManyToOne(() => Province, (province) => province.id)
+  @JoinColumn()
   @Field(type => Province, {nullable: true})
+  
   province: number
 
-  @Column({nullable: true})
+  // @Column({nullable: true})
   @ManyToOne(() => City, (city) => city.id)
+  @JoinColumn()
   @Field(type => City, {nullable: true})
   city: number
 
-  @Column({nullable: true})
+  // @Column({nullable: true})
   @ManyToOne(() => Subdistrict, (subd) => subd.id)
+  @JoinColumn()
   @Field(type => Subdistrict, {nullable: true})
   subdistrict: number
   

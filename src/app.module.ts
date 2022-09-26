@@ -22,6 +22,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 // import { TestResModule } from './test-res/test-res.module';
 import { LeadsModule } from './leads/leads.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PropertyLikeModule } from './property-like/property-like.module';
+import { PropertyMiddleware } from './properties/property.middleware';
 
 
 
@@ -76,7 +78,8 @@ console.log(process.env)
     SubdistrictsModule,
     FilesModule,
     SpacesModule,
-    LeadsModule
+    LeadsModule,
+    PropertyLikeModule
   ],
   controllers: [AppController],
   providers: [AppService,  {
@@ -84,4 +87,10 @@ console.log(process.env)
     useClass: ValidationPipe,
   },],
 })
-export class AppModule{}
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PropertyMiddleware)
+      .forRoutes('graphql');
+  }
+}
