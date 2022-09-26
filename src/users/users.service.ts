@@ -291,14 +291,7 @@ export class UsersService {
   async create(createUserInput: CreateUserInput) {
     // console.log(createUserInput)
     try {
-      const { password, confirm_password } = createUserInput;
-      console.log(`${password} - ${confirm_password}`);
-      if (password !== confirm_password) {
-        throw new HttpException({
-          message: "Confirm password harus sama!",
-          status: HttpStatus.FORBIDDEN
-        }, HttpStatus.FORBIDDEN);
-      }
+      
       const user = this.usersRespository.create(createUserInput);
       return await this.usersRespository.save(user);
     } catch (error) {

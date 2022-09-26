@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CreateUserInput } from 'src/users/dto/create-user.input';
 import { User } from 'src/users/entities/user.entity';
@@ -20,6 +20,14 @@ export class AuthResolver {
 
   @Mutation(() => User)
   signup(@Args('signupUserInput') signupUserInput: CreateUserInput) {
+    const { password, confirm_password } = signupUserInput;
+      console.log(`${password} - ${confirm_password}`);
+      if (password !== confirm_password) {
+        throw new HttpException({
+          message: "Confirm password harus sama!",
+          status: HttpStatus.FORBIDDEN
+        }, HttpStatus.FORBIDDEN);
+      }
     return this.authService.signup(signupUserInput);
   }
 }
