@@ -9,7 +9,7 @@ import { GqlAuthGuard } from './guards/gql-auth.guard';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Mutation(() => LoginResponse)
   @UseGuards(GqlAuthGuard)
@@ -20,7 +20,8 @@ export class AuthResolver {
 
   @Mutation(() => User)
   signup(@Args('signupUserInput') signupUserInput: CreateUserInput) {
-    const { password, confirm_password } = signupUserInput;
+    try {
+      const { password, confirm_password } = signupUserInput;
       console.log(`${password} - ${confirm_password}`);
       if (password !== confirm_password) {
         throw new HttpException({
@@ -28,6 +29,14 @@ export class AuthResolver {
           status: HttpStatus.FORBIDDEN
         }, HttpStatus.FORBIDDEN);
       }
-    return this.authService.signup(signupUserInput);
+      return this.authService.signup(signupUserInput);
+    } catch (error) {
+      console.log(error)
+      throw new HttpException({
+        message: "Confirm password harus sama!",
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: JSON.stringify(error)
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
