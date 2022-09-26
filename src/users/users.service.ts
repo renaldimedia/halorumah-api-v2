@@ -20,7 +20,7 @@ import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRespository: Repository<User>, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, @InjectRepository(Company) private companiesRepo: Repository<Company>
-  ) {}
+  ) { }
 
   findAll(): Promise<User[]> {
     return this.usersRespository.find();
@@ -28,32 +28,32 @@ export class UsersService {
 
   findByEmail(email: string): Promise<User> {
     // console.log('findbyemail');
-    return this.usersRespository.findOne({ where: {email: email} });
+    return this.usersRespository.findOne({ where: { email: email } });
   }
 
-  async createCompany(input: CompanyInput){
+  async createCompany(input: CompanyInput) {
     // const res = new Company();
 
     const cp = this.companiesRepo.create(input);
     return await this.companiesRepo.save(cp);
   }
 
-  async findById(id: string, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse>{
+  async findById(id: string, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse> {
     // const result = await this.usersRespository.findOneBy({id:id});
-  
+
     // console.log('findbyid');
     // let select = {};
     // if(publicOnly){
     //   select['province'] = false;
     // }
     const users = await this.usersRespository.findOne({
-      where: {id:id}
+      where: { id: id }
     });
     const response = new UsersResponse();
     // console.log(users);
 
 
-    Object.entries(users).forEach(([key,val]) => {
+    Object.entries(users).forEach(([key, val]) => {
       switch (key) {
         // case 'photo_profile':
         //   response[key] = new File()
@@ -70,7 +70,7 @@ export class UsersService {
         // case 'subdistrict':
         //   response[key] = val
         // break;
-      
+
         default:
           response[key] = val;
           break;
@@ -79,130 +79,130 @@ export class UsersService {
 
     let addr = "";
 
-    if(users.role != null){
+    if (users.role != null) {
       response.role = roleDisplay[users.role];
     }
-    
+
     if (users.photo_profile != null && typeof users.photo_profile == 'string') {
       response.photo_profile = await this.fileService.findOne(users.photo_profile);
     }
-    if(typeof users.full_address != 'undefined' && users.full_address != null){
+    if (typeof users.full_address != 'undefined' && users.full_address != null) {
       addr += users.full_address.trim();
     }
-    if(users.subdistrict != null && typeof users.subdistrict == 'number'){
+    if (users.subdistrict != null && typeof users.subdistrict == 'number') {
       response.subdistrict = await this.subdistrictsService.findOne(users.subdistrict);
       addr += typeof response.subdistrict != 'undefined' ? " " + response.subdistrict.subdistrict_name : "";
     }
-    if(users.city != null && typeof users.city == 'number'){
+    if (users.city != null && typeof users.city == 'number') {
       response.city = await this.citiesService.findOne(users.city);
       addr += typeof response.city != 'undefined' ? " " + response.city.city_name : "";
     }
-    if(users.province != null && typeof users.province == 'number'){
+    if (users.province != null && typeof users.province == 'number') {
       response.province = await this.provincesService.findOne(users.province);
       addr += typeof response.province != 'undefined' ? " " + response.province.province_name : "";
     }
-    if(users.country != null && typeof users.country == 'number'){
+    if (users.country != null && typeof users.country == 'number') {
       response.country = await this.countryService.findOne(users.country);
       addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
     }
-   
-    
+
+
     response.full_address_rendered = addr.trim();
 
 
-   
+
     // console.log(users);
     return response;
   }
 
-  findOneBy(search: any): Promise<User>{
+  findOneBy(search: any): Promise<User> {
     console.log('findby');
     return this.usersRespository.findOneBy(search);
   }
 
-  async findByDevice(deviceid: string): Promise<UsersResponse>{
+  async findByDevice(deviceid: string): Promise<UsersResponse> {
     // async findOneBy(search: any, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse>{
-      const users = await this.usersRespository.findOne({
-        where: {device_id: deviceid}
-      });
-      const response = new UsersResponse();
-      // console.log(users);
-  
-  
-      Object.entries(users).forEach(([key,val]) => {
-        switch (key) {
-          // case 'photo_profile':
-          //   response[key] = new File()
-          // break;
-          // case 'province':
-          //   response[key] = new Province()
-          // break;
-          // case 'country':
-          //   response[key] = new Country()
-          // break;
-          // case 'city':
-          //   response[key] = new City()
-          // break;
-          // case 'subdistrict':
-          //   response[key] = val
-          // break;
-        
-          default:
-            response[key] = val;
-            break;
-        }
-      });
-  
-      let addr = "";
-  
-      if(users.role != null){
-        response.role = roleDisplay[users.role];
+    const users = await this.usersRespository.findOne({
+      where: { device_id: deviceid }
+    });
+    const response = new UsersResponse();
+    // console.log(users);
+
+
+    Object.entries(users).forEach(([key, val]) => {
+      switch (key) {
+        // case 'photo_profile':
+        //   response[key] = new File()
+        // break;
+        // case 'province':
+        //   response[key] = new Province()
+        // break;
+        // case 'country':
+        //   response[key] = new Country()
+        // break;
+        // case 'city':
+        //   response[key] = new City()
+        // break;
+        // case 'subdistrict':
+        //   response[key] = val
+        // break;
+
+        default:
+          response[key] = val;
+          break;
       }
-      
-      if (users.photo_profile != null && typeof users.photo_profile == 'string') {
-        response.photo_profile = await this.fileService.findOne(users.photo_profile);
-      }
-      if(typeof users.full_address != 'undefined' && users.full_address != null){
-        addr += users.full_address.trim();
-      }
-      if(users.subdistrict != null && typeof users.subdistrict == 'number'){
-        response.subdistrict = await this.subdistrictsService.findOne(users.subdistrict);
-        addr += typeof response.subdistrict != 'undefined' ? " " + response.subdistrict.subdistrict_name : "";
-      }
-      if(users.city != null && typeof users.city == 'number'){
-        response.city = await this.citiesService.findOne(users.city);
-        addr += typeof response.city != 'undefined' ? " " + response.city.city_name : "";
-      }
-      if(users.province != null && typeof users.province == 'number'){
-        response.province = await this.provincesService.findOne(users.province);
-        addr += typeof response.province != 'undefined' ? " " + response.province.province_name : "";
-      }
-      if(users.country != null && typeof users.country == 'number'){
-        response.country = await this.countryService.findOne(users.country);
-        addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
-      }
-     
-      
-      response.full_address_rendered = addr.trim();
-  
-  
-     
-      // console.log(users);
-      return response;
+    });
+
+    let addr = "";
+
+    if (users.role != null) {
+      response.role = roleDisplay[users.role];
+    }
+
+    if (users.photo_profile != null && typeof users.photo_profile == 'string') {
+      response.photo_profile = await this.fileService.findOne(users.photo_profile);
+    }
+    if (typeof users.full_address != 'undefined' && users.full_address != null) {
+      addr += users.full_address.trim();
+    }
+    if (users.subdistrict != null && typeof users.subdistrict == 'number') {
+      response.subdistrict = await this.subdistrictsService.findOne(users.subdistrict);
+      addr += typeof response.subdistrict != 'undefined' ? " " + response.subdistrict.subdistrict_name : "";
+    }
+    if (users.city != null && typeof users.city == 'number') {
+      response.city = await this.citiesService.findOne(users.city);
+      addr += typeof response.city != 'undefined' ? " " + response.city.city_name : "";
+    }
+    if (users.province != null && typeof users.province == 'number') {
+      response.province = await this.provincesService.findOne(users.province);
+      addr += typeof response.province != 'undefined' ? " " + response.province.province_name : "";
+    }
+    if (users.country != null && typeof users.country == 'number') {
+      response.country = await this.countryService.findOne(users.country);
+      addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
+    }
+
+
+    response.full_address_rendered = addr.trim();
+
+
+
+    // console.log(users);
+    return response;
     // }
   }
 
   async findByRole(rol: string): Promise<UsersResponse[]> {
     // this.usersRespository.findBy()
-    let q = await this.usersRespository.findBy({role: Role[rol.toUpperCase()] as keyof typeof Role});
+    let q = await this.usersRespository.findBy({ role: Role[rol.toUpperCase()] as keyof typeof Role });
     let responses = [];
-    for(let i = 0 ; i < q.length ; i++){
+    for (let i = 0; i < q.length; i++) {
       let users = q[i];
       const response = new UsersResponse();
       // console.log(users);
-  
-  
-      Object.entries(users).forEach(([key,val]) => {
+
+
+      Object.entries(users).forEach(([key, val]) => {
         switch (key) {
           // case 'photo_profile':
           //   response[key] = new File()
@@ -219,66 +219,66 @@ export class UsersService {
           // case 'subdistrict':
           //   response[key] = val
           // break;
-        
+
           default:
             response[key] = val;
             break;
         }
       });
-  
+
       let addr = "";
-      if(users.role != null){
+      if (users.role != null) {
         response.role = roleDisplay[users.role];
       }
       if (users.photo_profile != null && typeof users.photo_profile == 'string') {
         response.photo_profile = await this.fileService.findOne(users.photo_profile);
-        
+
       }
-      if(typeof users.full_address != 'undefined' && users.full_address != null){
+      if (typeof users.full_address != 'undefined' && users.full_address != null) {
         addr += users.full_address.trim();
       }
-      if(users.subdistrict != null && typeof users.subdistrict == 'number'){
+      if (users.subdistrict != null && typeof users.subdistrict == 'number') {
         response.subdistrict = await this.subdistrictsService.findOne(users.subdistrict);
         addr += typeof response.subdistrict != 'undefined' ? " " + response.subdistrict.subdistrict_name : "";
       }
-      if(users.city != null && typeof users.city == 'number'){
+      if (users.city != null && typeof users.city == 'number') {
         response.city = await this.citiesService.findOne(users.city);
         addr += typeof response.city != 'undefined' ? " " + response.city.city_name : "";
       }
-      if(users.province != null && typeof users.province == 'number'){
+      if (users.province != null && typeof users.province == 'number') {
         response.province = await this.provincesService.findOne(users.province);
         addr += typeof response.province != 'undefined' ? " " + response.province.province_name : "";
       }
-      if(users.country != null && typeof users.country == 'number'){
+      if (users.country != null && typeof users.country == 'number') {
         response.country = await this.countryService.findOne(users.country);
         addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
       }
-     
-      
+
+
       response.full_address_rendered = addr.trim();
       responses.push(response);
     }
     return responses;
   }
 
-  async update(input: UpdateUserInput, id: string){
-    if(input.id == null){
+  async update(input: UpdateUserInput, id: string) {
+    if (input.id == null) {
       input.id = id;
     }
-    const result = await this.usersRespository.update({id: input.id}, input);
+    const result = await this.usersRespository.update({ id: input.id }, input);
     // console.log(input);
-    if(result.affected > 0){
+    if (result.affected > 0) {
       return input;
     }
-    
+
     throw new Error("Gagal mengupdate profile!");
-    
+
   }
 
-  async delete(userid:string): Promise<User> {
+  async delete(userid: string): Promise<User> {
     try {
-      const data = await this.usersRespository.findOneBy({id:userid});
-      if(data == null){
+      const data = await this.usersRespository.findOneBy({ id: userid });
+      if (data == null) {
         throw new Error("User tidak ditemukan!");
       }
       const result = await this.usersRespository.remove(data);
@@ -290,14 +290,24 @@ export class UsersService {
   }
   async create(createUserInput: CreateUserInput) {
     // console.log(createUserInput)
-    const {password, confirm_password} = createUserInput;
-    if(password !== confirm_password){
+    try {
+      const { password, confirm_password } = createUserInput;
+      console.log(`${password} - ${confirm_password}`);
+      if (password !== confirm_password) {
+        throw new HttpException({
+          message: "Confirm password harus sama!",
+          status: HttpStatus.FORBIDDEN
+        }, HttpStatus.FORBIDDEN);
+      }
+      const user = this.usersRespository.create(createUserInput);
+      return await this.usersRespository.save(user);
+    } catch (error) {
       throw new HttpException({
         message: "Confirm password harus sama!",
-        status: HttpStatus.FORBIDDEN
-      }, HttpStatus.FORBIDDEN);
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: JSON.stringify(error)
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    const user = this.usersRespository.create(createUserInput);
-    return await this.usersRespository.save(user);
+
   }
 }
