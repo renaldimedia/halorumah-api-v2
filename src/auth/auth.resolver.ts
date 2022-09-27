@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { exit } from 'process';
 import { CreateUserInput } from 'src/users/dto/create-user.input';
 import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
@@ -29,6 +30,7 @@ export class AuthResolver {
           message: "Confirm password harus sama!",
           status: 400
         }, 400);
+        return;
       }
       return this.authService.signup(signupUserInput);
     } catch (error) {
@@ -38,6 +40,7 @@ export class AuthResolver {
         status: 400,
         error: JSON.stringify(error)
       }, 400);
+      return;
     }
   }
 }
