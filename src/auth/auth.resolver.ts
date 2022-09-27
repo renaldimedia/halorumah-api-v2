@@ -20,24 +20,24 @@ export class AuthResolver {
 
   @Mutation(() => User)
   signup(@Args('signupUserInput') signupUserInput: CreateUserInput) {
-    console.log(signupUserInput);
+    // console.log(signupUserInput);
     try {
       const { password, confirm_password } = signupUserInput;
       console.log(`${password} - ${confirm_password}`);
       if (password !== confirm_password) {
         throw new HttpException({
           message: "Confirm password harus sama!",
-          status: HttpStatus.FORBIDDEN
-        }, HttpStatus.FORBIDDEN);
+          status: 400
+        }, 400);
       }
       return this.authService.signup(signupUserInput);
     } catch (error) {
       console.log(error)
       throw new HttpException({
         message: "Confirm password harus sama!",
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        status: 400,
         error: JSON.stringify(error)
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
+      }, 400);
     }
   }
 }
