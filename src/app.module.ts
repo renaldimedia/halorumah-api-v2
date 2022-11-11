@@ -24,6 +24,8 @@ import { LeadsModule } from './leads/leads.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PropertyLikeModule } from './property-like/property-like.module';
 import { PropertyMiddleware } from './properties/property.middleware';
+import { PackagesModule } from './packages/packages.module';
+// import { PaymentModule } from './payment/payment.module';
 
 
 
@@ -79,7 +81,8 @@ console.log(process.env)
     FilesModule,
     SpacesModule,
     LeadsModule,
-    PropertyLikeModule
+    PropertyLikeModule,
+    PackagesModule
   ],
   controllers: [AppController],
   providers: [AppService,  {
