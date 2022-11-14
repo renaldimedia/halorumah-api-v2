@@ -7,7 +7,7 @@ import { CreatePackageInput, PackageFeatureInput } from './dto/create-package.in
 import { UpdatePackageInput } from './dto/update-package.input';
 import { PackageFeature } from './entities/package-feature.entity';
 import { PackageFeatures } from './entities/package-features.entity';
-import { Package, PackageResponse} from './entities/package.entity';
+import { Package, PackageResponse } from './entities/package.entity';
 
 @Injectable()
 export class PackagesService {
@@ -16,19 +16,19 @@ export class PackagesService {
     @InjectRepository(Package) private readonly repos: Repository<Package>,
     @InjectRepository(PackageFeature) private readonly reposFeature: Repository<PackageFeature>,
     @InjectRepository(PackageFeatures) private readonly reposFeatures: Repository<PackageFeatures>
-    ) { }
+  ) { }
 
-  async createFeatures(featuresInput: PackageFeatureInput[]): Promise<PackageFeature[]>{
+  async createFeatures(featuresInput: PackageFeatureInput[]): Promise<PackageFeature[]> {
     const features = [];
-    for(let z = 0 ; z < featuresInput.length ; z ++){
+    for (let z = 0; z < featuresInput.length; z++) {
       const subfeatures = [];
       // console.log(typeof featuresInput[z].);
-      if(typeof featuresInput[z].package_subfeatures_input != 'undefined' && featuresInput[z].package_subfeatures_input.length > 0){
-        for(let i = 0 ; i < featuresInput[z].package_subfeatures_input.length ; i ++){
+      if (typeof featuresInput[z].package_subfeatures_input != 'undefined' && featuresInput[z].package_subfeatures_input.length > 0) {
+        for (let i = 0; i < featuresInput[z].package_subfeatures_input.length; i++) {
           featuresInput[z].package_subfeatures_input[i].feature_group = featuresInput[z].feature_code;
           let ft = await this.reposFeature.create(featuresInput[z].package_subfeatures_input[i]);
           let ftrs = await this.reposFeature.save(ft);
-          if(typeof ftrs.id == 'number'){
+          if (typeof ftrs.id == 'number') {
             subfeatures.push(ftrs);
           }
         }
@@ -39,24 +39,24 @@ export class PackagesService {
       const cr = await this.reposFeature.create(featuresInput[z]);
       features.push(await this.reposFeature.save(cr));
     }
-   
+
 
     return features;
   }
 
   async create(createPackageInput: CreatePackageInput): Promise<Package> {
 
-    const {package_features} = createPackageInput;
+    const { package_features } = createPackageInput;
     const cr = await this.repos.create(createPackageInput);
     const pack = await this.repos.save(cr);
 
-    if(package_features.length > 0){
+    if (package_features.length > 0) {
       let fet = [];
-      for(let i = 0 ; i < package_features.length ; i++){
+      for (let i = 0; i < package_features.length; i++) {
         let cr2 = new PackageFeatures();
         cr2.package = pack;
         let ftr = new PackageFeature();
-        ftr.id = package_features[i].feature_id;  
+        ftr.id = package_features[i].feature_id;
         cr2.feature = ftr;
         cr2.feature_value = package_features[i].feature_value;
         fet.push(cr2);
@@ -64,7 +64,7 @@ export class PackagesService {
         // this.reposFeatures.save()
       }
 
-      if(fet.length  > 0){
+      if (fet.length > 0) {
         await this.reposFeatures.save(fet)
       }
     }
@@ -72,7 +72,7 @@ export class PackagesService {
     return pack;
   }
 
-  async findAllSub(): Promise<any[]>{
+  async findAllSub(): Promise<any[]> {
     const response = [];
     const datas = await this.reposFeatures.find({
       relations: {
@@ -84,40 +84,88 @@ export class PackagesService {
     return datas;
   }
 
+  listFeature(param: PackageFeatures[]) {
+    let f = param;
+    let ftr = [];
+    let prnt = [];
+    if (f.length > 0) {
+      for (let i = 0; i < f.length; i++) {
+        let fitem = f[i].feature;
+        fitem.feature_value = f[i].feature_value;
+        // console.log(fitem.parent_feature.id)
+        // ftr[idx]['subfeature']
+        // fitem['subfeature'] = this.listFeature();
+      
+        if(typeof fitem.parent_feature == 'undefined' || fitem.parent_feature == null){
+          ftr.push(fitem);
+        }else{
+          let idx = ftr.findIndex(s => s.id == fitem.parent_feature.id);
+          if(typeof idx == 'number' && idx > 0){
+            if(typeof ftr[idx]['subfeature'] == 'undefined'){
+              ftr[idx]['subfeature'] = [];  
+            }
+            ftr[idx]['subfeature'].push(fitem)
+          }
+        }
+      }
+    }
+
+    return ftr;
+  }
+
   async findAll(option: MetaQuery = null): Promise<PackageResponse[]> {
     const response = [];
-    
+
     const datas = await this.repos.find({
-      relations: ['package_features', 'package_features.feature'],
+      relations: ['package_features', 'package_features.feature', 'package_features.feature.subfeature'],
       order: {
-        ord: 'ASC'
+        ord: 'ASC',
+        package_features: {
+          feature: {
+            parent_feature: {
+              id: 'DESC'
+            }
+          }
+        }
       }
     });
 
-    // console.log)
-    if(datas.length == 0){
-      throw new HttpException({message: "Tidak ada data!"}, HttpStatus.NOT_FOUND);
+    console.log(JSON.stringify(datas));
+    if (datas.length == 0) {
+      throw new HttpException({ message: "Tidak ada data!" }, HttpStatus.NOT_FOUND);
     }
+    // console.log()
     datas.forEach(data => {
       // console.log({...data.package_features})
       let f = data.package_features;
-      let ftr = [];
-      if(f.length > 0){
-        for(let i = 0 ; i < f.length ; i++){
-          let fitem = f[i].feature;
-          fitem.feature_value = f[i].feature_value;
-          ftr.push(fitem);
-        }
-      }
-      data.package_features = ftr;
+      // data.package_features = this.listFeature(f);
+      // console.log(data.package_features);
       response.push(data);
       // data['package_features']
     });
     return response;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} package`;
+  async findOne(id: number): Promise<Package> {
+    const data = await this.repos.findOne({
+      relations: ['package_features', 'package_features.feature', 'package_features.feature.parent_feature'],
+      where: { id: id }
+    });
+
+    let f = data.package_features;
+    let ftr = [];
+    if (f.length > 0) {
+      for (let i = 0; i < f.length; i++) {
+        let fitem = f[i].feature;
+        
+        fitem.feature_value = f[i].feature_value;
+        ftr.push(fitem);
+      }
+    }
+    data.package_features = ftr;
+
+    return data;
+    // return `This action returns a #${id} package`;
   }
 
   update(id: number, updatePackageInput: UpdatePackageInput) {
