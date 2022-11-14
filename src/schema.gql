@@ -329,6 +329,21 @@ type PackageFeature {
   feature_value: String
   id: Int!
   parent_feature: PackageFeature
+  subfeature: [PackageFeature!]
+  value_prefix: String
+  value_suffix: String
+}
+
+type PackageFeatureResponse {
+  feature_code: String!
+  feature_group: String
+  feature_icon: String
+  feature_name: String!
+  feature_type: String
+  feature_value: String
+  id: Int!
+  parent_feature: PackageFeature
+  subfeature: [PackageFeature!]
   value_prefix: String
   value_suffix: String
 }
@@ -354,7 +369,7 @@ type PackageResponse {
   package_billing_unit: String!
   package_code: String!
   package_display_name: String!
-  package_features: [PackageFeature!]!
+  package_features: [PackageFeatureResponse!]!
   package_icon: String!
   package_name: String!
   package_price: Int!

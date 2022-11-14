@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int, PartialType } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { PackageFeature } from './package-feature.entity';
+import { PackageFeature, PackageFeatureResponse } from './package-feature.entity';
 import { PackageFeatures } from './package-features.entity';
 
 @Entity()
@@ -112,7 +112,7 @@ export class PackageResponse{
   @IsOptional()
   is_popular?: boolean;
 
-  @Field(() => [PackageFeature])
-  package_features: PackageFeature[]
+  @Field(() => [PackageFeatureResponse])
+  package_features: PackageFeatureResponse[]
 }
 
