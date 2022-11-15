@@ -90,14 +90,15 @@ export class PackagesService {
     let res: PackageFeature[] = [];
     let py = param;
     let parents = datas;
-    for(let i = 0 ; i < datas.length ; i++){
+    for(let i = 0 ; i < parents.length ; i++){
       if(py.length == 0){
         break;
       }
-      if(typeof parents[i].subfeature == 'undefined'){
-        parents[i]['subfeature'] = [];
-      }
+      
       res.push(parents[i]);
+      if(typeof res[i].subfeature == 'undefined'){
+        res[i]['subfeature'] = [];
+      }
       // if()
       for(let j = 0 ; j < py.length ; j ++){
         
@@ -108,7 +109,7 @@ export class PackagesService {
             let pc = py[j].feature
             pc.feature_value = py[j].feature_value;
             // res.push(parents[i]);
-            res[i].subfeature.push(pc);
+            res[i]['subfeature'].push(pc);
             
            
           }
@@ -120,7 +121,7 @@ export class PackagesService {
           afterRemovePy: py
         })
       }
-      if((typeof res[i].parent_feature != 'undefined' && res[i].parent_feature == null) 
+      if(typeof res[i] != 'undefined' && (typeof res[i].parent_feature != 'undefined' && res[i].parent_feature == null) 
       && (typeof res[i].subfeature !='undefined' && res[i].subfeature.length == 0) && (typeof res[i].feature_value != 'undefined' && res[i].feature_value == null)){
         res = res.splice(i, 1);
       }
