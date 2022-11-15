@@ -10,8 +10,8 @@ export class PackageFeature{
   @Field(() => Int)
   id: number;
 
-  @Column()
-  @Field(() => String)
+  @Column({nullable: true})
+  @Field(() => String, {nullable: true})
   feature_code: string;
 
   @Column({nullable: true})

@@ -22,6 +22,8 @@ export class PackageFeaturePriInput{
   value_prefix?: string;
   @Field(() => String, {nullable: true})
   value_suffix?: string;
+  @Field(() => PackageFeaturePriInput, {nullable: true})
+  parent_feature?: PackageFeaturePriInput
 }
 
 @InputType()
@@ -33,6 +35,12 @@ export class PackageFeatureInput extends PartialType(PackageFeaturePriInput){
   @Field(() => [PackageFeaturePriInput], {nullable: true})
   @IsOptional()
   package_subfeatures?: PackageFeaturePriInput[]
+}
+
+@InputType()
+export class FeaturesInput{
+  @Field(() => [PackageFeatureInput])
+  features: PackageFeatureInput[];
 }
 
 @InputType()

@@ -1,9 +1,10 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { PackagesService } from './packages.service';
 import { Package, PackageResponse } from './entities/package.entity';
-import { CreatePackageInput } from './dto/create-package.input';
+import { CreatePackageInput, FeaturesInput, PackageFeatureInput } from './dto/create-package.input';
 import { UpdatePackageInput } from './dto/update-package.input';
 import { PackageFeatures } from './entities/package-features.entity';
+import { PackageFeature } from './entities/package-feature.entity';
 
 @Resolver(() => Package)
 export class PackagesResolver {
@@ -12,6 +13,11 @@ export class PackagesResolver {
   @Mutation(() => Package)
   async createPackage(@Args('createPackageInput') createPackageInput: CreatePackageInput) {
     return await this.packagesService.create(createPackageInput);
+  }
+
+  @Mutation(() => [PackageFeature], {name: 'createFeature'})
+  async createFeature(@Args('createFeatureInput') createFeatureInput: FeaturesInput) {
+    return await this.packagesService.createFeatures(createFeatureInput);
   }
 
   @Query(() => [PackageResponse], { name: 'packages' })

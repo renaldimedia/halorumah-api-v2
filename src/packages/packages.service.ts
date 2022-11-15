@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 import { MetaQuery } from 'src/global-entity/meta-query.input';
 import { IsNull, Repository } from 'typeorm';
-import { CreatePackageInput, PackageFeatureInput } from './dto/create-package.input';
+import { CreatePackageInput, FeaturesInput, PackageFeatureInput } from './dto/create-package.input';
 import { UpdatePackageInput } from './dto/update-package.input';
 import { PackageFeature } from './entities/package-feature.entity';
 import { PackageFeatures } from './entities/package-features.entity';
@@ -18,15 +18,17 @@ export class PackagesService {
     @InjectRepository(PackageFeatures) private readonly reposFeatures: Repository<PackageFeatures>
   ) { }
 
-  async createFeatures(featuresInput: PackageFeatureInput[]): Promise<PackageFeature[]> {
+  async createFeatures(featuresInput: FeaturesInput): Promise<any> {
     const features = [];
-    for (let z = 0; z < featuresInput.length; z++) {
+    for (let z = 0; z < featuresInput.features.length; z++) {
+      let ftr = featuresInput.features[z];
       const subfeatures = [];
-      // console.log(typeof featuresInput[z].);
-      if (typeof featuresInput[z].package_subfeatures_input != 'undefined' && featuresInput[z].package_subfeatures_input.length > 0) {
-        for (let i = 0; i < featuresInput[z].package_subfeatures_input.length; i++) {
-          featuresInput[z].package_subfeatures_input[i].feature_group = featuresInput[z].feature_code;
-          let ft = await this.reposFeature.create(featuresInput[z].package_subfeatures_input[i]);
+      // console.log(typeof ftr.);
+      
+      if (typeof ftr.package_subfeatures_input != 'undefined' && ftr.package_subfeatures_input.length > 0) {
+        for (let i = 0; i < ftr.package_subfeatures_input.length; i++) {
+          ftr.package_subfeatures_input[i].feature_group = ftr.feature_code;
+          let ft = await this.reposFeature.create(ftr.package_subfeatures_input[i]);
           let ftrs = await this.reposFeature.save(ft);
           if (typeof ftrs.id == 'number') {
             subfeatures.push(ftrs);
@@ -35,12 +37,12 @@ export class PackagesService {
       }
       const sv = new PackageFeature();
       // sv = {...featuresInput};
-      featuresInput[z].package_subfeatures = subfeatures;
-      const cr = await this.reposFeature.create(featuresInput[z]);
+      ftr.package_subfeatures = subfeatures;
+      const cr = await this.reposFeature.create(ftr);
       features.push(await this.reposFeature.save(cr));
     }
 
-
+    // console.log(features);
     return features;
   }
 
