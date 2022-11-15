@@ -26,8 +26,10 @@ export class PackagesResolver {
   }
 
   @Query(() => [PackageResponse], { name: 'packages' })
-  findAll() {
-    return this.packagesService.findAll();
+  async findAll() {
+    const res = this.packagesService.findAll();
+    console.log(res);
+    return res;
   }
 
   @Query(() => [PackageFeatures], { name: 'packagess' })
