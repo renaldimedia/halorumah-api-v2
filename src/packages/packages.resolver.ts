@@ -4,7 +4,7 @@ import { Package, PackageResponse } from './entities/package.entity';
 import { CreatePackageInput, FeaturesInput, PackageFeatureInput } from './dto/create-package.input';
 import { UpdatePackageInput } from './dto/update-package.input';
 import { PackageFeatures } from './entities/package-features.entity';
-import { PackageFeature } from './entities/package-feature.entity';
+import { PackageFeature, PackageFeatureResponse } from './entities/package-feature.entity';
 
 @Resolver(() => Package)
 export class PackagesResolver {
@@ -18,6 +18,11 @@ export class PackagesResolver {
   @Mutation(() => [PackageFeature], {name: 'createFeature'})
   async createFeature(@Args('createFeatureInput') createFeatureInput: FeaturesInput) {
     return await this.packagesService.createFeatures(createFeatureInput);
+  }
+
+  @Query(() => [PackageFeatureResponse], { name: 'packageFeatures' })
+  async findAllFeature() {
+    return await this.packagesService.findFeatures();
   }
 
   @Query(() => [PackageResponse], { name: 'packages' })

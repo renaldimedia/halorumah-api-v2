@@ -88,12 +88,6 @@ export class PackagesService {
 
   listFeature(param: PackageFeatures[], datas: PackageFeature[], id: any = null) {
     let res: PackageFeature[] = [];
-    // res = datas;
-
-    // console.log({
-    //   first: param,
-    //   id: id
-    // });
     let py = param;
     let parents = datas;
     for(let i = 0 ; i < datas.length ; i++){
@@ -136,6 +130,14 @@ export class PackagesService {
     // });
     // console.log(JSON.stringify(res));
     return res;
+  }
+
+  async findFeatures(): Promise<PackageFeature[]>{
+    let parentList = await this.reposFeature.find({
+      relations: ['parent_feature', 'subfeature'],
+    });
+
+    return parentList;
   }
 
   async findAll(option: MetaQuery = null): Promise<any[]> {
