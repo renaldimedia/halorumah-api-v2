@@ -87,51 +87,47 @@ export class PackagesService {
   }
 
   listFeature(param: PackageFeatures[], datas: PackageFeature[], id: any = null) {
-    let res: PackageFeature[] = [];
-    let py = param;
-    let parents = datas;
-    for(let i = 0 ; i < parents.length ; i++){
-      if(py.length == 0){
+    // let res: PackageFeature[] = [];
+    for(let i = 0 ; i < datas.length ; i++){
+      if(param.length == 0){
         break;
       }
-      
-      res.push(parents[i]);
-      if(typeof res[i].subfeature == 'undefined'){
-        res[i]['subfeature'] = [];
+      if(typeof datas[i].subfeature == 'undefined'){
+        datas[i]['subfeature'] = [];
       }
       // if()
-      for(let j = 0 ; j < py.length ; j ++){
+      for(let j = 0 ; j < param.length ; j ++){
         
-        if(py[j].feature.parent_feature != null){
-          // console.log(res[i])
-          if(py[j].feature.parent_feature.id == parents[i].id && py[j].feature_value != null){
+        if(param[j].feature.parent_feature != null){
+          // console.log(datas[i])
+          if(param[j].feature.parent_feature.id == datas[i].id && param[j].feature_value != null){
             //  pc = new PackageFeature();
-            let pc = py[j].feature
-            pc.feature_value = py[j].feature_value;
-            // res.push(parents[i]);
-            res[i]['subfeature'].push(pc);
+            let pc = param[j].feature
+            pc.feature_value = param[j].feature_value;
+            // datas.push(datas[i]);
+            datas[i]['subfeature'].push(pc);
             
            
           }
-        }else if(py[j].feature.parent_feature == null && py[j].feature.id == parents[i].id && py[j].feature_value != null){
-          res[i].feature_value = py[j].feature_value;
+        }else if(param[j].feature.parent_feature == null && param[j].feature.id == datas[i].id && param[j].feature_value != null){
+          datas[i].feature_value = param[j].feature_value;
         }
-        py = py.splice(j, 1);
+        param = param.splice(j, 1);
         console.log({
-          afterRemovePy: py
+          afterRemoveparam: param
         })
       }
-      if(typeof res[i] != 'undefined' && (typeof res[i].parent_feature != 'undefined' && res[i].parent_feature == null) 
-      && (typeof res[i].subfeature !='undefined' && res[i].subfeature.length == 0) && (typeof res[i].feature_value != 'undefined' && res[i].feature_value == null)){
-        res = res.splice(i, 1);
+      if(typeof datas[i] != 'undefined' && (typeof datas[i].parent_feature != 'undefined' && datas[i].parent_feature == null) 
+      && (typeof datas[i].subfeature !='undefined' && datas[i].subfeature.length == 0) && (typeof datas[i].feature_value != 'undefined' && datas[i].feature_value == null)){
+        datas = datas.splice(i, 1);
       }
     }
     // console.log({
-    //   return: res,
+    //   return: datas,
     //   id: id
     // });
-    // console.log(JSON.stringify(res));
-    return res;
+    // console.log(JSON.stringify(datas));
+    return datas;
   }
 
   async findFeatures(): Promise<PackageFeature[]>{
@@ -169,7 +165,7 @@ export class PackagesService {
     // console.log(parentList);
     // throw new HttpException({ message: "Tidak ada data!" }, HttpStatus.NOT_FOUND);
     for (let i = 0; i < datas.length; i++) {
-      if(datas[i].id >= 3){
+      // if(datas[i].id >= 3){
       let data = datas[i];
       let parentList = await this.reposFeature.find({
         relations: ['parent_feature'],
@@ -177,8 +173,6 @@ export class PackagesService {
           parent_feature: IsNull()
         }
       });
-      const prls = parentList;
-      // let prls = parentList;
       // console.log({...data.package_features})
       let pr = new PackageResponse();
       Object.entries(data).forEach(([k, v]) => {
@@ -186,18 +180,18 @@ export class PackagesService {
       });
       let f = data.package_features;
       if(f.length > 0){
-        let ft = this.listFeature(f, prls, pr.id);
-        console.log({
-          id: datas[i].id,
-          returning: JSON.stringify(ft)
-        })
+        let ft = this.listFeature(f, parentList, pr.id);
+        // console.log({
+        //   id: datas[i].id,
+        //   returning: JSON.stringify(ft)
+        // })
         pr.package_features = ft;
       }
 
       // prls = null;
       
       response.push(pr);
-    }
+    // }
     }
 
     // console.log(JSON.stringify(response));
