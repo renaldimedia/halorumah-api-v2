@@ -120,7 +120,8 @@ export class PackagesService {
           afterRemovePy: py
         })
       }
-      if(res[i].subfeature.length == 0 && res[i].feature_value == null){
+      if((typeof res[i].parent_feature != 'undefined' && res[i].parent_feature == null) 
+      && (typeof res[i].subfeature !='undefined' && res[i].subfeature.length == 0) && (typeof res[i].feature_value != 'undefined' && res[i].feature_value == null)){
         res = res.splice(i, 1);
       }
     }
