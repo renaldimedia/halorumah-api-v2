@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 import { MetaQuery } from 'src/global-entity/meta-query.input';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreatePackageInput, PackageFeatureInput } from './dto/create-package.input';
 import { UpdatePackageInput } from './dto/update-package.input';
 import { PackageFeature } from './entities/package-feature.entity';
@@ -84,40 +84,63 @@ export class PackagesService {
     return datas;
   }
 
-  listFeature(param: PackageFeatures[]) {
-    let f = param;
-    let ftr = [];
-    let prnt = [];
-    if (f.length > 0) {
-      for (let i = 0; i < f.length; i++) {
-        let fitem = f[i].feature;
-        fitem.feature_value = f[i].feature_value;
-        // console.log(fitem.parent_feature.id)
-        // ftr[idx]['subfeature']
-        // fitem['subfeature'] = this.listFeature();
-      
-        if(typeof fitem.parent_feature == 'undefined' || fitem.parent_feature == null){
-          ftr.push(fitem);
-        }else{
-          let idx = ftr.findIndex(s => s.id == fitem.parent_feature.id);
-          if(typeof idx == 'number' && idx > 0){
-            if(typeof ftr[idx]['subfeature'] == 'undefined'){
-              ftr[idx]['subfeature'] = [];  
-            }
-            ftr[idx]['subfeature'].push(fitem)
+  listFeature(param: PackageFeatures[], datas: PackageFeature[], id: any = null) {
+    let res: PackageFeature[] = [];
+    // res = datas;
+
+    // console.log({
+    //   first: param,
+    //   id: id
+    // });
+    let py = param;
+    let parents = datas;
+    for(let i = 0 ; i < datas.length ; i++){
+      if(py.length == 0){
+        break;
+      }
+      if(typeof parents[i].subfeature == 'undefined'){
+        parents[i]['subfeature'] = [];
+      }
+      res.push(parents[i]);
+      // if()
+      for(let j = 0 ; j < py.length ; j ++){
+        
+        if(py[j].feature.parent_feature != null){
+          // console.log(res[i])
+          if(py[j].feature.parent_feature.id == parents[i].id && py[j].feature_value != null){
+            //  pc = new PackageFeature();
+            let pc = py[j].feature
+            pc.feature_value = py[j].feature_value;
+            // res.push(parents[i]);
+            res[i].subfeature.push(pc);
+            
+           
           }
+        }else if(py[j].feature.parent_feature == null && py[j].feature.id == parents[i].id){
+          res[i].feature_value = py[j].feature_value;
         }
+        py = py.splice(j, 1);
+        console.log({
+          afterRemovePy: py
+        })
+      }
+      if(res[i].parent_feature != null && res[i].subfeature.length == 0 && res[i].feature_value == null){
+        res = res.splice(i, 1);
       }
     }
-
-    return ftr;
+    // console.log({
+    //   return: res,
+    //   id: id
+    // });
+    // console.log(JSON.stringify(res));
+    return res;
   }
 
-  async findAll(option: MetaQuery = null): Promise<PackageResponse[]> {
+  async findAll(option: MetaQuery = null): Promise<any[]> {
     const response = [];
-
+    // console.log('test')
     const datas = await this.repos.find({
-      relations: ['package_features', 'package_features.feature', 'package_features.feature.subfeature'],
+      relations: ['package_features', 'package_features.feature', 'package_features.feature.parent_feature'],
       order: {
         ord: 'ASC',
         package_features: {
@@ -130,19 +153,48 @@ export class PackagesService {
       }
     });
 
-    console.log(JSON.stringify(datas));
+    // console.log(JSON.stringify(datas));
+    // throw new HttpException({ message: "Tidak ada data!" }, HttpStatus.NOT_FOUND);
     if (datas.length == 0) {
       throw new HttpException({ message: "Tidak ada data!" }, HttpStatus.NOT_FOUND);
     }
     // console.log()
-    datas.forEach(data => {
+    
+    // console.log(parentList);
+    // throw new HttpException({ message: "Tidak ada data!" }, HttpStatus.NOT_FOUND);
+    for (let i = 0; i < datas.length; i++) {
+      if(datas[i].id >= 3){
+      let data = datas[i];
+      let parentList = await this.reposFeature.find({
+        relations: ['parent_feature'],
+        where: {
+          parent_feature: IsNull()
+        }
+      });
+      const prls = parentList;
+      // let prls = parentList;
       // console.log({...data.package_features})
+      let pr = new PackageResponse();
+      Object.entries(data).forEach(([k, v]) => {
+        pr[k] = v;
+      });
       let f = data.package_features;
-      // data.package_features = this.listFeature(f);
-      // console.log(data.package_features);
-      response.push(data);
-      // data['package_features']
-    });
+      if(f.length > 0){
+        let ft = this.listFeature(f, prls, pr.id);
+        console.log({
+          id: datas[i].id,
+          returning: JSON.stringify(ft)
+        })
+        pr.package_features = ft;
+      }
+
+      // prls = null;
+      
+      response.push(pr);
+    }
+    }
+
+    // console.log(JSON.stringify(response));
     return response;
   }
 
@@ -157,7 +209,7 @@ export class PackagesService {
     if (f.length > 0) {
       for (let i = 0; i < f.length; i++) {
         let fitem = f[i].feature;
-        
+
         fitem.feature_value = f[i].feature_value;
         ftr.push(fitem);
       }

@@ -46,16 +46,17 @@ export class PackageFeature{
 
   @ManyToOne(type => PackageFeature)
   // @JoinTable()
+  @JoinColumn({name: 'parent_id'})
   @Field(() => PackageFeature, {nullable: true})
   @IsOptional()
-  parent_feature?: PackageFeature;
+  parent_feature?: PackageFeature | null;
 
   // @OneToMany(type => PackageFeature, pack => pack.parent_feature)
   // parent_id: PackageFeature[];
 
   @OneToMany(type => PackageFeature, pack => pack.parent_feature)
   @Field(() => [PackageFeature], {nullable: true})
-  subfeature?: PackageFeature[]
+  subfeature?: PackageFeature[] | null;
 }
 
 @ObjectType()
