@@ -112,7 +112,7 @@ export class PackagesService {
             
            
           }
-        }else if(py[j].feature.parent_feature == null && py[j].feature.id == parents[i].id){
+        }else if(py[j].feature.parent_feature == null && py[j].feature.id == parents[i].id && py[j].feature_value != null){
           res[i].feature_value = py[j].feature_value;
         }
         py = py.splice(j, 1);
@@ -120,7 +120,7 @@ export class PackagesService {
           afterRemovePy: py
         })
       }
-      if(res[i].parent_feature != null && res[i].subfeature.length == 0 && res[i].feature_value == null){
+      if(res[i].parent_feature == null && res[i].subfeature.length == 0 && res[i].feature_value == null){
         res = res.splice(i, 1);
       }
     }
