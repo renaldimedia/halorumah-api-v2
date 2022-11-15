@@ -27,7 +27,7 @@ export class PackagesResolver {
 
   @Query(() => [PackageResponse], { name: 'packages' })
   async findAll() {
-    const res = this.packagesService.findAll();
+    const res = await this.packagesService.findAll();
     console.log(res);
     return res;
   }
