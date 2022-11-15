@@ -120,7 +120,7 @@ export class PackagesService {
           afterRemovePy: py
         })
       }
-      if(res[i].parent_feature == null && res[i].subfeature.length == 0 && res[i].feature_value == null){
+      if(res[i].subfeature.length == 0 && res[i].feature_value == null){
         res = res.splice(i, 1);
       }
     }
