@@ -24,7 +24,7 @@ export class PackagesService {
       let ftr = featuresInput.features[z];
       const subfeatures = [];
       // console.log(typeof ftr.);
-      
+
       if (typeof ftr.package_subfeatures_input != 'undefined' && ftr.package_subfeatures_input.length > 0) {
         for (let i = 0; i < ftr.package_subfeatures_input.length; i++) {
           ftr.package_subfeatures_input[i].feature_group = ftr.feature_code;
@@ -88,28 +88,28 @@ export class PackagesService {
 
   listFeature(param: PackageFeatures[], datas: PackageFeature[], id: any = null) {
     // let res: PackageFeature[] = [];
-    for(let i = 0 ; i < datas.length ; i++){
-      if(param.length == 0){
+    for (let i = 0; i < datas.length; i++) {
+      if (param.length == 0) {
         break;
       }
-      if(typeof datas[i].subfeature == 'undefined'){
+      if (datas[i].parent_feature == null && typeof datas[i].subfeature == 'undefined') {
         datas[i]['subfeature'] = [];
       }
       // if()
-      for(let j = 0 ; j < param.length ; j ++){
-        
-        if(param[j].feature.parent_feature != null){
+      for (let j = 0; j < param.length; j++) {
+
+        if (param[j].feature.parent_feature != null) {
           // console.log(datas[i])
-          if(param[j].feature.parent_feature.id == datas[i].id && param[j].feature_value != null){
+          if (param[j].feature.parent_feature.id == datas[i].id && param[j].feature_value != null) {
             //  pc = new PackageFeature();
             let pc = param[j].feature
             pc.feature_value = param[j].feature_value;
             // datas.push(datas[i]);
             datas[i]['subfeature'].push(pc);
-            
-           
+
+
           }
-        }else if(param[j].feature.parent_feature == null && param[j].feature.id == datas[i].id && param[j].feature_value != null){
+        } else if (param[j].feature.parent_feature == null && param[j].feature.id == datas[i].id && param[j].feature_value != null) {
           datas[i].feature_value = param[j].feature_value;
         }
         param = param.splice(j, 1);
@@ -117,20 +117,47 @@ export class PackagesService {
           afterRemoveparam: param
         })
       }
-      if(typeof datas[i] != 'undefined' && (typeof datas[i].parent_feature != 'undefined' && datas[i].parent_feature == null) 
-      && (typeof datas[i].subfeature !='undefined' && datas[i].subfeature.length == 0) && (typeof datas[i].feature_value != 'undefined' && datas[i].feature_value == null)){
+      if (typeof datas[i] != 'undefined' && (typeof datas[i].parent_feature != 'undefined' && datas[i].parent_feature == null)
+        && (typeof datas[i].subfeature != 'undefined' && datas[i].subfeature.length == 0) && (typeof datas[i].feature_value != 'undefined' && datas[i].feature_value == null)) {
         datas = datas.splice(i, 1);
       }
     }
-    // console.log({
-    //   return: datas,
-    //   id: id
-    // });
-    // console.log(JSON.stringify(datas));
     return datas;
   }
 
-  async findFeatures(): Promise<PackageFeature[]>{
+  async lftr(data: PackageFeatures[]) {
+    // const res = [];
+    const parent = [];
+    data.forEach((item) => {
+      if (item.feature.parent_feature != null) {
+        item.feature.feature_value = item.feature_value;
+        if (typeof parent[item.feature.parent_feature.id] == 'undefined') {
+          parent[item.feature.parent_feature.id] = item.feature.parent_feature;
+          if (typeof parent[item.feature.parent_feature.id]['subfeature'] == 'undefined') {
+            parent[item.feature.parent_feature.id]['subfeature'] = [];
+            parent[item.feature.parent_feature.id]['subfeature'].push(item.feature);
+          } else {
+            parent[item.feature.parent_feature.id]['subfeature'].push(item.feature);
+          }
+        } else {
+          if (typeof parent[item.feature.parent_feature.id]['subfeature'] == 'undefined') {
+            parent[item.feature.parent_feature.id]['subfeature'] = [];
+            parent[item.feature.parent_feature.id]['subfeature'].push(item.feature);
+          } else {
+            parent[item.feature.parent_feature.id]['subfeature'].push(item.feature);
+          }
+        }
+      }
+    });
+
+
+    // console.log({
+    //   parent: parent.filter(n => n)
+    // });
+    return parent.filter(n => n);
+  }
+
+  async findFeatures(): Promise<PackageFeature[]> {
     let parentList = await this.reposFeature.find({
       relations: ['parent_feature', 'subfeature'],
     });
@@ -161,26 +188,20 @@ export class PackagesService {
       throw new HttpException({ message: "Tidak ada data!" }, HttpStatus.NOT_FOUND);
     }
     // console.log()
-    
+
     // console.log(parentList);
     // throw new HttpException({ message: "Tidak ada data!" }, HttpStatus.NOT_FOUND);
     for (let i = 0; i < datas.length; i++) {
       // if(datas[i].id >= 3){
       let data = datas[i];
-      let parentList = await this.reposFeature.find({
-        relations: ['parent_feature'],
-        where: {
-          parent_feature: IsNull()
-        }
-      });
       // console.log({...data.package_features})
       let pr = new PackageResponse();
       Object.entries(data).forEach(([k, v]) => {
         pr[k] = v;
       });
       let f = data.package_features;
-      if(f.length > 0){
-        let ft = this.listFeature(f, parentList, pr.id);
+      if (f.length > 0) {
+        let ft = await this.lftr(f);
         // console.log({
         //   id: datas[i].id,
         //   returning: JSON.stringify(ft)
@@ -189,9 +210,9 @@ export class PackagesService {
       }
 
       // prls = null;
-      
+
       response.push(pr);
-    // }
+      // }
     }
 
     // console.log(JSON.stringify(response));
