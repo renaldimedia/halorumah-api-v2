@@ -14,6 +14,10 @@ class PropertyInput{
   @Field(type => String, {nullable: true})
   property_code: string
 
+  // @Column({nullable: true})
+  @Field(() => Int, {nullable: true})
+  old_id: number;
+
   @Field(type => String, {nullable: false})
   property_title: string
 
@@ -46,10 +50,10 @@ class PropertyInput{
   @Field(type => Boolean, {nullable: true, defaultValue: false})
   property_has_garage: boolean
 
-  @Field(type => Int)
+  @Field(type => String)
   property_price: number
 
-  @Field(type => Int, {nullable: true})
+  @Field(type => String, {nullable: true})
   property_price_second: number
 
   @Field(type => String, {nullable: false})
@@ -61,21 +65,29 @@ class PropertyInput{
   @Field(type => Float, {nullable: true})
   property_land_size: number
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true, defaultValue: 0})
   property_bathroom_count: number
 
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true, defaultValue: 0})
   property_bedroom_count: number
 
-  @Field(type => String, {nullable: false})
+  @Field(type => String, {nullable: true})
   property_certificate_type: string
 
 
-  @Field(type => String, {nullable: false})
+  @Field(type => String, {nullable: true})
   property_featured_image: string
 
-  @Field(type => [String], {nullable: false})
+  @Field(type => [String], {nullable: true})
   property_list_images: string[]
+
+  // @Column({nullable: true})
+  @Field({nullable:true})
+  property_featured_image_rendered: string
+
+  // @Column({type: 'json', nullable: true})
+  @Field(type => [String], {nullable: true})
+  property_list_images_rendered: string[]
 
   @Field({nullable: true})
   country: number
@@ -89,6 +101,21 @@ class PropertyInput{
   @Field({nullable: true})
   subdistrict: number
 
+  @Field({nullable: true})
+  country_text: string
+
+  @Field({nullable: true})
+  province_text: string
+
+  @Field({nullable: true})
+  city_text: string
+
+  @Field({nullable: true})
+  subdistrict_text: string
+
+  @Field({nullable: true})
+  created_at: string
+
   @Field(type => String, {nullable: false})
   property_full_address: string
 
@@ -98,7 +125,13 @@ class PropertyInput{
   @Field(type => String,{nullable: true})
   call_to_user: string
 
-  @Field(type => Int)
+  @Field(type => Int,{nullable: true})
+  created_by_user_old: number
+
+  @Field(type => Int,{nullable: true})
+  call_to_user_old: number
+
+  @Field(type => Int, {nullable: true})
   property_build_years: number
 
   // @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0, nullable: true })
@@ -109,7 +142,7 @@ class PropertyInput{
   // @Field()
   // property_building_size: number;
 
-  @Field(type => String)
+  @Field(type => String, {nullable: true})
   @IsIn(Object.values(propAgeConstants))
   property_condition: string
 
@@ -124,6 +157,9 @@ class PropertyInput{
   @Field(type => String, {nullable: true, defaultValue: purchaseTypes.ONCE})
   @IsIn(Object.values(purchaseTypes))
   purchase_type: string;
+
+  @Field(type => Int, {nullable: true})
+  total_views: number;
 }
 
 

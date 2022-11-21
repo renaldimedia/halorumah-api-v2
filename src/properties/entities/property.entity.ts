@@ -12,6 +12,7 @@ import propAgeConstants from 'src/enums/propAgeConstans.enum';
 import purchaseTypes from 'src/enums/purchaseType.enum';
 import propPurchaseStatus from 'src/enums/propPurchaseStatus.enum';
 import saleTypes from 'src/enums/saleTypes.enum';
+import GraphQLLong from '../../../lib/Longtype';
 
 @Entity()
 @ObjectType()
@@ -30,7 +31,7 @@ export class Property {
   property_code: string
 
   @Column()
-  @Index({unique: true})
+  // @Index({unique: true})
   @Field(type => String, {nullable: false})
   property_title: string
 
@@ -38,12 +39,12 @@ export class Property {
   @Field(type => String, {nullable: false})
   property_desc: string
 
-  @Column()
-  @Field(type => Int)
+  @Column({type: 'numeric', nullable: true, default: 0})
+  @Field(type => String)
   property_price: number
 
-  @Column({nullable: true})
-  @Field(type => Int, {nullable: true})
+  @Column({nullable: true, type: 'numeric'})
+  @Field(type => String, {nullable: true})
   @IsOptional()
   property_price_second: number
 
@@ -100,14 +101,22 @@ export class Property {
   @Field(type => String, {nullable: false})
   property_certificate_type: string
 
-  @Column()
+  @Column({nullable: true})
   @ManyToOne(() => File)
-  @Field({nullable: false})
+  @Field({nullable: true})
   property_featured_image: string
 
-  @Column({type: 'json'})
-  @Field(type => [String], {nullable: false})
+  @Column({type: 'json', nullable: true})
+  @Field(type => [String], {nullable: true})
   property_list_images: string[]
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  property_featured_image_rendered: string
+
+  @Column({type: 'json', nullable: true})
+  @Field(type => [String], {nullable: false})
+  property_list_images_rendered: string[]
 
 
   @Column({nullable: true})
@@ -130,6 +139,26 @@ export class Property {
   @Field({nullable: true})
   subdistrict: number
 
+  @Column({nullable: true})
+  @Field({nullable: true})
+  country_text: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  province_text: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  city_text: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  district_text: string
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  subdistrict_text: string
+
   @Column({type: 'text', nullable: false})
   @Field(type => String, {nullable: false})
   property_full_address: string
@@ -138,10 +167,19 @@ export class Property {
   @Field(type => User)
   created_by_user: string
 
+  @Column({type: 'int', nullable: true})
+  @Field(type => Int)
+  created_by_user_old: number
+
   @Column({type: 'uuid'})
   @ManyToOne(() => User)
   @Field(type => User)
   call_to_user: string
+
+  @Column({type: 'int', nullable: true})
+  // @ManyToOne(() => User)
+  @Field(type => Int)
+  call_to_user_old: number
 
   @OneToMany(() => PropertyMeta, (pm) => pm.property)
   metas: PropertyMeta[]
@@ -152,13 +190,13 @@ export class Property {
   @Column({
     nullable: true
   })
-  @Field()
+  @Field({nullable: true})
   property_build_years: number
 
   @Column({
     nullable: true
   })
-  @Field()
+  @Field({nullable: true})
   @IsIn(Object.values(propAgeConstants))
   property_condition: string
 

@@ -35,14 +35,14 @@ export class PropertyResponse {
   property_desc: string
 
   
-  @Field(type => Int)
+  @Field(type => String)
   property_price: number
 
   @Field(type => String, {nullable: true})
   property_price_rendered: string
 
   
-  @Field(type => Int, {nullable: true})
+  @Field(type => String, {nullable: true})
   @IsOptional()
   property_price_second: number
 
@@ -58,11 +58,11 @@ export class PropertyResponse {
 
 
   
-  @Field()
+  @Field({nullable: true})
   property_area_size: number;
 
   
-  @Field()
+  @Field({nullable: true})
   property_building_size: number;
 
   @Field({nullable: true})
@@ -132,17 +132,25 @@ export class PropertyResponse {
 
   
   // @ManyToOne(() => File)
-  @Field(type => File, {nullable: false})
+  @Field(type => File, {nullable: true})
   property_featured_image: File
 
-  @Field(type => String, {nullable: false})
+  @Field(type => String, {nullable: true})
   property_featured_image_url: string
 
-  @Field(type => [String], {nullable: false})
+  @Field(type => [String], {nullable: true})
   property_list_images: string[]
 
-  @Field(type => [File], {nullable: false})
+  @Field(type => [File], {nullable: true})
   property_list_images_url: File[]
+
+  // @Column({nullable: true})
+  @Field({nullable: true})
+  property_featured_image_rendered: string
+
+  // @Column({type: 'json', nullable: true})
+  @Field(type => [String], {nullable: true})
+  property_list_images_rendered: string[]
   
   @Field(type => Country, {nullable: true})
   country: Country
@@ -158,6 +166,21 @@ export class PropertyResponse {
   
   @Field(type => Subdistrict, {nullable: true})
   subdistrict: Subdistrict
+
+  @Field(type => String, {nullable: true})
+  country_text: string
+
+  
+  @Field(type => String, {nullable: true})
+  province_text: string
+
+  
+  @Field(type => String, {nullable: true})
+  city_text: string
+
+  
+  @Field(type => String, {nullable: true})
+  subdistrict_text: string
 
   
   @Field(type => String, {nullable: false})
@@ -177,41 +200,41 @@ export class PropertyResponse {
   @Field(type => [PropertyMetaResponse], {nullable: true})
   features_extra: PropertyMetaResponse[]
 
-  @Field()
+  @Field({nullable: true})
   property_build_years: number
 
 
-  @Field()
+  @Field({nullable: true})
   property_condition: string
 
-  @Field()
+  @Field({nullable: true})
   total_views: number
 
 
-  @Field()
+  @Field({nullable: true})
   total_star: number
 
-  @Field()
+  @Field({nullable: true})
   total_leads: number
 
 
-  @Field()
+  @Field({nullable: true})
   total_messages: number
 
-  @Field()
+  @Field({nullable: true})
   created_at: Date;
 
-  @Field()
+  @Field({nullable: true})
   updated_at: Date;
 
-  @Field()
+  @Field({nullable: true})
   deleted_at: Date;
 
 
-  @Field()
+  @Field({nullable: true})
   sales_type: string;
 
-  @Field()
+  @Field({nullable: true})
   sales_status: string;
 
 
