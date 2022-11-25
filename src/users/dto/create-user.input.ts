@@ -34,7 +34,7 @@ export class CreateUserInput {
   // @IsMobilePhone('id-ID')
   phone: string;
 
-  @Field()
+  @Field({nullable: true})
   // @IsMobilePhone('id-ID')
   mobile: string;
 
