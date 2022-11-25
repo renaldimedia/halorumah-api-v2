@@ -105,8 +105,8 @@ export class UsersResolver {
   }
 
   @Mutation(() => User, { name: 'createUser' })
-  @UseGuards(JwtAuthGuard,RolesGuard)
-  @Roles(Role.ADMIN)
+  // @UseGuards(JwtAuthGuard,RolesGuard)
+  // @Roles(Role.ADMIN)
   async create(
     @Args('createUserInput') createUserInput: CreateUserInput,
   ): Promise<User> {
