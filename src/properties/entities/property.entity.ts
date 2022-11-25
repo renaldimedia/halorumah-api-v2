@@ -97,8 +97,8 @@ export class Property {
   @Field(type => Boolean, {nullable: true, defaultValue: false})
   property_has_garage: boolean
 
-  @Column()
-  @Field(type => String, {nullable: false})
+  @Column({nullable: true})
+  @Field(type => String, {nullable: true})
   property_certificate_type: string
 
   @Column({nullable: true})

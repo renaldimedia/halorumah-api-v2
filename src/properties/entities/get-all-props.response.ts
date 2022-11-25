@@ -19,6 +19,9 @@ export class PropertyResponse {
   @Field(() => Int)
   id: number;
 
+  @Field(() => Int)
+  old_id: number;
+
   // Required fields
   
   
