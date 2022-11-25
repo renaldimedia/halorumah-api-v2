@@ -315,7 +315,7 @@ export class UsersService {
    
     // const password = await bcrypt.hash(signupUserInput.password, 10);
     try {
-      const {package_code, package_registered, package_banefit} = createUserInput
+      const {package_code, package_registered, package_banefit, package_status} = createUserInput
       // let pck = null;
       // let user = null;
       let user = this.usersRespository.create(createUserInput);
@@ -329,6 +329,7 @@ export class UsersService {
             usrpck.user = user;
             usrpck.registered_date = package_registered;
             usrpck.banefit = package_banefit;
+            usrpck.status = package_status;
             const re = await this.userPackageRepo.save(usrpck);
             result['package'] = pck;
           }
