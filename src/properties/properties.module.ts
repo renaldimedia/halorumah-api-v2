@@ -15,8 +15,9 @@ import { PropertyMeta } from './entities/property-meta.entity';
 import { PropertyMetaMaster } from './entities/property-meta-master.entity';
 import { PropertyListImages } from './entities/property-list-images.entity';
 import { PropertiesController } from './properties.controller';
+import { HttpModule } from '@nestjs/axios';
 @Module({
-  imports: [TypeOrmModule.forFeature([Property, PropertyMeta, PropertyMetaMaster, PropertyListImages]), CountriesModule, SpacesModule, ProvincesModule, CitiesModule, SubdistrictsModule, FilesModule, UsersModule],
+  imports: [TypeOrmModule.forFeature([Property, PropertyMeta, PropertyMetaMaster, PropertyListImages]), CountriesModule, SpacesModule, ProvincesModule, CitiesModule, SubdistrictsModule, FilesModule, UsersModule, HttpModule],
   providers: [PropertiesResolver, PropertiesService, PropertyCreatedListener],
   controllers: [PropertiesController],
 })

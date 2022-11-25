@@ -17,7 +17,8 @@ import { CitiesService } from 'src/cities/cities.service';
 import { CountriesService } from 'src/countries/countries.service';
 import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
 import { CompanyResponse } from './entities/company.entity';
-import { CompanyInput } from './dto/company.input';
+import { CompanyInput } from './dto/company.input';import * as bcrypt from 'bcrypt';
+
 
 @Resolver(() => UsersResponse)
 export class UsersResolver {
@@ -104,11 +105,17 @@ export class UsersResolver {
   }
 
   @Mutation(() => User, { name: 'createUser' })
-  @UseGuards(RolesGuard, JwtAuthGuard)
+  @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.ADMIN)
-  create(
+  async create(
     @Args('createUserInput') createUserInput: CreateUserInput,
   ): Promise<User> {
+    if(typeof createUserInput.password == 'undefined' || createUserInput.password == null){
+      let pass = await bcrypt.hash("123456", 10);
+      createUserInput.password = pass;
+    }else if(typeof createUserInput.plainpass == 'boolean' && createUserInput.plainpass == true){
+      createUserInput.password = await bcrypt.hash(createUserInput.password, 10);
+    }
     return this.usersService.create(createUserInput);
   }
 

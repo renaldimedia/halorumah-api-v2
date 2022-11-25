@@ -36,7 +36,13 @@ export class PackageFeatureInput extends PartialType(PackageFeaturePriInput){
   @IsOptional()
   package_subfeatures?: PackageFeaturePriInput[]
 }
-
+@InputType()
+export class PackageBanefitInput{
+  @Field(type => Int) 
+  package_listings: number;
+  @Field(type => Int, {nullable: true, defaultValue: 0})
+  package_featured_listings: number;
+}
 @InputType()
 export class FeaturesInput{
   @Field(() => [PackageFeatureInput])

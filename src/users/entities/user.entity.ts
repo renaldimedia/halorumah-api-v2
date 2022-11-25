@@ -1,35 +1,51 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import Role from 'src/enums/roles.enum';
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { IsEmail, IsInt, IsOptional, IsPhoneNumber, IsUUID } from 'class-validator';
 import { capabilities_default } from 'src/enums/capabilities.enum';
-import { Profile, ProfileResponse } from './profile.entity';
-import * as bcrypt from 'bcrypt';
 import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
 import { Province } from 'src/provinces/entities/province.entity';
 import { City } from 'src/cities/entities/city.entity';
 import { Country } from 'src/countries/entities/country.entity';
 import { File } from 'src/files/entities/file.entity';
 import { Company, CompanyResponse } from './company.entity';
+import { UserPackages } from './user-packages.entity';
+import { Package } from 'src/packages/entities/package.entity';
 
 @Entity()
-@Unique('user_unique',['email', 'phone', 'device_id'])
+@Unique('user_unique',['email', 'phone', 'device_id', 'username'])
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn("uuid")
   @Field()
   id: string;
+
+  @Column({nullable: true, type: 'text'})
+  @Field({nullable: true})
+  user_desc: string;
+
+  @Column({type: 'int', nullable: true})
+  @Field(type => Int, {nullable: true})
+  old_id: number;
   
   @Column()
   @Field()
   @IsEmail()
   email: string;
 
+  @Column({nullable: true})
+  @Field({nullable: true})
+  username: string;
 
-  @Column()
-  @Field()
+  @Column({nullable: true})
+  @Field({nullable: true})
   @IsPhoneNumber('ID')
   phone: string;
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  // @IsPhoneNumber('ID')
+  mobile: string;
 
   @Column()
   password: string;
@@ -47,11 +63,19 @@ export class User {
   @Field(type => Company)
   company: string
 
+  @Column({nullable: true})
+  @Field(type => String, {nullable: true})
+  company_old: string
+
   @Column({
     nullable: true
   })
   @Field(type => String, {nullable: true})
-  resetpasswordkey: string
+  resetpasswordkey: string;
+
+  @CreateDateColumn({ type: "date" })
+  @Field()
+  public registered_date: Date;
 
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
   @Field()
@@ -98,6 +122,10 @@ export class User {
   @JoinColumn()
   photo_profile: string
 
+  @Column({type: 'text', nullable: true})
+  @Field(type => String, {nullable: true})
+  photo_profile_old: string
+
   // @Field(type => File, {nullable: true})
   // photo_profile_file: File
 
@@ -143,12 +171,19 @@ export class User {
   @Field(type => Country, {nullable: true})
   country: number
 
+  @Column({nullable: true})
+  @Field(type => String, {nullable: true})
+  country_text: string;
+
   // @Column({nullable: true})
   @ManyToOne(() => Province, (province) => province.id)
   @JoinColumn()
   @Field(type => Province, {nullable: true})
-  
   province: number
+
+  @Column({nullable: true})
+  @Field(type => String, {nullable: true})
+  province_text: string;
 
   // @Column({nullable: true})
   @ManyToOne(() => City, (city) => city.id)
@@ -156,15 +191,27 @@ export class User {
   @Field(type => City, {nullable: true})
   city: number
 
+  @Column({nullable: true})
+  @Field(type => String, {nullable: true})
+  city_text: string;
+
   // @Column({nullable: true})
   @ManyToOne(() => Subdistrict, (subd) => subd.id)
   @JoinColumn()
   @Field(type => Subdistrict, {nullable: true})
   subdistrict: number
+
+  @Column({nullable: true})
+  @Field(type => String, {nullable: true})
+  subdistrict_text: string;
   
   @Column({nullable: true, type: 'text'})
   @Field(type => String, {nullable: true})
   full_address: string
+
+  @Column({nullable: true, type: 'varchar', length: 30})
+  @Field(type => String, {nullable: true})
+  agent_id_old: string
 
   @Column({nullable: true, type: 'varchar', length: 30})
   @Field(type => String, {nullable: true})
@@ -196,6 +243,16 @@ export class User {
   
   @Field({nullable: true})
   discord_link: string
+
+  @OneToMany(type => UserPackages, (upk) => upk.user)
+  @Field(() => [UserPackages], {nullable: true})
+  userpackages: UserPackages[];
+
+  @Field(type => Package, {nullable: true})
+  package: Package
+
+  @Field({nullable: true})
+  title: string;
 }
 
 @ObjectType()
@@ -203,17 +260,31 @@ export class UsersResponse{
   @Field({nullable: true})
   id: string;
 
+  @Field({nullable: true})
+  username: string;
+
+  @Field({nullable: true})
+  password: string;
+
   @Field(type => CompanyResponse, {nullable: true})
   company: CompanyResponse
 
   @Field(type => File, {nullable: true})
   photo_profile_file: File
 
+  // @Column({nullable: true, type: 'text'})
+  @Field({nullable: true})
+  user_desc: string;
+
   @Field({nullable: true})
   email: string;
 
   @Field({nullable: true})
   phone: string;
+
+  @Field({nullable: true})
+  // @IsPhoneNumber('ID')
+  mobile: string;
 
   @Field({nullable: true})
   role: string; 
@@ -319,4 +390,13 @@ export class UsersResponse{
 
   @Field(type => String, {nullable: true})
   device_id: string
+
+  @Field(type => String, {nullable: true})
+  photo_profile_old: string
+
+  @Field(type => Package, {nullable: true})
+  package: Package
+
+  @Field({nullable: true})
+  title: string;
 }

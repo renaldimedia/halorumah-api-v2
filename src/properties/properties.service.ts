@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { MetaQuery } from 'src/global-entity/meta-query.input';
-import { DataSource, ILike, Like, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreatePropertyInput } from './dto/create-property.input';
 import { UpdatePropertyInput } from './dto/update-property.input';
 import { PropertyMetaMaster, PropertyMetaMasterInput } from './entities/property-meta-master.entity';
@@ -15,10 +15,12 @@ import { ProvincesService } from 'src/provinces/provinces.service';
 import { CitiesService } from 'src/cities/cities.service';
 import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 import { PropertyResponse } from './entities/get-all-props.response';
+import { HttpService } from '@nestjs/axios';
+
 
 @Injectable()
 export class PropertiesService {
-  constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService) { }
+  constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, private readonly httpService: HttpService) { }
 
   async createMeta(input: PropertyMetaMasterInput) {
     const pr = this.metaMasterRepos.create(input);
@@ -30,7 +32,7 @@ export class PropertiesService {
   async create(createPropertyInput: CreatePropertyInput, userid: string = null) {
     // const prop = new Property();
     // const metas = new PropertyMeta();
-    const { property, metas } = createPropertyInput;
+    const { property, metas, callback } = createPropertyInput;
     if (typeof property.created_by_user == 'undefined') {
       property['created_by_user'] = userid
     }
@@ -517,6 +519,10 @@ export class PropertiesService {
   //   return null;
   //   // return res;
   // }
+
+  async updateUserOld(old_userid: number, prop_id: number){
+
+  }
 
   async getExtraFeatureList(): Promise<PropertyMetaMaster[]> {
     const result = await this.metaMasterRepos.createQueryBuilder('meta').where(`property_constant ILike '%FEATURE%'`).getMany();

@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Package } from './entities/package.entity';
 import { PackageFeature } from './entities/package-feature.entity';
 import { PackageFeatures } from './entities/package-features.entity';
+import { UserPackages } from 'src/users/entities/user-packages.entity';
 
 @Module({
   providers: [PackagesResolver, PackagesService],
-  imports: [TypeOrmModule.forFeature([Package, PackageFeature, PackageFeatures])]
+  imports: [TypeOrmModule.forFeature([Package, PackageFeature, PackageFeatures, UserPackages])]
 })
 export class PackagesModule {}

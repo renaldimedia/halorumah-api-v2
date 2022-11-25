@@ -17,6 +17,9 @@ export class UpdateUserInput {
   @IsMobilePhone('id-ID')
   phone: string;
 
+  @Field(type => String, {nullable: true})
+  user_desc: string
+
   @Field({nullable: true})
   @IsOptional()
   password: string;

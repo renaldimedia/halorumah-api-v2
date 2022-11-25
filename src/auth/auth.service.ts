@@ -14,6 +14,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findOneBy({email: email});
+    // console.log(user);
     const valid = user && (await bcrypt.compare(password, user?.password));
 
     if (user && valid) {
@@ -41,7 +42,7 @@ export class AuthService {
   async signup(signupUserInput: CreateUserInput) {
     const user = await this.usersService.findOneBy({email: signupUserInput.email});
 
-    if (user) {
+    if (user && user.id != null) {
       throw new Error('User already exists');
     }
 

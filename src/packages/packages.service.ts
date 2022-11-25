@@ -52,7 +52,7 @@ export class PackagesService {
     const cr = await this.repos.create(createPackageInput);
     const pack = await this.repos.save(cr);
 
-    if (package_features.length > 0) {
+    if (typeof package_features != 'undefined' && package_features.length > 0) {
       let fet = [];
       for (let i = 0; i < package_features.length; i++) {
         let cr2 = new PackageFeatures();

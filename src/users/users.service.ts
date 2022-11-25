@@ -13,13 +13,15 @@ import { CitiesService } from 'src/cities/cities.service';
 import roleDisplay from 'src/enums/roleDisplay';
 import { CompanyInput } from './dto/company.input';
 import { Company } from './entities/company.entity';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { Package } from 'src/packages/entities/package.entity';
+import { UserPackages } from './entities/user-packages.entity';
+import { use } from 'passport';
 
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRespository: Repository<User>, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, @InjectRepository(Company) private companiesRepo: Repository<Company>
+    @InjectRepository(User) private usersRespository: Repository<User>, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, @InjectRepository(Company) private companiesRepo: Repository<Company>, @InjectRepository(Package) private packageRepo: Repository<Package>, @InjectRepository(UserPackages) private userPackageRepo: Repository<UserPackages>
   ) { }
 
   findAll(): Promise<User[]> {
@@ -38,21 +40,11 @@ export class UsersService {
     return await this.companiesRepo.save(cp);
   }
 
-  async findById(id: string, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse> {
-    // const result = await this.usersRespository.findOneBy({id:id});
-
-    // console.log('findbyid');
-    // let select = {};
-    // if(publicOnly){
-    //   select['province'] = false;
-    // }
-    const users = await this.usersRespository.findOne({
-      where: { id: id }
-    });
-    const response = new UsersResponse();
+  async proccesUser(users: User, response: UsersResponse) {
     // console.log(users);
-
-
+    if(users == null){
+      return response;
+    }
     Object.entries(users).forEach(([key, val]) => {
       switch (key) {
         // case 'photo_profile':
@@ -105,19 +97,49 @@ export class UsersService {
       response.country = await this.countryService.findOne(users.country);
       addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
     }
+    
+    let pack = await this.userPackageRepo.find({
+      relations: {
+        package: true
+      },
+      where: {
+        user: {
+          id: users.id
+        },
+        status: 1,
+      }
+    });
 
+    if(pack != null && pack.length > 0){
+      response.package = pack[0].package;
+    }
 
     response.full_address_rendered = addr.trim();
 
-
-
-    // console.log(users);
     return response;
   }
 
-  findOneBy(search: any): Promise<User> {
+  async findById(id: string, publicOnly: boolean = false, fields: any = []): Promise<UsersResponse> {
+
+    const users = await this.usersRespository.findOne({
+      where: { id: id }
+    });
+    
+    const response = new UsersResponse();
+   
+    let res = this.proccesUser(users, response);
+
+    return res;
+  }
+
+  async findOneBy(search: any): Promise<UsersResponse> {
     console.log('findby');
-    return this.usersRespository.findOneBy(search);
+    const users = await this.usersRespository.findOneBy(search);
+    const response = new UsersResponse();
+    
+    let res = this.proccesUser(users, response);
+
+    return res;
   }
 
   async findByDevice(deviceid: string): Promise<UsersResponse> {
@@ -290,10 +312,29 @@ export class UsersService {
   }
   async create(createUserInput: CreateUserInput) {
     // console.log(createUserInput)
+   
+    // const password = await bcrypt.hash(signupUserInput.password, 10);
     try {
+      const {package_code, package_registered, package_banefit} = createUserInput
+      // let pck = null;
+      // let user = null;
+      let user = this.usersRespository.create(createUserInput);
+      user = await this.usersRespository.save(user);
+      let result = {...user};
+      if(typeof package_code != 'undefined' && package_code != null){
+          let pck = await this.packageRepo.findOneBy({package_code: package_code});
+          if(pck != null && typeof pck['id'] != 'undefined'){
+            const usrpck = new UserPackages();
+            usrpck.package = pck;
+            usrpck.user = user;
+            usrpck.registered_date = package_registered;
+            usrpck.banefit = package_banefit;
+            const re = await this.userPackageRepo.save(usrpck);
+            result['package'] = pck;
+          }
+      }
       
-      const user = this.usersRespository.create(createUserInput);
-      return await this.usersRespository.save(user);
+      return result;
     } catch (error) {
       console.log(error)
       throw new HttpException({

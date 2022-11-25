@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int, PartialType } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Package } from './package.entity';
+// import { Package } from './package.entity';
 
 @Entity()
 @ObjectType()
@@ -104,6 +104,17 @@ export class PackageFeatureResponse{
   @Field(() => [PackageFeature], {nullable: true})
   subfeature?: PackageFeature[]
 }
+
+@ObjectType()
+export class PackageBanefit{
+  @Field(type => Int) 
+  package_listings: number;
+  @Field(type => Int, {nullable: true, defaultValue: 0})
+  package_featured_listings: number;
+}
+
+
+
 
 // @Entity()
 // @ObjectType()

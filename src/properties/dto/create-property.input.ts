@@ -181,4 +181,7 @@ export class CreatePropertyInput {
 
   @Field(type => [PropertyMetaInput], {nullable: true})
   metas: PropertyMetaInput[]
+
+  @Field(type => String, {nullable: true})
+  callback: string;
 }

@@ -1,15 +1,22 @@
-import { ObjectType, Field, Int, PartialType } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { PackageFeature, PackageFeatureResponse } from './package-feature.entity';
+import { UserPackages } from 'src/users/entities/user-packages.entity';
+// import { User } from 'src/users/entities/user.entity';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { PackageFeatureResponse } from './package-feature.entity';
 import { PackageFeatures } from './package-features.entity';
 
 @Entity()
+// @Unique('user_unique',['email', 'phone', 'device_id', 'username'])
 @ObjectType()
 export class Package {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;
+
+  @Column({nullable: true})
+  @Field(() => Int, {nullable: true})
+  old_id: number;
 
   @Column({type: 'int', nullable: true, default: 0})
   @Field(() => Int, {nullable: true, defaultValue: 0})
@@ -32,6 +39,7 @@ export class Package {
   package_display_name: string;
 
   @Column()
+  @Index({unique: true})
   @Field(() => String, {nullable: true})
   package_code: string;
 
@@ -61,6 +69,9 @@ export class Package {
   @OneToMany(() => PackageFeatures, pack => pack.package)
   package_features: PackageFeatures[]
 
+  @OneToMany(() => UserPackages, (usr) => usr.package)
+  @Field(() => [UserPackages])
+  userpackages: UserPackages[];
 }
 
 

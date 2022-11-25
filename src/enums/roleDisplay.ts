@@ -9,6 +9,7 @@ const roleDisplay = {};
     roleDisplay[Role.OWNER] = "Home Owner";
     roleDisplay[Role.USER] = "Member";
     roleDisplay[Role.DEVELOPER] = "Pengembang";
+    roleDisplay[Role.MEMBER] = "Member";
 // });
 
 export default roleDisplay;

@@ -10,9 +10,11 @@ import { CitiesModule } from 'src/cities/cities.module';
 import { SubdistrictsModule } from 'src/subdistricts/subdistricts.module';
 import { FilesModule } from 'src/files/files.module';
 import { Company } from './entities/company.entity';
+import { UserPackages } from './entities/user-packages.entity';
+import { Package } from 'src/packages/entities/package.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Profile, Company]), ProvincesModule,  CountriesModule, CitiesModule, SubdistrictsModule, FilesModule],
+  imports: [TypeOrmModule.forFeature([User, Profile, Company, UserPackages, Package]), ProvincesModule,  CountriesModule, CitiesModule, SubdistrictsModule, FilesModule],
   providers: [UsersResolver, UsersService],
   exports: [UsersService],
 })
