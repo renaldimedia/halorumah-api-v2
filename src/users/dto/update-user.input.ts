@@ -134,4 +134,7 @@ export class UpdateUserInput {
   
   @Field(type => String, {nullable: true})
   agent_id: string
+
+  @Field(type => String, {nullable: true})
+  package_code: string
 }

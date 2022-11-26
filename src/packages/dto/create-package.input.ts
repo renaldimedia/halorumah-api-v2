@@ -42,6 +42,10 @@ export class PackageBanefitInput{
   package_listings: number;
   @Field(type => Int, {nullable: true, defaultValue: 0})
   package_featured_listings: number;
+  @Field(type => Int, {nullable: true, defaultValue: 0})
+  vnov_credit: number;
+  @Field(type => Int, {nullable: true, defaultValue: 0})
+  credit: number;
 }
 @InputType()
 export class FeaturesInput{
@@ -92,6 +96,21 @@ export class CreatePackageInput {
 
   @Field(() => Boolean, {nullable: true})
   is_popular?: boolean;
+
+  // @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  credit: number;
+
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  vnov_credit: number;
+
+  // @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  package_listings: number;
+
+  // @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  package_featured_listings: number;
 
   @Field(() => [PackageFeaturesInput], {nullable: true})
   package_features?: PackageFeaturesInput[];

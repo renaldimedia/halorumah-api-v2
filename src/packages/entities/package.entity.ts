@@ -1,6 +1,6 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
-import { UserPackages } from 'src/users/entities/user-packages.entity';
+import { UserPackages } from 'src/user-packages/entities/user-packages.entity';
 // import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PackageFeatureResponse } from './package-feature.entity';
@@ -66,6 +66,22 @@ export class Package {
   @IsOptional()
   is_popular?: boolean;
 
+  @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  credit: number;
+
+  @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  package_listings: number;
+
+  @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  package_featured_listings: number;
+
+  @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  vnov_credit: number;
+
   @OneToMany(() => PackageFeatures, pack => pack.package)
   package_features: PackageFeatures[]
 
@@ -107,6 +123,21 @@ export class PackageResponse{
   // @Column()
   @Field(() => String)
   package_billing_unit: string;
+
+  // @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  credit: number;
+
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  vnov_credit: number;
+
+  // @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  package_listings: number;
+
+  // @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  package_featured_listings: number;
 
   // @Column({type: 'boolean', default: true})
   @Field(() => Boolean, {nullable: true, defaultValue: true})

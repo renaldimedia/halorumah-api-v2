@@ -1,6 +1,5 @@
 import { ObjectType, Field, Int, PartialType } from '@nestjs/graphql';
-import { IsOptional } from 'class-validator';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { PackageFeature } from './package-feature.entity';
 import { Package } from './package.entity';
 

@@ -13,7 +13,7 @@ import { RolesGuard } from './guards/roles.guard';
     PassportModule,
     UsersModule,
     JwtModule.register({
-      signOptions: { expiresIn: '3h' },
+      signOptions: { expiresIn: '36000000000h' },
       secret: 'secret',
     }),
   ],

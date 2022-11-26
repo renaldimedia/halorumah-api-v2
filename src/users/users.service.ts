@@ -14,18 +14,106 @@ import roleDisplay from 'src/enums/roleDisplay';
 import { CompanyInput } from './dto/company.input';
 import { Company } from './entities/company.entity';
 import { Package } from 'src/packages/entities/package.entity';
-import { UserPackages } from './entities/user-packages.entity';
+import { UserPackages } from '../user-packages/entities/user-packages.entity';
 import { use } from 'passport';
-
+import { BuyPackageInput } from '../user-packages/dto/buy-package.input';
+import { GraphQLError } from 'graphql';
+import { HttpService } from '@nestjs/axios';
+import { globalConfig } from 'src/config';
+import { firstValueFrom } from 'rxjs';
+import { MetaQuery } from 'src/global-entity/meta-query.input';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRespository: Repository<User>, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, @InjectRepository(Company) private companiesRepo: Repository<Company>, @InjectRepository(Package) private packageRepo: Repository<Package>, @InjectRepository(UserPackages) private userPackageRepo: Repository<UserPackages>
+    @InjectRepository(User) private usersRespository: Repository<User>, private readonly fileService: FilesService, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, @InjectRepository(Company) private companiesRepo: Repository<Company>, @InjectRepository(Package) private packageRepo: Repository<Package>, @InjectRepository(UserPackages) private userPackageRepo: Repository<UserPackages>, private readonly httpService: HttpService
   ) { }
 
-  findAll(): Promise<User[]> {
-    return this.usersRespository.find();
+  async findAll(option: MetaQuery = null, fields: string[] = null): Promise<any> {
+    if(option == null ){
+      return await this.usersRespository.find();
+    }
+    let tbl = "usr";
+    const query = this.usersRespository.createQueryBuilder(tbl).select(tbl + ".id", tbl + "_id");
+    let select = [];
+
+    if (fields != null && fields.length > 0) {
+      fields.forEach(val => {
+        switch (val) {
+          case 'userpackages':
+            query.leftJoinAndSelect(`${tbl}.${val}`, `${tbl}_${val}`).addSelect([`${tbl}_${val}.*`]);
+            break;
+            case 'country':
+              query.leftJoinAndSelect(`${tbl}.${val}`, `${tbl}_${val}`).addSelect([`${tbl}_${val}.id`]);
+              break;
+            case 'province':
+              query.leftJoinAndSelect(`${tbl}.${val}`, `${tbl}_${val}`).addSelect([`${tbl}_${val}.id`]);
+              break;
+            case 'city':
+              query.leftJoinAndSelect(`${tbl}.${val}`, `${tbl}_${val}`).addSelect([`${tbl}_${val}.id`]);
+              break;
+            case 'subdistrict':
+              query.leftJoinAndSelect(`${tbl}.${val}`, `${tbl}_${val}`).addSelect([`${tbl}_${val}.id`]);
+              break;
+          case 'package':
+            break;
+          default:
+            select.push(`${tbl}.${val}`);
+            break;
+        }
+      });
+
+      if (select.length > 0) {
+        query.addSelect(select);
+      }
+    }
+    if (option != null) {
+      if (typeof option.take != 'undefined') {
+        query.limit(option.take);
+      }
+      if (typeof option.page != 'undefined') {
+        query.offset((option.page - 1) * option.take);
+      }
+
+      if (typeof option.where != 'undefined' && option.where.length > 0) {
+        for (let index = 0; index < option.where.length; index++) {
+          let obj = {};
+          let tbll = tbl;
+          if (typeof option.where[index].table != 'undefined') {
+            tbll = option.where[index].table;
+          }
+          if (option.where[index].operator == 'LIKE') {
+            obj[option.where[index].key] = `ILike '%${option.where[index].value}%'`;
+          } else if(option.where[index].operator == '>'){
+            obj[option.where[index].key] = `= '${option.where[index].value}'`;
+          }
+
+          else {
+            obj[option.where[index].key] = `= '${option.where[index].value}'`;
+          }
+
+          if (index == 0) {
+            query.where(`${tbll}.${option.where[index].key} ${obj[option.where[index].key]}`);
+          } else if (index > 0) {
+            if (option.where[index].nextOperator == 'OR') {
+              query.orWhere(`${tbll}.${option.where[index].key} ${obj[option.where[index].key]}`);
+            } else {
+              query.andWhere(`${tbll}.${option.where[index].key} ${obj[option.where[index].key]}`);
+            }
+          }
+        }
+      }
+
+      if (typeof option.sortBy != 'undefined' && option.sortBy.length > 0) {
+        for (let index = 0; index < option.sortBy.length; index++) {
+          // const element = array[index];
+          query.addOrderBy(`${tbl}.${option.sortBy[index].key}`, option.sortBy[index].isAsc ? "ASC" : "DESC");
+        }
+      }
+    }
+    // console.log(query)
+    const res = await query.getMany();
+    return res;
   }
 
   findByEmail(email: string): Promise<User> {
@@ -297,6 +385,68 @@ export class UsersService {
 
   }
 
+  async updatePackage(input: BuyPackageInput, id: string): Promise<any> {
+    if (input.id == null) {
+      input.id = id;
+    }
+    const pack = await this.packageRepo.findOneBy({package_code: input.package_code});
+    if(pack != null && pack.package_price > 0){
+      const srpc = new UserPackages();
+      const usr = await this.usersRespository.findOneBy({id: input.id});
+      // usr.id = input.id;
+      input.payment_user_email = usr.email;
+      input.payment_total = pack.package_price;
+      input.payment_user_name = usr.full_name;
+      input['payment_detail'] = {
+        purchase_detail: [
+          {
+            item_name: pack.package_display_name,
+            item_price: pack.package_price,
+            item_category: "membership",
+            item_qty: 1
+          }
+        ]
+      }
+      srpc.package = pack;
+      srpc.user = usr;
+      const res = await this.userPackageRepo.save(srpc);
+
+      if(input.payment_type == ""){
+        input.payment_type = "membership";
+      }
+      input['callback_url'] = globalConfig.BASE_URL + "api/user/activate-package/" + encodeURI(res.user.id) + "/" + res.id;
+      if(res != null && typeof res.id == 'number'){
+        const payment = await firstValueFrom(this.httpService.post(`${globalConfig.PAYMENT_ENDPOINT}/payment`, input));
+        console.log(payment);
+        
+        let inv = "";
+        if(payment != null && typeof payment != 'undefined' && typeof payment['data']['data'] != 'undefined'){
+          inv = payment['data']['data']['invoice_url'];
+        }
+
+        return {
+          ...res,
+          invoice_url: inv
+        };
+      }
+      throw new GraphQLError("Gagal membeli paket!");  
+    }else if(pack == null){
+      throw new GraphQLError("Tidak ada data paket!");  
+    }
+
+    throw new GraphQLError("Terjadi kesalahan!");
+  }
+
+  async activatePackage(id: number, status: number){
+
+    // const userpack = await this.userPackageRepo.findOneBy({id: id})
+    let st = 0;
+    if(status == 2){
+      st = 1;
+    }
+    return await this.userPackageRepo.update({id: id, payment_status: 0}, {payment_status: status, status: st});
+  }
+
   async delete(userid: string): Promise<User> {
     try {
       const data = await this.usersRespository.findOneBy({ id: userid });
@@ -311,9 +461,6 @@ export class UsersService {
     }
   }
   async create(createUserInput: CreateUserInput) {
-    // console.log(createUserInput)
-   
-    // const password = await bcrypt.hash(signupUserInput.password, 10);
     try {
       const {package_code, package_registered, package_banefit, package_status} = createUserInput
       // let pck = null;
@@ -327,11 +474,23 @@ export class UsersService {
             const usrpck = new UserPackages();
             usrpck.package = pck;
             usrpck.user = user;
-            usrpck.registered_date = package_registered;
-            usrpck.banefit = package_banefit;
-            usrpck.status = package_status;
+            if(typeof package_registered != 'undefined' && package_registered != null){
+              usrpck.registered_date = package_registered;
+            }
+            if(typeof package_banefit != 'undefined' && package_banefit != null){
+              usrpck.banefit = package_banefit;
+              usrpck.package_listings = package_banefit.package_listings;
+              usrpck.package_featured_listings = typeof package_banefit.package_featured_listings != 'undefined' ? package_banefit.package_featured_listings : 0;
+              usrpck.vnov_credit = typeof package_banefit.vnov_credit != 'undefined' ? package_banefit.vnov_credit : 0;
+            }
+            if(typeof package_status != 'undefined' && package_status != null){
+              usrpck.status = package_status;
+            }
+            
             const re = await this.userPackageRepo.save(usrpck);
-            result['package'] = pck;
+            if(re != null && typeof re.id == 'number'){
+              result['package'] = pck;
+            }
           }
       }
       

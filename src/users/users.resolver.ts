@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent, Info } from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { User, UsersResponse } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
@@ -18,6 +18,9 @@ import { CountriesService } from 'src/countries/countries.service';
 import { SubdistrictsService } from 'src/subdistricts/subdistricts.service';
 import { CompanyResponse } from './entities/company.entity';
 import { CompanyInput } from './dto/company.input';import * as bcrypt from 'bcrypt';
+import { BuyPackageInput } from '../user-packages/dto/buy-package.input';
+import { UserPackages } from '../user-packages/entities/user-packages.entity';
+import { MetaQuery } from 'src/global-entity/meta-query.input';
 
 
 @Resolver(() => UsersResponse)
@@ -43,7 +46,7 @@ export class UsersResolver {
   //   return await this.provincesService.findOne(user.province);
   // }
 
-  // @ResolveField(() => Country, { name: 'province' })
+  // @ResolveFiefld(() => Country, { name: 'province' })
   // country(@Parent() user: User) {
   //   // console.log('xx')
   //   return this.countryService.findOne(user.country);
@@ -67,12 +70,26 @@ export class UsersResolver {
   async updateUser(@Args('profileData') profileData: UpdateUserInput, @CurrentUser() user: any) {
     return this.usersService.update(profileData, user.userId);
   }
+
+  @Mutation(() => UserPackages, { name: 'buyPackage' })
+  @UseGuards(JwtAuthGuard)
+  // @Roles(Role.ADMIN)
+  async buyPackage(@Args('package') packageData: BuyPackageInput, @CurrentUser() user: any) {
+    return this.usersService.updatePackage(packageData, user.userId);
+  }
   // Example of a query that requires a JWT token and a role of ADMIN
   @Query(() => [UsersResponse], { name: 'users' })
   @UseGuards(RolesGuard, JwtAuthGuard)
   @Roles(Role.ADMIN)
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
+  }
+
+  @Query(() => [UsersResponse], { name: 'searchUsers' })
+  @UseGuards(JwtAuthGuard)
+  searchUser(@Args('option', {nullable: true}) opt:MetaQuery = null, @Info() inf: any): Promise<any> {
+    const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
+    return this.usersService.findAll(opt, fields);
   }
 
   @Query(() => UsersResponse, { name: 'userByEmail' })

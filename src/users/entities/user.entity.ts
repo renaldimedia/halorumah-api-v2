@@ -9,7 +9,7 @@ import { City } from 'src/cities/entities/city.entity';
 import { Country } from 'src/countries/entities/country.entity';
 import { File } from 'src/files/entities/file.entity';
 import { Company, CompanyResponse } from './company.entity';
-import { UserPackages } from './user-packages.entity';
+import { UserPackages } from '../../user-packages/entities/user-packages.entity';
 import { Package } from 'src/packages/entities/package.entity';
 
 @Entity()
@@ -380,6 +380,20 @@ export class UsersResponse{
 
   @Field(type => Subdistrict, {nullable: true})
   subdistrict: Subdistrict
+
+  @Field(type => String, {nullable: true})
+  country_text: string
+
+  @Field(type => String, {nullable: true})
+  // @ManyToOne(() => Province)
+  province_text: string
+  
+
+  @Field(type => String, {nullable: true})
+  city_text: string
+
+  @Field(type => String, {nullable: true})
+  subdistrict_text: string
   
 
   @Field(type => String, {nullable: true})

@@ -27,6 +27,7 @@ import { PropertyMiddleware } from './properties/property.middleware';
 import { PackagesModule } from './packages/packages.module';
 // import { PaymentModule } from './payment/payment.module';
 import { SyncModule } from './sync/sync.module';
+import { UserPackagesModule } from './user-packages/user-packages.module';
 
 
 
@@ -84,7 +85,8 @@ console.log(process.env)
     LeadsModule,
     PropertyLikeModule,
     PackagesModule,
-    SyncModule
+    SyncModule,
+    UserPackagesModule
   ],
   controllers: [AppController],
   providers: [AppService,  {

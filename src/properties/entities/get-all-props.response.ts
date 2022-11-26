@@ -6,12 +6,7 @@ import { Province } from 'src/provinces/entities/province.entity';
 import { City } from 'src/cities/entities/city.entity';
 import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
 import { User, UsersResponse } from 'src/users/entities/user.entity';
-import { PropertyMeta } from './property-meta.entity';
 import { IsIn, IsOptional } from 'class-validator';
-import propAgeConstants from 'src/enums/propAgeConstans.enum';
-import purchaseTypes from 'src/enums/purchaseType.enum';
-import propPurchaseStatus from 'src/enums/propPurchaseStatus.enum';
-import saleTypes from 'src/enums/saleTypes.enum';
 import { PropertyMetaResponse } from './property-meta.entity';
 
 @ObjectType()
