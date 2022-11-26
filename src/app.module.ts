@@ -28,6 +28,7 @@ import { PackagesModule } from './packages/packages.module';
 // import { PaymentModule } from './payment/payment.module';
 import { SyncModule } from './sync/sync.module';
 import { UserPackagesModule } from './user-packages/user-packages.module';
+import { GlobalConfigModule } from './global-config/global-config.module';
 
 
 
@@ -86,7 +87,8 @@ console.log(process.env)
     PropertyLikeModule,
     PackagesModule,
     SyncModule,
-    UserPackagesModule
+    UserPackagesModule,
+    GlobalConfigModule
   ],
   controllers: [AppController],
   providers: [AppService,  {

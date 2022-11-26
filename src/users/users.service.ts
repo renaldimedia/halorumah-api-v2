@@ -417,7 +417,7 @@ export class UsersService {
       input['callback_url'] = globalConfig.BASE_URL + "api/user/activate-package/" + encodeURI(res.user.id) + "/" + res.id;
       if(res != null && typeof res.id == 'number'){
         const payment = await firstValueFrom(this.httpService.post(`${globalConfig.PAYMENT_ENDPOINT}/payment`, input));
-        console.log(payment);
+        // console.log(payment);
         
         let inv = "";
         if(payment != null && typeof payment != 'undefined' && typeof payment['data']['data'] != 'undefined'){
