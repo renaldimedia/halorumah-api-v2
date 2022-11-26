@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { GlobalConfigService } from './global-config.service';
-import { GlobalConfigResolver } from './global-config.resolver';
+import { GlobalConfigController } from './global-config.controller';
 
 @Module({
-  providers: [GlobalConfigResolver, GlobalConfigService]
+  controllers: [GlobalConfigController],
+  providers: [GlobalConfigService]
 })
 export class GlobalConfigModule {}

@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGlobalConfigInput } from './dto/create-global-config.input';
-import { UpdateGlobalConfigInput } from './dto/update-global-config.input';
+import { CreateGlobalConfigDto } from './dto/create-global-config.dto';
+import { UpdateGlobalConfigDto } from './dto/update-global-config.dto';
 import { cfg } from 'src/config';
 @Injectable()
 export class GlobalConfigService {
-  create(createGlobalConfigInput: CreateGlobalConfigInput) {
+  create(createGlobalConfigDto: CreateGlobalConfigDto) {
     return 'This action adds a new globalConfig';
   }
 
   findAll() {
     return cfg;
-    // return `This action returns all globalConfig`;
+    return `This action returns all globalConfig`;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} globalConfig`;
   }
 
-  update(id: number, updateGlobalConfigInput: UpdateGlobalConfigInput) {
+  update(id: number, updateGlobalConfigDto: UpdateGlobalConfigDto) {
     return `This action updates a #${id} globalConfig`;
   }
 

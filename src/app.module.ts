@@ -29,6 +29,7 @@ import { PackagesModule } from './packages/packages.module';
 import { SyncModule } from './sync/sync.module';
 import { UserPackagesModule } from './user-packages/user-packages.module';
 import { GlobalConfigModule } from './global-config/global-config.module';
+// import { GlobalConfigModule } from './global-config/global-config.module';
 
 
 
