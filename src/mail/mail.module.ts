@@ -4,23 +4,23 @@ import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { join } from 'path';
 import { MailController } from './mail.controller';
-
+import { globalConfig } from 'src/config';
 @Module({
   imports: [
     MailerModule.forRoot({
       // transport: 'smtps://user@example.com:topsecret@smtp.example.com',
       // or
       transport: {
-        host: 'echo.mxrouting.net',
-        port: 587,
-        secure: false,
+        host: globalConfig.MAIL_HOST,
+        port: parseInt(globalConfig.MAIL_PORT),
+        secure: globalConfig.MAIL_SSL_ENABLE == "true" ? true : false,
         auth: {
-          user: 'dev@halorumah.id',
-          pass: 'dev@propTech2022',
+          user: globalConfig.MAIL_USER,
+          pass: globalConfig.MAIL_PASSWORD,
         },
       },
       defaults: {
-        from: '"No Reply" <noreply@example.com>',
+        from: `"No Reply" <${globalConfig.MAIL_ADDRESS}>`,
       },
       template: {
         dir: join(__dirname, 'templates'),
