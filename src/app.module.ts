@@ -30,6 +30,7 @@ import { SyncModule } from './sync/sync.module';
 import { UserPackagesModule } from './user-packages/user-packages.module';
 import { GlobalConfigModule } from './global-config/global-config.module';
 // import { GlobalConfigModule } from './global-config/global-config.module';
+import { MailModule } from './mail/mail.module';
 
 
 
@@ -89,7 +90,8 @@ console.log(process.env)
     PackagesModule,
     SyncModule,
     UserPackagesModule,
-    GlobalConfigModule
+    GlobalConfigModule,
+    MailModule
   ],
   controllers: [AppController],
   providers: [AppService,  {
