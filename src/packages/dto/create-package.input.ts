@@ -88,6 +88,9 @@ export class CreatePackageInput {
   @Field(() => String)
   package_billing_unit: string;
 
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  ord?: number;
+
   @Field(() => Boolean, {nullable: true})
   is_displayed?: boolean;
 

@@ -35,9 +35,19 @@ export const cfg = {
   site: {
     name: "Halorumah",
     url: "https://halorumah.id",
-    logo: "" 
+    logo: "",
+    contact: {
+      email: ["halomin@halorumah.id"],
+      mobile: [{
+        name: "Halorumah Customer Service",
+        number: "6281290518080",
+        whatsapp: "https://wa.me/6281290518080"
+      }]
+    }
   },
   appmode: process.env.NODE_ENV || 'development',
+  app_version: "",
+  app_forceupdate: true,
   maintenance_mode: false,
   disable_membership: false,
   endpoint: {
