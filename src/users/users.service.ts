@@ -485,11 +485,14 @@ export class UsersService {
   async create(createUserInput: CreateUserInput) {
     try {
       const {package_code, package_registered, package_banefit, package_status} = createUserInput
-      // let pck = null;
-      // let user = null;
+      // let usr = new User();
+      // Object.keys(createUserInput).forEach(k => {
+      //   usr[k] = createUserInput[k];
+      // })
       let user = this.usersRespository.create(createUserInput);
+      
       user = await this.usersRespository.save(user);
-      let result = {...user};
+      let result = user;
       if(typeof package_code != 'undefined' && package_code != null){
           let pck = await this.packageRepo.findOneBy({package_code: package_code});
           if(pck != null && typeof pck['id'] != 'undefined'){

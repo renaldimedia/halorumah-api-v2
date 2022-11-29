@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Country } from 'src/countries/entities/country.entity';
 import { Expose } from 'class-transformer';
 // import { Paginated } from 'src/pagination';
@@ -7,7 +7,7 @@ import { Expose } from 'class-transformer';
 @Unique('province_unique',['province_code'])
 @ObjectType()
 @Expose()
-export class Province {
+export class Province extends BaseEntity  {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;

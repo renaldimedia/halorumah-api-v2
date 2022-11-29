@@ -1,6 +1,6 @@
 import { ObjectType, Field, Int, HideField } from '@nestjs/graphql';
 import Role from 'src/enums/roles.enum';
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { IsEmail, IsInt, IsOptional, IsPhoneNumber, IsUUID } from 'class-validator';
 import { capabilities_default } from 'src/enums/capabilities.enum';
 import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
@@ -15,7 +15,7 @@ import { Package } from 'src/packages/entities/package.entity';
 @Entity()
 @Unique('user_unique',['email', 'phone', 'device_id', 'username'])
 @ObjectType()
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   @Field()
   id: string;
@@ -83,10 +83,10 @@ export class User {
   role: string;
 
   // @Column({type: 'uuid', nullable: true})
-  @ManyToOne(() => Company)
-  @JoinColumn()
-  @Field(type => Company)
-  company: string
+  // @ManyToOne(() => Company)
+  // @JoinColumn()
+  // @Field(type => Company)
+  // company: string
 
   @Column({nullable: true})
   @Field(type => String, {nullable: true})

@@ -2,14 +2,14 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
 import { UserPackages } from 'src/user-packages/entities/user-packages.entity';
 // import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PackageFeatureResponse } from './package-feature.entity';
 import { PackageFeatures } from './package-features.entity';
 
 @Entity()
 // @Unique('user_unique',['email', 'phone', 'device_id', 'username'])
 @ObjectType()
-export class Package {
+export class Package extends BaseEntity  {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;

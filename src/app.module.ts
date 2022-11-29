@@ -31,6 +31,40 @@ import { UserPackagesModule } from './user-packages/user-packages.module';
 import { GlobalConfigModule } from './global-config/global-config.module';
 // import { GlobalConfigModule } from './global-config/global-config.module';
 import { MailModule } from './mail/mail.module';
+import { AdminModule } from '@adminjs/nestjs'
+import { User } from './users/entities/user.entity';
+import AdminJS from 'adminjs';
+import * as AdminJSTypeorm from '@adminjs/typeorm'
+import { File } from './files/entities/file.entity';
+import { Country } from './countries/entities/country.entity';
+import { Province } from './provinces/entities/province.entity';
+import { City } from './cities/entities/city.entity';
+import { Subdistrict } from './subdistricts/entities/subdistrict.entity';
+import { Package } from './packages/entities/package.entity';
+import { UserPackage } from './user-packages/entities/user-package.entity';
+import { Property } from './properties/entities/property.entity';
+import { UserPackages } from './user-packages/entities/user-packages.entity';
+import { PackageFeature } from './packages/entities/package-feature.entity';
+import { MailDb } from './mail/entity/mail.entity';
+
+AdminJS.registerAdapter({
+  Resource: AdminJSTypeorm.Resource,
+  Database: AdminJSTypeorm.Database,
+});
+
+// adminJS.watch();
+
+const DEFAULT_ADMIN = {
+  email: 'admin@example.com',
+  password: 'password',
+}
+
+const authenticate = async (email: string, password: string) => {
+  if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
+    return Promise.resolve(DEFAULT_ADMIN)
+  }
+  return null
+}
 
 
 
@@ -42,6 +76,24 @@ console.log(process.env)
 
 @Module({
   imports: [
+    AdminModule.createAdminAsync({
+      useFactory: () => ({
+        adminJsOptions: {
+          rootPath: '/admin',
+          resources: [User, File, Country, Province, City, Subdistrict, Package, UserPackages, Property, PackageFeature, MailDb],
+        },
+        auth: {
+          authenticate,
+          cookieName: 'adminjs',
+          cookiePassword: 'secret'
+        },
+        sessionOptions: {
+          resave: true,
+          saveUninitialized: true,
+          secret: 'secret'
+        },
+      }),
+    }),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 30,
@@ -99,6 +151,8 @@ console.log(process.env)
     useClass: ValidationPipe,
   },],
 })
+
+
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
     consumer

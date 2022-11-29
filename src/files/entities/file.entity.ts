@@ -1,5 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 // import { City } from 'src/cities/entities/city.entity';
 import { User } from 'src/users/entities/user.entity';
 import { IsIn, IsInt, IsUUID } from 'class-validator';
@@ -7,7 +7,7 @@ import { IsIn, IsInt, IsUUID } from 'class-validator';
 @Entity()
 @Unique('file_unique', ['filename', 'uniquekey'])
 @ObjectType()
-export class File {
+export class File extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   @Field()
   id: string;

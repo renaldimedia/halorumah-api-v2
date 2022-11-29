@@ -1,11 +1,11 @@
 import { ObjectType, Field, Int, PartialType } from '@nestjs/graphql';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { PackageFeature } from './package-feature.entity';
 import { Package } from './package.entity';
 
 @Entity()
 @ObjectType()
-export class PackageFeatures {
+export class PackageFeatures extends BaseEntity {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;

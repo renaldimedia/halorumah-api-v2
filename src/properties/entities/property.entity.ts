@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { File } from 'src/files/entities/file.entity';
 import { Country } from 'src/countries/entities/country.entity';
 import { Province } from 'src/provinces/entities/province.entity';
@@ -12,11 +12,10 @@ import propAgeConstants from 'src/enums/propAgeConstans.enum';
 import purchaseTypes from 'src/enums/purchaseType.enum';
 import propPurchaseStatus from 'src/enums/propPurchaseStatus.enum';
 import saleTypes from 'src/enums/saleTypes.enum';
-import GraphQLLong from '../../../lib/Longtype';
 
 @Entity()
 @ObjectType()
-export class Property {
+export class Property extends BaseEntity  {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;

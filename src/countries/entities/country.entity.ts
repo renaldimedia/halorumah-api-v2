@@ -1,10 +1,10 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
 @Unique('country_unique',['country_code'])
 @ObjectType()
-export class Country {
+export class Country extends BaseEntity  {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;

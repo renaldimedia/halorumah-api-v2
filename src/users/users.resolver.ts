@@ -133,6 +133,7 @@ export class UsersResolver {
     }else if(typeof createUserInput.plainpass == 'boolean' && createUserInput.plainpass == true){
       createUserInput.password = await bcrypt.hash(createUserInput.password, 10);
     }
+   
     return this.usersService.create(createUserInput);
   }
 
