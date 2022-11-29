@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { exit } from 'process';
+import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 import { CreateUserInput } from 'src/users/dto/create-user.input';
 import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { LoginResponse } from './dto/login-response';
 import { LoginUserInput } from './dto/login-user.input';
+import { ResetPasswordInput } from './dto/reset-password.input';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
 
 @Resolver()
@@ -42,5 +43,15 @@ export class AuthResolver {
       }, 400);
       return;
     }
+  }
+
+  @Mutation(() => User, {name: 'resetPasswordRequest'})
+  async resetPasswordRequest(@Args('email') email: string){
+    return await this.authService.createResetPassword(email);
+  }
+
+  @Mutation(() => GlobalMutationResponse)
+  async resetPassword(@Args('payload') payload: ResetPasswordInput){
+    return await this.authService.resetPassword(payload);
   }
 }

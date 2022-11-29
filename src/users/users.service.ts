@@ -22,6 +22,7 @@ import { HttpService } from '@nestjs/axios';
 import { globalConfig } from 'src/config';
 import { firstValueFrom } from 'rxjs';
 import { MetaQuery } from 'src/global-entity/meta-query.input';
+import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 
 @Injectable()
 export class UsersService {
@@ -382,6 +383,27 @@ export class UsersService {
     }
 
     throw new Error("Gagal mengupdate profile!");
+
+  }
+
+  async resetPassword(input: UpdateUserInput, code: string) {
+    code = input.reset_password_code;
+    input.reset_password_code = "";
+    input.reset_password_count = 0;
+    input.last_reset_password = new Date();
+    const result = await this.usersRespository.update({ reset_password_code: code }, input);
+    // console.log(result);
+    const res = new GlobalMutationResponse();
+    res.affected = result.affected;
+   
+    res.message = "Gagal mengupdate password!";
+    if (result.affected > 0) {
+        res.ok = true;
+        res.message = "Berhasil melakukan reset password!";
+    }
+
+    // throw new GraphQLError("Gagal mengupdate password!");
+    return res;
 
   }
 

@@ -7,6 +7,30 @@ export class UpdateUserInput {
   @Field({nullable: true})
   id: string
 
+  // @Column({nullable: true})
+  @Field(() => String, {nullable: true})
+  // @HideField()
+  reset_password_code : string;
+
+  @Field(() => String, {nullable: true})
+  email_confirm_code : string;
+
+  @Field(() => String, {nullable: true})
+  phone_confirm_code : string;
+
+
+  // @Column({type: 'date', nullable: true})
+  @Field({nullable: true})
+  // @HideField()
+  last_reset_password: Date;
+
+  // @Column({nullable: true})
+  @Field(() => Int, {nullable: true})
+  // @HideField()
+  reset_password_count : number;
+
+
+
   @Field({nullable: true})
   @IsOptional()
   @IsEmail()

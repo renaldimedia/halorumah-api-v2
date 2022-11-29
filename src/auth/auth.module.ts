@@ -7,6 +7,7 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RolesGuard } from './guards/roles.guard';
       signOptions: { expiresIn: '36000000000h' },
       secret: 'secret',
     }),
+    MailModule
   ],
   providers: [
     AuthService,

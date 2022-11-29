@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, HideField } from '@nestjs/graphql';
 import Role from 'src/enums/roles.enum';
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { IsEmail, IsInt, IsOptional, IsPhoneNumber, IsUUID } from 'class-validator';
@@ -41,6 +41,31 @@ export class User {
   @Field({nullable: true})
   @IsPhoneNumber('ID')
   phone: string;
+
+  @Column({nullable: true})
+  @Field(() => String, {nullable: true})
+  @HideField()
+  reset_password_code : string;
+
+  @Column({type: 'date', nullable: true})
+  @Field({nullable: true})
+  // @HideField()
+  last_reset_password: Date;
+
+  @Column({nullable: true})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  @HideField()
+  reset_password_count : number;
+
+  @Column({nullable: true})
+  @Field(() => String, {nullable: true})
+  @HideField()
+  email_confirm_code : string;
+
+  @Column({nullable: true})
+  @Field(() => String, {nullable: true})
+  @HideField()
+  phone_confirm_code : string;
 
   @Column({nullable: true})
   @Field({nullable: true})
@@ -265,6 +290,8 @@ export class UsersResponse{
 
   @Field({nullable: true})
   password: string;
+
+  
 
   @Field(type => CompanyResponse, {nullable: true})
   company: CompanyResponse

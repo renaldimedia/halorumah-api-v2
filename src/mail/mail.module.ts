@@ -5,6 +5,8 @@ import { MailService } from './mail.service';
 import { join } from 'path';
 import { MailController } from './mail.controller';
 import { globalConfig } from 'src/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailDb } from './entity/mail.entity';
 @Module({
   imports: [
     MailerModule.forRoot({
@@ -30,6 +32,7 @@ import { globalConfig } from 'src/config';
         },
       },
     }),
+    TypeOrmModule.forFeature([MailDb])
   ],
   providers: [MailService],
   exports: [MailService],
