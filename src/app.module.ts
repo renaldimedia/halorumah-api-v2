@@ -46,6 +46,7 @@ import { Property } from './properties/entities/property.entity';
 import { UserPackages } from './user-packages/entities/user-packages.entity';
 import { PackageFeature } from './packages/entities/package-feature.entity';
 import { MailDb } from './mail/entity/mail.entity';
+import { PackageFeatures } from './packages/entities/package-features.entity';
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -72,7 +73,7 @@ dotenv.config();
 
 const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
 
-console.log(process.env)
+// console.log(process.env)
 
 @Module({
   imports: [
@@ -80,7 +81,7 @@ console.log(process.env)
       useFactory: () => ({
         adminJsOptions: {
           rootPath: '/admin',
-          resources: [User, File, Country, Province, City, Subdistrict, Package, UserPackages, Property, PackageFeature, MailDb],
+          resources: [User, File, Country, Province, City, Subdistrict, Package, UserPackages, Property, PackageFeature, MailDb, PackageFeatures],
         },
         auth: {
           authenticate,
