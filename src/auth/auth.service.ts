@@ -60,7 +60,7 @@ export class AuthService {
     if(usr == null || typeof usr == 'undefined'){
       throw new GraphQLError("User tidak terdaftar");
     }
-    if((typeof payload.password == 'undefined' || payload.password == null) && usr != null){
+    if((typeof payload.password == 'undefined' || payload.password == null) && typeof usr['id'] != 'undefined'){
       const result = new GlobalMutationResponse();
       result.ok = true;
       result.message = "ok";
