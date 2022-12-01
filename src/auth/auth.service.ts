@@ -9,6 +9,7 @@ import * as Str from '@supercharge/strings/dist';
 import { GraphQLError } from 'graphql';
 import { UpdateUserInput } from 'src/users/dto/update-user.input';
 import { ResetPasswordInput } from './dto/reset-password.input';
+import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 
 @Injectable()
 export class AuthService {
@@ -60,7 +61,10 @@ export class AuthService {
       throw new GraphQLError("User tidak terdaftar");
     }
     if((typeof payload.password == 'undefined' || payload.password == null) && usr != null){
-      return usr;
+      const result = new GlobalMutationResponse();
+      result.ok = true;
+      result.message = "ok";
+      return result;
     }
     let usrobj = new UpdateUserInput();
     usrobj.reset_password_code = payload.code;
