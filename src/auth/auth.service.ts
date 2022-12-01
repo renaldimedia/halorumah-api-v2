@@ -65,6 +65,11 @@ export class AuthService {
       result.ok = true;
       result.message = "ok";
       return result;
+    }else if((typeof payload.password == 'undefined' || payload.password == null) && typeof usr['id'] == 'undefined'){
+      const result = new GlobalMutationResponse();
+      result.ok = false;
+      result.message = "code not found!";
+      return result;
     }
     let usrobj = new UpdateUserInput();
     usrobj.reset_password_code = payload.code;
