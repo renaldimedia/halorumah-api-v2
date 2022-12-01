@@ -24,12 +24,12 @@ export class File extends BaseEntity {
   @Field()
   filepath: string
 
-  @Column()
-  @Field()
+  @Column({nullable: true})
+  @Field({nullable: true})
   mimetype: string
 
-  @Column()
-  @Field()
+  @Column({nullable: true})
+  @Field({nullable: true})
   @IsInt()
   size: number
 
