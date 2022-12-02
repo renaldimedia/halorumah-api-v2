@@ -365,6 +365,21 @@ export class UsersService {
         addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
       }
 
+      let pack = await this.userPackageRepo.find({
+        relations: {
+          package: true
+        },
+        where: {
+          user: {
+            id: users.id
+          },
+          status: 1,
+        }
+      });
+  
+      if(pack != null && pack.length > 0){
+        response.package = pack[0].package;
+      }
 
       response.full_address_rendered = addr.trim();
       responses.push(response);
