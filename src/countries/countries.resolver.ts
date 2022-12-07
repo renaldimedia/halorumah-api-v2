@@ -14,8 +14,8 @@ export class CountriesResolver {
   constructor(private readonly countriesService: CountriesService) {}
 
   @Mutation(() => Country)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.ADMIN)
   createCountry(@Args('createCountryInput') createCountryInput: CreateCountryInput) {
     return this.countriesService.create(createCountryInput);
   }

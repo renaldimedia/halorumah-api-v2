@@ -1,10 +1,11 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Province } from 'src/provinces/entities/province.entity';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
-@Unique('country_unique',['country_code'])
+@Unique('country_unique', ['country_code'])
 @ObjectType()
-export class Country extends BaseEntity  {
+export class Country extends BaseEntity {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;
@@ -18,4 +19,12 @@ export class Country extends BaseEntity  {
   @Column()
   @Field()
   country_name: string
+
+  @OneToMany(() => Province, (prov) => prov.country, {
+    cascade: true, // <= here
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  @Field(() => [Province])
+  provinces: Province[]
 }

@@ -1,6 +1,8 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Province } from 'src/provinces/entities/province.entity';
+import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
+
 @Entity()
 @Unique('city_unique',['city_code'])
 @ObjectType()
@@ -19,11 +21,16 @@ export class City extends BaseEntity {
   @Field()
   city_name: string
 
-  @Column()
-  @ManyToOne(() => Province, (province) => province.id)
-  @JoinColumn()
-  province_id: number
-
+  @ManyToOne(() => Province, (province) => province.cities)
+  @JoinColumn({name: 'province_id'})
   @Field(type => Province, {nullable: true})
   province: Province
+
+  @OneToMany(() => Subdistrict, (sub) => sub.city, {
+    cascade: true, // <= here
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  @Field(() => [Subdistrict], {nullable: true})
+  subdistricts: Subdistrict[]
 }

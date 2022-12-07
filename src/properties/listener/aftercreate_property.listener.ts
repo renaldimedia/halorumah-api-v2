@@ -24,12 +24,12 @@ export class PropertyCreatedListener {
   async updateSearchKey(event: PropertyCreatedEvent) {
     // handle and process "OrderCreatedEvent" event
     console.log('property created')
-    let loc = "";
+    let loc = null;
     if(event.property.subdistrict != null){
-      loc = await this.subdistrictsServices.findAllOne(event.property.subdistrict);
+      loc = await this.subdistrictsServices.findOne(event.property.subdistrict);
     }
     if(event.property.subdistrict == null && event.property.city){
-      loc = await this.subdistrictsServices.findAllOne(event.property.subdistrict);
+      loc = await this.subdistrictsServices.findOne(event.property.subdistrict);
     }
     // const loc = await this.provinceServices.findOne(event.property.province_id);
     let keyText = event.property.property_title + " " + event.property.property_desc + " ";

@@ -16,12 +16,7 @@ export class ProvincesResolver {
   createProvince(@Args('createProvinceInput') createProvinceInput: CreateProvinceInput) {
     return this.provincesService.create(createProvinceInput);
   }
-
-  @ResolveField(() => Country)
-  country(@Parent() ctr: Province, @Info() info) {
-    return this.countriesService.findOne(ctr.country_id);
-  }
-
+  
   @Query(() => [Province], { name: 'provinces' })
   async findAll(@Args('keyword', {nullable: true}) keyword: string = null, @Args('country_id', {nullable: true}) country_id: number = null, @Info() info) {
     // const fields = info.fieldNodes[0].selectionSet.selections.map(item => item.name.value);

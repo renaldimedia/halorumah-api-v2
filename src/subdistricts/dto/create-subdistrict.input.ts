@@ -1,4 +1,5 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
+import { CreateCityInput } from 'src/cities/dto/create-city.input';
 
 @InputType()
 export class CreateSubdistrictInput {
@@ -13,6 +14,6 @@ export class CreateSubdistrictInput {
   @Field()
   subdistrict_name: string
 
-  @Field({ nullable: false })
+  @Field({ nullable: true })
   city_id: number
 }

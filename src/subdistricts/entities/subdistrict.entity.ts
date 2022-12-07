@@ -19,12 +19,8 @@ export class Subdistrict extends BaseEntity  {
   @Field()
   subdistrict_name: string
 
-  @Column({nullable: false})
-  @Field({nullable: false})
-  @ManyToOne(() => City, (city) => city.id)
-  @JoinColumn()
-  city_id: number
-
+  @ManyToOne(() => City, (city) => city.subdistricts)
+  @JoinColumn({name: 'city_id'})
   @Field(type => City, {nullable: true})
   city: City
 }
