@@ -451,7 +451,7 @@ export class UsersService {
       if(input.payment_type == ""){
         input.payment_type = "membership";
       }
-      input['callback_url'] = globalConfig.BASE_URL + "api/user/activate-package/" + encodeURI(res.user.id) + "/" + res.id;
+      input['callback_url'] = globalConfig.BASE_URL + "/api/user/activate-package/" + encodeURI(res.user.id) + "/" + res.id;
       if(res != null && typeof res.id == 'number'){
         const payment = await firstValueFrom(this.httpService.post(`${globalConfig.PAYMENT_ENDPOINT}/payment`, input));
         // console.log(payment);
