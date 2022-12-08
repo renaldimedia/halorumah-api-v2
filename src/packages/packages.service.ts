@@ -129,8 +129,9 @@ export class PackagesService {
     // const res = [];
     const parent = [];
     data.forEach((item) => {
+
+      item.feature.feature_value = item.feature_value;
       if (item.feature.parent_feature != null) {
-        item.feature.feature_value = item.feature_value;
         if (typeof parent[item.feature.parent_feature.id] == 'undefined') {
           parent[item.feature.parent_feature.id] = item.feature.parent_feature;
           if (typeof parent[item.feature.parent_feature.id]['subfeature'] == 'undefined') {
@@ -147,14 +148,20 @@ export class PackagesService {
             parent[item.feature.parent_feature.id]['subfeature'].push(item.feature);
           }
         }
+      } else {
+        parent[item.feature.id] = item.feature;
       }
     });
 
+    let res = await parent.filter(n => n);
 
+    res.sort((a, b) => {
+      return a.ord - b.ord;
+    });
     // console.log({
     //   parent: parent.filter(n => n)
     // });
-    return parent.filter(n => n);
+    return res;
   }
 
   async findFeatures(): Promise<PackageFeature[]> {

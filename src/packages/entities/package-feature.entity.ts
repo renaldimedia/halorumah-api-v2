@@ -18,6 +18,10 @@ export class PackageFeature  extends BaseEntity{
   @Field(() => String, {nullable: true})
   feature_group?: string;
 
+  @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  ord?:number;
+
   @Column()
   @Field(() => String)
   feature_name: string;
