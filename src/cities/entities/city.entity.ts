@@ -11,8 +11,8 @@ export class City extends BaseEntity {
   @Field(() => Int)
   id: number;
 
-  @Column()
-  @Field()
+  @Column({nullable: true})
+  @Field({nullable: true})
   city_code: string
 
   @Column({

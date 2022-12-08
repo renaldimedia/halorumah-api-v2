@@ -47,6 +47,7 @@ import { UserPackages } from './user-packages/entities/user-packages.entity';
 import { PackageFeature } from './packages/entities/package-feature.entity';
 import { MailDb } from './mail/entity/mail.entity';
 import { PackageFeatures } from './packages/entities/package-features.entity';
+import { DistrictModule } from './district/district.module';
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -144,7 +145,8 @@ const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
     SyncModule,
     UserPackagesModule,
     GlobalConfigModule,
-    MailModule
+    MailModule,
+    DistrictModule
   ],
   controllers: [AppController],
   providers: [AppService,  {

@@ -16,7 +16,7 @@ export class Province extends BaseEntity  {
   @Column({
     nullable: true
   })
-  @Field()
+  @Field({nullable: true})
   province_code: string
 
   @Column({
