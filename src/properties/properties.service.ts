@@ -246,22 +246,12 @@ export class PropertiesService {
   }
 
   
-
-
-  async findOne(id: number, fields: string[] = null, restApi: boolean = false): Promise<PropertyResponse> {
-    const res = new PropertyResponse();
-    const fnd = await this.repos.findOne({
-      where: { id: id },
-      relations: [
-        'province', 'country', 'city', 'subdistrict', 'call_to_user'
-      ]
-    });
-
+  async formatOne(fnd: Property, res: PropertyResponse) {
+  
     Object.entries(fnd).forEach(([key, val]) => {
       res[key] = val;
     });
 
-    console.log(res)
 
     let lt = "";
     if (res.property_type != null) {
@@ -345,8 +335,34 @@ export class PropertiesService {
     }
     if(res.call_to_user.subdistrict != null && typeof res.call_to_user.subdistrict == 'number'){
       res.call_to_user.subdistrict = await this.subdistrictsService.findOne(res.call_to_user.subdistrict);
-    }
+    }  
 
+    return res;
+  }
+
+  async findOne(id: number, fields: string[] = null, restApi: boolean = false): Promise<PropertyResponse> {
+    let res = new PropertyResponse();
+    const fnd = await this.repos.findOne({
+      where: { id: id },
+      relations: [
+        'province', 'country', 'city', 'subdistrict', 'call_to_user'
+      ]
+    });
+
+    res = await this.formatOne(fnd,res);
+    return res;
+  }
+
+  async findOneSlug(slug: string, fields: string[] = null, restApi: boolean = false): Promise<PropertyResponse> {
+    let res = new PropertyResponse();
+    const fnd = await this.repos.findOne({
+      where: { slug:slug },
+      relations: [
+        'province', 'country', 'city', 'subdistrict', 'call_to_user'
+      ]
+    });
+
+    res = await this.formatOne(fnd,res);
     return res;
   }
 

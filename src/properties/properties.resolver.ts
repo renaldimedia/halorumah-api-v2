@@ -94,6 +94,14 @@ export class PropertiesResolver {
     return this.propertiesService.findOne(id,fields);
   }
 
+  // propertyBySlug
+  @Query(() => PropertyResponse, { name: 'propertyBySlug' })
+  propertyBySlug(@Args('slug', { type: () => String }) slug: string, @Info() inf: any) {
+    const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
+
+    return this.propertiesService.findOneSlug(slug,fields);
+  }
+
   @Mutation(() => GlobalMutationResponse)
   updateProperty(@Args('updatePropertyInput') updatePropertyInput: UpdatePropertyInput) {
     return this.propertiesService.update(updatePropertyInput.id, updatePropertyInput);
