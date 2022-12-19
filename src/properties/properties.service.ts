@@ -16,6 +16,7 @@ import { CitiesService } from 'src/cities/cities.service';
 import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 import { PropertyResponse } from './entities/get-all-props.response';
 import { HttpService } from '@nestjs/axios';
+var slugify = require('slugify');
 
 
 @Injectable()
@@ -40,7 +41,15 @@ export class PropertiesService {
       property['call_to_user'] = userid
     }
     const pr = this.repos.create(property);
+    let slug = slugify(property.property_title);
+    let slugExs = await this.repos.createQueryBuilder("prop").where(`prop.slug ILike '${slug}%'`).getCount();
+    if(slugExs > 0){
+      slug = slug + "-" + (slugExs+1);
+    }
+    pr.slug = slug;
     const propSaved = await this.repos.insert(pr);
+
+    
 
     if (typeof property.property_list_images != 'undefined' && propSaved.identifiers.length > 0) {
       let ls = [];
@@ -159,9 +168,7 @@ export class PropertiesService {
         }
       }
     }
-    // console.log(query)
     const res = await query.getMany();
-    // console.log(res);
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
@@ -237,6 +244,8 @@ export class PropertiesService {
 
     return [];
   }
+
+  
 
 
   async findOne(id: number, fields: string[] = null, restApi: boolean = false): Promise<PropertyResponse> {

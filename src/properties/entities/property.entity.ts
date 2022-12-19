@@ -27,7 +27,12 @@ export class Property extends BaseEntity  {
   @Column({nullable: true, unique: true})
   @Index({unique: true})
   @Field(type => String, {nullable: true})
-  property_code: string
+  property_code: string;
+
+  @Column({nullable: true, unique: true})
+  @Index({unique: true})
+  @Field(type => String, {nullable: true})
+  slug: string;
 
   @Column()
   // @Index({unique: true})
@@ -259,6 +264,8 @@ export class Property extends BaseEntity  {
   @Field({nullable: true})
   @IsIn(Object.values(purchaseTypes))
   purchase_type: string;
+
+  
 }
 
 

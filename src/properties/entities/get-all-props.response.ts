@@ -23,6 +23,9 @@ export class PropertyResponse {
   @Field(type => String, {nullable: true})
   property_code: string
 
+  @Field(type => String, {nullable: true})
+  slug: string
+
   
   
   @Field(type => String, {nullable: false})

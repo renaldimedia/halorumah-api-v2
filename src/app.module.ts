@@ -31,10 +31,11 @@ import { UserPackagesModule } from './user-packages/user-packages.module';
 import { GlobalConfigModule } from './global-config/global-config.module';
 // import { GlobalConfigModule } from './global-config/global-config.module';
 import { MailModule } from './mail/mail.module';
-import { AdminModule } from '@adminjs/nestjs'
 import { User } from './users/entities/user.entity';
+import { AdminModule } from '@adminjs/nestjs'
+
 import AdminJS from 'adminjs';
-import * as AdminJSTypeorm from '@adminjs/typeorm'
+import * as AdminJSTypeorm from '@adminjs/typeorm';
 import { File } from './files/entities/file.entity';
 import { Country } from './countries/entities/country.entity';
 import { Province } from './provinces/entities/province.entity';
