@@ -336,6 +336,9 @@ export class PropertiesService {
     if(res.call_to_user.subdistrict != null && typeof res.call_to_user.subdistrict == 'number'){
       res.call_to_user.subdistrict = await this.subdistrictsService.findOne(res.call_to_user.subdistrict);
     }  
+    if(res.slug != null && res.slug != ""){
+      res.web_url = `https://halorumah.id/property/${res.slug}`;
+    }
 
     return res;
   }

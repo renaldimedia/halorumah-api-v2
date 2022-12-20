@@ -90,12 +90,11 @@ export class PropertiesResolver {
   @Query(() => PropertyResponse, { name: 'property' })
   findOne(@Args('id', { type: () => Int }) id: number, @Info() inf: any) {
     const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
-
     return this.propertiesService.findOne(id,fields);
   }
 
   // propertyBySlug
-  @Query(() => PropertyResponse, { name: 'propertyBySlug' })
+  @Query(() => PropertyResponse, { name: 'propertyBySlug', description: "get property by slug" })
   propertyBySlug(@Args('slug', { type: () => String }) slug: string, @Info() inf: any) {
     const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
 

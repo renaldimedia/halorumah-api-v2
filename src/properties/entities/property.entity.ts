@@ -7,7 +7,7 @@ import { City } from 'src/cities/entities/city.entity';
 import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
 import { User } from 'src/users/entities/user.entity';
 import { PropertyMeta } from './property-meta.entity';
-import { IsIn, IsOptional } from 'class-validator';
+import { IsDecimal, IsIn, IsOptional } from 'class-validator';
 import propAgeConstants from 'src/enums/propAgeConstans.enum';
 import purchaseTypes from 'src/enums/purchaseType.enum';
 import propPurchaseStatus from 'src/enums/propPurchaseStatus.enum';
@@ -17,11 +17,11 @@ import saleTypes from 'src/enums/saleTypes.enum';
 @ObjectType()
 export class Property extends BaseEntity  {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
+  @Field(() => Int, {description: 'Automatic primary id'})
   id: number;
 
   @Column({nullable: true})
-  @Field(() => Int, {nullable: true})
+  @Field(() => Int, {nullable: true, description: 'Fill this with id from old system(wordpress)'})
   old_id: number;
   // Required fields
   @Column({nullable: true, unique: true})
@@ -48,21 +48,25 @@ export class Property extends BaseEntity  {
   property_price: number
 
   @Column({nullable: true, type: 'numeric'})
-  @Field(type => String, {nullable: true})
+  @Field(type => String, {nullable: true, description: 'Maximum price, fill this if property have price range'})
   @IsOptional()
   property_price_second: number
 
   @Column()
-  @Field(type => String, {nullable: false})
+  @Field(type => String, {nullable: false, description: "Such as Land, House, Warehouse etc"})
   property_type: string
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0, nullable: true })
-  @Field()
-  property_area_size: number;
+  @Field({nullable: true, description: "Fill with decimal format number"})
+  @IsOptional()
+  @IsDecimal()
+  property_area_size: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0, nullable: true })
-  @Field()
-  property_building_size: number;
+  @Field({nullable: true, description: "Fill with decimal format number"})
+  @IsOptional()
+  @IsDecimal()
+  property_building_size: string;
 
   @Column()
   @Field(type => Int, {nullable: false})

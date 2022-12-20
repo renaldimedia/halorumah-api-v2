@@ -18,7 +18,8 @@ export class PropertyResponse {
   old_id: number;
 
   // Required fields
-  
+  @Field(() => String, {nullable: true})
+  web_url: string;
   
   @Field(type => String, {nullable: true})
   property_code: string
