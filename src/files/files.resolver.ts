@@ -23,13 +23,13 @@ export class FilesResolver {
     return this.filesService.findOne(id);
   }
 
-  @Mutation(() => File)
-  updateFile(@Args('updateFileInput') updateFileInput: UpdateFileInput) {
-    return this.filesService.update(updateFileInput.id, updateFileInput);
-  }
+  // @Mutation(() => File)
+  // updateFile(@Args('updateFileInput') updateFileInput: UpdateFileInput) {
+  //   return this.filesService.update(updateFileInput.id, updateFileInput);
+  // }
 
-  @Mutation(() => File)
-  removeFile(@Args('id', { type: () => String }) id: string) {
-    return this.filesService.remove(id);
-  }
+  // @Mutation(() => File)
+  // removeFile(@Args('id', { type: () => String }) id: string) {
+  //   return this.filesService.remove(id);
+  // }
 }

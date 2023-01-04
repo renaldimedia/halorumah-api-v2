@@ -49,7 +49,9 @@ import { PackageFeature } from './packages/entities/package-feature.entity';
 import { MailDb } from './mail/entity/mail.entity';
 import { PackageFeatures } from './packages/entities/package-features.entity';
 import { DistrictModule } from './district/district.module';
-
+import { SequelizeModule } from '@nestjs/sequelize';
+import { GlobalConfig } from './global-config/entities/global-config.entity';
+import { globalConfig } from './config';
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
   Database: AdminJSTypeorm.Database,
@@ -130,6 +132,13 @@ const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
         logging: env === 'development' ? true : false,
         ssl: env === 'production' ? { rejectUnauthorized: false } : false,
       }),
+    }),
+    SequelizeModule.forRoot({
+      dialect: 'mysql',
+      host: globalConfig.DB2_HOST,
+      username: globalConfig.DB2_USERNAME,
+      password: globalConfig.DB2_PASSWORD,
+      database: globalConfig.DB2_DATABASE
     }),
     UsersModule,
     AuthModule,
