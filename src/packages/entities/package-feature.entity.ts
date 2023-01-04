@@ -1,11 +1,11 @@
 import { ObjectType, Field, Int, PartialType } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 // import { Package } from './package.entity';
 
 @Entity()
 @ObjectType()
-export class PackageFeature{
+export class PackageFeature  extends BaseEntity{
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;
@@ -17,6 +17,10 @@ export class PackageFeature{
   @Column({nullable: true})
   @Field(() => String, {nullable: true})
   feature_group?: string;
+
+  @Column({nullable: true, default: 0, type: 'int'})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
+  ord?:number;
 
   @Column()
   @Field(() => String)

@@ -16,11 +16,13 @@ import { CitiesService } from 'src/cities/cities.service';
 import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 import { PropertyResponse } from './entities/get-all-props.response';
 import { HttpService } from '@nestjs/axios';
+import { PropertiesWPService } from './properties-wp.service';
+var slugify = require('slugify');
 
 
 @Injectable()
 export class PropertiesService {
-  constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, private readonly httpService: HttpService) { }
+  constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, private readonly httpService: HttpService, private readonly wpdbService: PropertiesWPService) { }
 
   async createMeta(input: PropertyMetaMasterInput) {
     const pr = this.metaMasterRepos.create(input);
@@ -40,7 +42,15 @@ export class PropertiesService {
       property['call_to_user'] = userid
     }
     const pr = this.repos.create(property);
+    let slug = slugify(property.property_title);
+    let slugExs = await this.repos.createQueryBuilder("prop").where(`prop.slug ILike '${slug}%'`).getCount();
+    if(slugExs > 0){
+      slug = slug + "-" + (slugExs+1);
+    }
+    pr.slug = slug;
     const propSaved = await this.repos.insert(pr);
+
+    
 
     if (typeof property.property_list_images != 'undefined' && propSaved.identifiers.length > 0) {
       let ls = [];
@@ -66,8 +76,6 @@ export class PropertiesService {
     // console.log(res)
     return res;
   }
-
-  
 
   async findAll(option: MetaQuery = null, fields: string[] = null): Promise<any> {
     const query = this.repos.createQueryBuilder('prop').select("prop.id", "prop_id");
@@ -159,9 +167,14 @@ export class PropertiesService {
         }
       }
     }
-    // console.log(query)
     const res = await query.getMany();
-    // console.log(res);
+    // let res = [];
+    let exclude = [];
+    for(let i = 0 ; i < res.length ; i++){
+      exclude.push(res[i].old_id);
+    }
+    let reswp = await this.wpdbService.findAllWP(exclude, option, fields);
+    // console.log(res[0]);
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
@@ -237,22 +250,13 @@ export class PropertiesService {
 
     return [];
   }
-
-
-  async findOne(id: number, fields: string[] = null, restApi: boolean = false): Promise<PropertyResponse> {
-    const res = new PropertyResponse();
-    const fnd = await this.repos.findOne({
-      where: { id: id },
-      relations: [
-        'province', 'country', 'city', 'subdistrict', 'call_to_user'
-      ]
-    });
-
+  
+  async formatOne(fnd: Property, res: PropertyResponse) {
+  
     Object.entries(fnd).forEach(([key, val]) => {
       res[key] = val;
     });
 
-    console.log(res)
 
     let lt = "";
     if (res.property_type != null) {
@@ -336,192 +340,38 @@ export class PropertiesService {
     }
     if(res.call_to_user.subdistrict != null && typeof res.call_to_user.subdistrict == 'number'){
       res.call_to_user.subdistrict = await this.subdistrictsService.findOne(res.call_to_user.subdistrict);
+    }  
+    if(res.slug != null && res.slug != ""){
+      res.web_url = `https://halorumah.id/property/${res.slug}`;
     }
 
     return res;
   }
 
-  // async findOne(id: number, fields: string[] = null, restApi: boolean = false): Promise<any> {
-  //   const query = this.repos.createQueryBuilder('prop').addSelect("prop.id", "prop_id").where({ id: id });
-  //   let select = [];
+  async findOne(id: number, fields: string[] = null, restApi: boolean = false): Promise<PropertyResponse> {
+    let res = new PropertyResponse();
+    const fnd = await this.repos.findOne({
+      where: { id: id },
+      relations: [
+        'province', 'country', 'city', 'subdistrict', 'call_to_user'
+      ]
+    });
 
-  //   if (fields != null && fields.length > 0 && !restApi) {
-  //     fields.forEach(val => {
-  //       switch (val) {
-  //         case 'features_extra':
-  //           break;
-  //         case 'property_featured_image':
-  //           query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
-  //           break;
-  //         case 'property_featured_image_url':
-  //           // query.leftJoinAndSelect(`prop.${val}`, `prop_property_featured_image`).addSelect([`prop_${val}.id`]);
-  //           break;
-  //         case 'country':
-  //           query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
-  //           break;
-  //         case 'province':
-  //           query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
-  //           break;
-  //         case 'city':
-  //           query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
-  //           break;
-  //         case 'subdistrict':
-  //           query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
-  //           break;
-  //         case 'call_to_user':
-  //           // query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`*`, `CONCAT('https://wa.me/', prop_${val}.account_whatsapp_number) as whatsapp_link`]);
-  //           break;
-  //         case 'property_price_rendered':
-  //           break;
-  //         case 'full_address_rendered':
-  //           break;
-  //         case 'property_building_size_rendered':
-  //           break;
-  //         case 'property_area_size_rendered':
-  //           break;
-  //         case 'property_type_rendered':
-  //           break;
-  //         case 'property_has_airconditioner_rendered':
-  //           break;
-  //         case 'property_has_heater_rendered':
-  //           break;
-  //         case 'property_has_garage_rendered':
-  //           break;
-  //         case 'id':
-  //           break;
-  //         case 'metas':
-  //           break;
-  //         case 'property_type_rendered':
-  //           break;
-  //         case 'metas_field':
-  //           break;
-  //         case 'property_list_images_url':
-  //           select.push(`prop.property_list_images`);
-  //           break;
-  //         default:
-  //           select.push(`prop.${val}`);
-  //           break;
-  //       }
-  //     });
+    res = await this.formatOne(fnd,res);
+    return res;
+  }
 
-  //     if (select.length > 0) {
-  //       query.addSelect(select);
-  //     }
-  //   } else if (restApi) {
-  //     query.addSelect(['prop.*']);
-  //     query.leftJoinAndSelect(`prop.property_featured_image`, `prop_property_featured_image`).addSelect([`prop_property_featured_image.*`]);
-  //     query.leftJoinAndSelect(`prop.country`, `prop_country`).addSelect([`prop_country.*`]);
-  //     query.leftJoinAndSelect(`prop.province`, `prop_province`).addSelect([`prop_province.*`]);
-  //     query.leftJoinAndSelect(`prop.city`, `prop_city`).addSelect([`prop_city.*`]);
-  //     query.leftJoinAndSelect(`prop.subdistrict`, `prop_subdistrict`).addSelect([`prop_subdistrict.*`]);
-  //     query.leftJoinAndSelect(`prop.call_to_user`, `prop_call_to_user`).addSelect([`prop_call_to_user.*`]);
-  //   }
-  //   const res = await query.getOneOrFail();
-  //   // console.log(res);
-  //   var formatter = new Intl.NumberFormat('id-ID', {
-  //     style: 'currency',
-  //     currency: 'IDR',
-  //     maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
-  //   });
-  //   if (res != null) {
-  //     let lt = "";
-  //     if(res.property_type != null){
-  //       lt += " " + res.property_type
-  //     }
-  //     if(res.sales_type != null){
-  //       lt += " " + res.sales_type
-  //     }
-  //     res['property_type_rendered'] = lt.trim();
-  //     if(res.call_to_user['account_whatsapp_number'] != null){
-  //       res.call_to_user
-  //     }
-  //     // if (res.call_to_user['full_address'] == null) {
-  //     //   res.call_to_user['full_address'] = "";
-  //     //   if (typeof res.call_to_user['subdistrict'] == 'number') {
-  //     //     let sub = await this.subdistrictsService.findOne(res.call_to_user['subdistrict']);
-  //     //     res.call_to_user['full_address'] += " " + sub.subdistrict_name;
-  //     //   }
-  //     //   if (typeof res.call_to_user['city'] == 'number') {
-  //     //     let city = await this.citiesService.findOne(res.call_to_user['city']);
-  //     //     res.call_to_user['full_address'] += " " + city.city_name;
-  //     //   }
-  //     //   if (typeof res.call_to_user['province'] == 'number') {
-  //     //     let prov = await this.provincesService.findOne(res.call_to_user['province']);
-  //     //     res.call_to_user['full_address'] += " " + prov.province_name;
-  //     //   }
-  //     //   if (typeof res.call_to_user['country'] == 'number') {
-  //     //     let sub = await this.countryService.findOne(res.call_to_user['country']);
-  //     //     res.call_to_user['full_address'] += " " + (typeof sub.country_name != 'undefined' ? sub.country_name : "")
-  //     //   }
-  //     //   res.call_to_user['full_address'] = res.call_to_user['full_address'].trim();
-  //     // }
+  async findOneSlug(slug: string, fields: string[] = null, restApi: boolean = false): Promise<PropertyResponse> {
+    let res = new PropertyResponse();
+    const fnd = await this.repos.findOne({
+      where: { slug:slug },
+      relations: [
+        'province', 'country', 'city', 'subdistrict', 'call_to_user'
+      ]
+    });
 
-  //     if (res.property_price != null) {
-  //       res['property_price_rendered'] = formatter.format(res.property_price);
-  //     }
-  //     if (res.property_price_second != null) {
-  //       res['property_price_second_rendered'] = formatter.format(res.property_price_second);
-  //     }
-  //     if (res.property_area_size != null) {
-  //       res['property_area_size_rendered'] = res.property_area_size + "m<sup>2</sup>";
-  //     }
-  //     if (res.property_building_size != null) {
-  //       res['property_building_size_rendered'] = res.property_building_size + "m<sup>2</sup>";
-  //     }
-
-  //     let addr = "";
-  //     if (res.property_full_address != null) {
-  //       addr += res.property_full_address + " ";
-  //     }
-  //     if (res.subdistrict != null) {
-  //       addr += typeof res.subdistrict['subdistrict_name'] != 'undefined' ? res.subdistrict['subdistrict_name'] + " " : ""
-  //     }
-  //     if (res.city != null) {
-  //       addr += typeof res.city['city_name'] != 'undefined' ? res.city['city_name'] + " " : ""
-  //     }
-  //     if (res.province != null) {
-  //       addr += typeof res.province['province_name'] != 'undefined' ? res.province['province_name'] + " " : ""
-  //     }
-  //     if (res.country != null) {
-  //       addr += typeof res.country['country_name'] != 'undefined' ? res.country['country_name'] + " " : ""
-  //     }
-  //     // console.log(addr)
-  //     res['full_address_rendered'] = "";
-  //     res['full_address_rendered'] = addr.trim();
-  //     if (res.property_price != null) {
-  //       res['property_price_rendered'] = formatter.format(res.property_price);
-  //     }
-  //     if (res['property_featured_image'] != null) {
-  //       res['property_featured_image_url'] = res.property_featured_image['rendered_url']
-  //     }
-  //     res['property_type_rendered'] = "";
-  //     if (res.property_type != null) {
-  //       res['property_type_rendered'] += res.property_type;
-  //     }
-  //     if (res.sales_type != null) {
-  //       res['property_type_rendered'] += (" " + res.sales_type);
-  //     }
-  //     if (res.property_list_images != null && res.property_list_images.length > 0) {
-  //       const images = await this.fileService.findFileList(res.property_list_images);
-
-  //       res['property_list_images_url'] = images;
-  //     } else {
-  //       res['property_list_images_url'] = [];
-  //     }
-  //     const metas = await this.findAllMeta(res.id);
-  //     res['features_extra'] = metas;
-  //     res['property_has_airconditioner_rendered'] = res.property_has_airconditioner ? "Tersedia" : "Tidak Tersedia";
-  //     res['property_has_garage_rendered'] = res.property_has_garage ? "Tersedia" : "Tidak Tersedia";
-  //     res['property_has_heater_rendered'] = res.property_has_heater ? "Tersedia" : "Tidak Tersedia";
-  //     return res;
-  //   }
-
-  //   return null;
-  //   // return res;
-  // }
-
-  async updateUserOld(old_userid: number, prop_id: number){
-
+    res = await this.formatOne(fnd,res);
+    return res;
   }
 
   async getExtraFeatureList(): Promise<PropertyMetaMaster[]> {

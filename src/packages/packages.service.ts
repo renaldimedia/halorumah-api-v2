@@ -128,15 +128,18 @@ export class PackagesService {
   async lftr(data: PackageFeatures[]) {
     // const res = [];
     const parent = [];
+    let idx = 0;
     data.forEach((item) => {
+
+      item.feature.feature_value = item.feature_value;
       if (item.feature.parent_feature != null) {
-        item.feature.feature_value = item.feature_value;
         if (typeof parent[item.feature.parent_feature.id] == 'undefined') {
           parent[item.feature.parent_feature.id] = item.feature.parent_feature;
           if (typeof parent[item.feature.parent_feature.id]['subfeature'] == 'undefined') {
             parent[item.feature.parent_feature.id]['subfeature'] = [];
             parent[item.feature.parent_feature.id]['subfeature'].push(item.feature);
           } else {
+            // if(parent[item.feature.parent_feature.id]['subfeature'][idx] != null)
             parent[item.feature.parent_feature.id]['subfeature'].push(item.feature);
           }
         } else {
@@ -147,14 +150,28 @@ export class PackagesService {
             parent[item.feature.parent_feature.id]['subfeature'].push(item.feature);
           }
         }
+
+        parent[item.feature.parent_feature.id]['subfeature'].sort((a, b) => {
+
+          return a.ord - b.ord;
+        });
+      } else {
+        parent[item.feature.id] = item.feature;
       }
+
+      idx++;
     });
 
+    let res = await parent.filter(n => n);
 
+    res.sort((a, b) => {
+
+      return a.ord - b.ord;
+    });
     // console.log({
     //   parent: parent.filter(n => n)
     // });
-    return parent.filter(n => n);
+    return res;
   }
 
   async findFeatures(): Promise<PackageFeature[]> {

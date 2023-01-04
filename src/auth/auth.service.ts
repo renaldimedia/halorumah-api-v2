@@ -9,6 +9,7 @@ import * as Str from '@supercharge/strings/dist';
 import { GraphQLError } from 'graphql';
 import { UpdateUserInput } from 'src/users/dto/update-user.input';
 import { ResetPasswordInput } from './dto/reset-password.input';
+import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 
 @Injectable()
 export class AuthService {
@@ -52,12 +53,23 @@ export class AuthService {
   }
 
   async resetPassword(payload: ResetPasswordInput){
-    if(payload.password !== payload.confirm_password){
+    if((typeof payload.password != 'undefined' || payload.password != null) && payload.password !== payload.confirm_password){
       throw new GraphQLError("Pastikan anda mengisi password dan konfirmasi password dengan benar!");
     }
     let usr = await this.usersService.findOneBy({reset_password_code: payload.code});
     if(usr == null || typeof usr == 'undefined'){
       throw new GraphQLError("User tidak terdaftar");
+    }
+    if((typeof payload.password == 'undefined' || payload.password == null) && typeof usr['id'] != 'undefined'){
+      const result = new GlobalMutationResponse();
+      result.ok = true;
+      result.message = "ok";
+      return result;
+    }else if((typeof payload.password == 'undefined' || payload.password == null) && typeof usr['id'] == 'undefined'){
+      const result = new GlobalMutationResponse();
+      result.ok = false;
+      result.message = "code not found!";
+      return result;
     }
     let usrobj = new UpdateUserInput();
     usrobj.reset_password_code = payload.code;

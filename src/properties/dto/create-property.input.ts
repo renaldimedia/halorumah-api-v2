@@ -1,12 +1,9 @@
-import { InputType, Int, Field, Float } from '@nestjs/graphql';
-import { IsIn } from 'class-validator';
-import { CreateCityInput } from 'src/cities/dto/create-city.input';
-import { CreateCountryInput } from 'src/countries/dto/create-country.input';
+import { InputType, Int, Field } from '@nestjs/graphql';
+import { IsDecimal, IsIn, IsOptional } from 'class-validator';
 import propAgeConstants from 'src/enums/propAgeConstans.enum';
 import propPurchaseStatus from 'src/enums/propPurchaseStatus.enum';
 import purchaseTypes from 'src/enums/purchaseType.enum';
 import saleTypes from 'src/enums/saleTypes.enum';
-import Decimal from 'decimal.js';
 
 
 @InputType()
@@ -59,11 +56,15 @@ class PropertyInput{
   @Field(type => String, {nullable: false})
   property_type: string
 
-  @Field(type => Float, {nullable: true})
-  property_building_size: number
+  @Field(type => String, {nullable: true})
+  @IsOptional()
+  @IsDecimal()
+  property_building_size: string
 
-  @Field(type => Float, {nullable: true})
-  property_land_size: number
+  @Field(type => String, {nullable: true})
+  @IsOptional()
+  @IsDecimal()
+  property_land_size: string
 
   @Field(type => Int, {nullable: true, defaultValue: 0})
   property_bathroom_count: number
@@ -134,13 +135,6 @@ class PropertyInput{
   @Field(type => Int, {nullable: true})
   property_build_years: number
 
-  // @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0, nullable: true })
-  @Field()
-  property_area_size: number;
-
-  // @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0, nullable: true })
-  // @Field()
-  // property_building_size: number;
 
   @Field(type => String, {nullable: true})
   @IsIn(Object.values(propAgeConstants))

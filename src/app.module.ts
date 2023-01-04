@@ -31,6 +31,45 @@ import { UserPackagesModule } from './user-packages/user-packages.module';
 import { GlobalConfigModule } from './global-config/global-config.module';
 // import { GlobalConfigModule } from './global-config/global-config.module';
 import { MailModule } from './mail/mail.module';
+import { User } from './users/entities/user.entity';
+import { AdminModule } from '@adminjs/nestjs'
+
+import AdminJS from 'adminjs';
+import * as AdminJSTypeorm from '@adminjs/typeorm';
+import { File } from './files/entities/file.entity';
+import { Country } from './countries/entities/country.entity';
+import { Province } from './provinces/entities/province.entity';
+import { City } from './cities/entities/city.entity';
+import { Subdistrict } from './subdistricts/entities/subdistrict.entity';
+import { Package } from './packages/entities/package.entity';
+import { UserPackage } from './user-packages/entities/user-package.entity';
+import { Property } from './properties/entities/property.entity';
+import { UserPackages } from './user-packages/entities/user-packages.entity';
+import { PackageFeature } from './packages/entities/package-feature.entity';
+import { MailDb } from './mail/entity/mail.entity';
+import { PackageFeatures } from './packages/entities/package-features.entity';
+import { DistrictModule } from './district/district.module';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { GlobalConfig } from './global-config/entities/global-config.entity';
+import { globalConfig } from './config';
+AdminJS.registerAdapter({
+  Resource: AdminJSTypeorm.Resource,
+  Database: AdminJSTypeorm.Database,
+});
+
+// adminJS.watch();
+
+const DEFAULT_ADMIN = {
+  email: 'admin@example.com',
+  password: 'password',
+}
+
+const authenticate = async (email: string, password: string) => {
+  if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
+    return Promise.resolve(DEFAULT_ADMIN)
+  }
+  return null
+}
 
 
 
@@ -38,10 +77,28 @@ dotenv.config();
 
 const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
 
-console.log(process.env)
+// console.log(process.env)
 
 @Module({
   imports: [
+    AdminModule.createAdminAsync({
+      useFactory: () => ({
+        adminJsOptions: {
+          rootPath: '/admin',
+          resources: [User, File, Country, Province, City, Subdistrict, Package, UserPackages, Property, PackageFeature, MailDb, PackageFeatures],
+        },
+        auth: {
+          authenticate,
+          cookieName: 'adminjs',
+          cookiePassword: 'secret'
+        },
+        sessionOptions: {
+          resave: true,
+          saveUninitialized: true,
+          secret: 'secret'
+        },
+      }),
+    }),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 30,
@@ -76,6 +133,13 @@ console.log(process.env)
         ssl: env === 'production' ? { rejectUnauthorized: false } : false,
       }),
     }),
+    SequelizeModule.forRoot({
+      dialect: 'mysql',
+      host: globalConfig.DB2_HOST,
+      username: globalConfig.DB2_USERNAME,
+      password: globalConfig.DB2_PASSWORD,
+      database: globalConfig.DB2_DATABASE
+    }),
     UsersModule,
     AuthModule,
     PropertiesModule,
@@ -91,7 +155,8 @@ console.log(process.env)
     SyncModule,
     UserPackagesModule,
     GlobalConfigModule,
-    MailModule
+    MailModule,
+    DistrictModule
   ],
   controllers: [AppController],
   providers: [AppService,  {
@@ -99,6 +164,8 @@ console.log(process.env)
     useClass: ValidationPipe,
   },],
 })
+
+
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
     consumer

@@ -16,13 +16,6 @@ export class CitiesResolver {
     return this.citiesService.create(createCityInput);
   }
 
-  @ResolveField(() => Province)
-  async province(@Parent() ctr: City, @Info() info) {
-    const { province_id } = ctr;
-    // const fields = info.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
-    return this.provincesService.findOne(province_id);
-  }
-
   @Query(() => [City], { name: 'cities' })
   findAll(@Args('province_id', {nullable: true}) province_id: number = null,@Args('keyword', {nullable: true}) keyword: string = null,@Info() info) {
     // const fields = info.fieldNodes[0].selectionSet.selections.map(item => item.name.value);

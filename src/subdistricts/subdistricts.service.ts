@@ -17,6 +17,8 @@ export class SubdistrictsService {
     private citiesServices: CitiesService, @InjectDataSource() private datasource: DataSource
   ) {}
 
+  // createAll(payload)
+
   findCityByID(id: number): Promise<City>{
     return this.citiesServices.findOne(id);
   }
@@ -28,12 +30,12 @@ export class SubdistrictsService {
   }
 
   findAll(group_id: number = null, keyword: string = null): Promise<Subdistrict[]> {
-    const py = {where: null};
+    const py = {where: null, relations: ['city', 'city.province', 'city.province.country']};
     if(keyword != null || group_id != null){
      py['where'] = [];
     }
     if(group_id != null){
-      py['where'].push({city_id: group_id});
+      py['where'].push({city: {id: group_id}});
     }
     if(keyword != null && keyword != ""){
       py['where'].push({subdistrict_name: ILike(`%${keyword}%`)});
@@ -43,13 +45,7 @@ export class SubdistrictsService {
   }
 
   findOne(id: number): Promise<Subdistrict> {
-    return this.subdistrictsRespository.findOneBy({id:id});
-  }
-
-  async findAllOne(id: number): Promise<any>{
-    const result = await this.datasource.query(`SELECT * FROM subdistrict as sb LEFT JOIN city as c ON sb.city_id = c.id LEFT JOIN province as p ON c.province_id = p.id WHERE sb.id = ${id}`);
-
-                  return result;
+    return this.subdistrictsRespository.findOne({where: {id:id}, relations: ['city', 'city.province', 'city.province.country']});
   }
 
   async update(id: number, updateSubdistrictInput: UpdateSubdistrictInput) {

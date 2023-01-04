@@ -3,7 +3,6 @@ import { SubdistrictsService } from './subdistricts.service';
 import { Subdistrict } from './entities/subdistrict.entity';
 import { CreateSubdistrictInput } from './dto/create-subdistrict.input';
 import { UpdateSubdistrictInput } from './dto/update-subdistrict.input';
-import { City } from 'src/cities/entities/city.entity';
 import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 
 @Resolver(() => Subdistrict)
@@ -15,12 +14,6 @@ export class SubdistrictsResolver {
     return this.subdistrictsService.create(createSubdistrictInput);
   }
 
-  @ResolveField()
-  async city(@Parent() ctr: Subdistrict) {
-    const { city_id } = ctr;
-    
-    return this.subdistrictsService.findCityByID(city_id);
-  }
 
   @Query(() => [Subdistrict], { name: 'subdistricts' })
   findAll(@Args('city_id', {nullable: true}) groupid: number, @Args('keyword', {nullable: true}) keyword: string) {

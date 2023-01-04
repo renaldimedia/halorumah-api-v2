@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Province } from 'src/provinces/entities/province.entity';
 import { ILike, Like, Repository } from 'typeorm';
 import { CreateCountryInput } from './dto/create-country.input';
 import { UpdateCountryInput } from './dto/update-country.input';
@@ -9,16 +10,25 @@ import { Country } from './entities/country.entity';
 export class CountriesService {
 
   constructor(
-    @InjectRepository(Country) private countriesRespository: Repository<Country>,
+    @InjectRepository(Country) private countriesRespository: Repository<Country>,@InjectRepository(Province) private provincesRespository: Repository<Province>
   ) {}
 
   async create(createCountryInput: CreateCountryInput) {
     let ctr = new Country();
-    Object.entries(createCountryInput).forEach(([key, val]) => {
-      ctr[key] = val;
-    });
+    const {province} = createCountryInput;
+    ctr.country_name = createCountryInput.country_name;
+    ctr.country_code = createCountryInput.country_code;
+    ctr.id = createCountryInput.id;
+    let provinces: Province[] = [];
+    if(province.length > 0){
+      for(let i = 0 ; i < province.length ; i ++){
+        let prv = this.provincesRespository.create(province[i]);
+        provinces.push(prv);
+      }
+    }
+    ctr.provinces = provinces;
     const ct = this.countriesRespository.create(ctr);
-    return this.countriesRespository.save(ct);
+    return await this.countriesRespository.save(ct);
   }
 
   findAll(keyword: string = ""): Promise<Country[]> {
@@ -27,7 +37,7 @@ export class CountriesService {
       py['where'] = []
       py['where'].push({country_name: ILike(`%${keyword}%`)});
     }
-    console.log(JSON.stringify(py))
+    // console.log(JSON.stringify(py))
     return this.countriesRespository.find(py);
   }
 

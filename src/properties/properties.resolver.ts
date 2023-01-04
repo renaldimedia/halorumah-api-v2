@@ -23,10 +23,11 @@ import { PropertyMeta, PropertyMetaResponse } from './entities/property-meta.ent
 import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.response';
 import { User, UsersResponse } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { PropertiesWPService } from './properties-wp.service';
 
 @Resolver(() => Property)
 export class PropertiesResolver {
-  constructor(private readonly propertiesService: PropertiesService, private readonly fileService: FilesService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, private readonly subdistrictsService: SubdistrictsService, private readonly usersService: UsersService) {}
+  constructor(private readonly propertiesService: PropertiesService, private readonly fileService: FilesService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, private readonly subdistrictsService: SubdistrictsService, private readonly usersService: UsersService, private readonly wpdb: PropertiesWPService) {}
 
   @Mutation(() => Property)
   @UseGuards(JwtAuthGuard)
@@ -90,8 +91,16 @@ export class PropertiesResolver {
   @Query(() => PropertyResponse, { name: 'property' })
   findOne(@Args('id', { type: () => Int }) id: number, @Info() inf: any) {
     const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
-
     return this.propertiesService.findOne(id,fields);
+  }
+
+
+  // propertyBySlug
+  @Query(() => PropertyResponse, { name: 'propertyBySlug', description: "get property by slug" })
+  propertyBySlug(@Args('slug', { type: () => String }) slug: string, @Info() inf: any) {
+    const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
+
+    return this.propertiesService.findOneSlug(slug,fields);
   }
 
   @Mutation(() => GlobalMutationResponse)

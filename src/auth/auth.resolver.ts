@@ -50,6 +50,11 @@ export class AuthResolver {
     return await this.authService.createResetPassword(email);
   }
 
+  // @Mutation(() => GlobalMutationResponse)
+  // async checkCode(@Args('payload') payload: CheckCodeInput){
+  //   return await this.authService.checkCode(payload);
+  // }
+
   @Mutation(() => GlobalMutationResponse)
   async resetPassword(@Args('payload') payload: ResetPasswordInput){
     return await this.authService.resetPassword(payload);

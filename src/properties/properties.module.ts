@@ -16,9 +16,10 @@ import { PropertyMetaMaster } from './entities/property-meta-master.entity';
 import { PropertyListImages } from './entities/property-list-images.entity';
 import { PropertiesController } from './properties.controller';
 import { HttpModule } from '@nestjs/axios';
+import { PropertiesWPService } from './properties-wp.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Property, PropertyMeta, PropertyMetaMaster, PropertyListImages]), CountriesModule, SpacesModule, ProvincesModule, CitiesModule, SubdistrictsModule, FilesModule, UsersModule, HttpModule],
-  providers: [PropertiesResolver, PropertiesService, PropertyCreatedListener],
+  providers: [PropertiesResolver, PropertiesService, PropertyCreatedListener, PropertiesWPService],
   controllers: [PropertiesController],
 })
 export class PropertiesModule {}

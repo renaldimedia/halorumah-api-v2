@@ -365,6 +365,21 @@ export class UsersService {
         addr += typeof response.country != 'undefined' ? " " + response.country.country_name : "";
       }
 
+      let pack = await this.userPackageRepo.find({
+        relations: {
+          package: true
+        },
+        where: {
+          user: {
+            id: users.id
+          },
+          status: 1,
+        }
+      });
+  
+      if(pack != null && pack.length > 0){
+        response.package = pack[0].package;
+      }
 
       response.full_address_rendered = addr.trim();
       responses.push(response);
@@ -436,7 +451,7 @@ export class UsersService {
       if(input.payment_type == ""){
         input.payment_type = "membership";
       }
-      input['callback_url'] = globalConfig.BASE_URL + "api/user/activate-package/" + encodeURI(res.user.id) + "/" + res.id;
+      input['callback_url'] = globalConfig.BASE_URL + "/api/user/activate-package/" + encodeURI(res.user.id) + "/" + res.id;
       if(res != null && typeof res.id == 'number'){
         const payment = await firstValueFrom(this.httpService.post(`${globalConfig.PAYMENT_ENDPOINT}/payment`, input));
         // console.log(payment);
@@ -485,11 +500,14 @@ export class UsersService {
   async create(createUserInput: CreateUserInput) {
     try {
       const {package_code, package_registered, package_banefit, package_status} = createUserInput
-      // let pck = null;
-      // let user = null;
+      // let usr = new User();
+      // Object.keys(createUserInput).forEach(k => {
+      //   usr[k] = createUserInput[k];
+      // })
       let user = this.usersRespository.create(createUserInput);
+      
       user = await this.usersRespository.save(user);
-      let result = {...user};
+      let result = user;
       if(typeof package_code != 'undefined' && package_code != null){
           let pck = await this.packageRepo.findOneBy({package_code: package_code});
           if(pck != null && typeof pck['id'] != 'undefined'){

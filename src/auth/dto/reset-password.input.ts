@@ -2,12 +2,12 @@ import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
 export class ResetPasswordInput {
-  @Field()
+  @Field({nullable: true})
   code: string;
 
-  @Field()
+  @Field({nullable: true})
   password: string;
 
-  @Field()
+  @Field({nullable: true})
   confirm_password: string;
 }
