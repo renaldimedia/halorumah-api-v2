@@ -23,7 +23,11 @@ export class Property extends BaseEntity  {
   @Column({nullable: true})
   @Field(() => Int, {nullable: true, description: 'Fill this with id from old system(wordpress)'})
   old_id: number;
-  // Required fields
+
+  @Column({nullable: true})
+  @Field(() => Int, {nullable: true, description: 'Fill this with author_id from old system(wordpress)'})
+  old_author_id: number;
+ 
   @Column({nullable: true, unique: true})
   @Index({unique: true})
   @Field(type => String, {nullable: true})
@@ -57,7 +61,7 @@ export class Property extends BaseEntity  {
   property_type: string
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0, nullable: true })
-  @Field({nullable: true, description: "Fill with decimal format number"})
+  @Field({ nullable: true, description: "Fill with decimal format number" })
   @IsOptional()
   @IsDecimal()
   property_area_size: string;
@@ -240,6 +244,9 @@ export class Property extends BaseEntity  {
 
   @DeleteDateColumn({ type: "timestamp" })
   deleted_at: Date;
+
+  @Column({ type: "timestamp", nullable: true })
+  expired_at: Date;
 
   @Column({
     type: 'varchar',

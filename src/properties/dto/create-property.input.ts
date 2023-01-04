@@ -15,6 +15,9 @@ class PropertyInput{
   @Field(() => Int, {nullable: true})
   old_id: number;
 
+  @Field(() => Int, {nullable: true})
+  old_author_id: number;
+
   @Field(type => String, {nullable: false})
   property_title: string
 
