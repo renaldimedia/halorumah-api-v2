@@ -275,8 +275,6 @@ export class Property extends BaseEntity  {
   @Field({nullable: true})
   @IsIn(Object.values(purchaseTypes))
   purchase_type: string;
-
-  
 }
 
 
