@@ -126,7 +126,7 @@ const env = `${(process.env.NODE_ENV || 'development').toLowerCase()}`;
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_DATABASE'),
-        schema: 'public',
+        schema: config.get<string>('DB_SCHEMA'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
         logging: env === 'development' ? true : false,

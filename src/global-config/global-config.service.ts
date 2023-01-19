@@ -10,18 +10,5 @@ export class GlobalConfigService {
 
   findAll() {
     return cfg;
-    return `This action returns all globalConfig`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} globalConfig`;
-  }
-
-  update(id: number, updateGlobalConfigDto: UpdateGlobalConfigDto) {
-    return `This action updates a #${id} globalConfig`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} globalConfig`;
   }
 }

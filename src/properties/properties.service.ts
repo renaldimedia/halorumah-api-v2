@@ -19,7 +19,6 @@ import { HttpService } from '@nestjs/axios';
 import { PropertiesWPService } from './properties-wp.service';
 var slugify = require('slugify');
 
-
 @Injectable()
 export class PropertiesService {
   constructor(@InjectRepository(Property) private readonly repos: Repository<Property>, @InjectRepository(PropertyMeta) private readonly metasRepos: Repository<PropertyMeta>, @InjectRepository(PropertyMetaMaster) private readonly metaMasterRepos: Repository<PropertyMetaMaster>, @InjectDataSource() private datasource: DataSource, private readonly fileService: FilesService, @InjectRepository(PropertyListImages) private readonly listImagesRepos: Repository<PropertyListImages>, private readonly subdistrictsService: SubdistrictsService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, private readonly httpService: HttpService, private readonly wpdbService: PropertiesWPService) { }
@@ -169,11 +168,11 @@ export class PropertiesService {
     }
     const res = await query.getMany();
     // let res = [];
-    let exclude = [];
-    for(let i = 0 ; i < res.length ; i++){
-      exclude.push(res[i].old_id);
-    }
-    let reswp = await this.wpdbService.findAllWP(exclude, option, fields);
+    // let exclude = [];
+    // for(let i = 0 ; i < res.length ; i++){
+    //   exclude.push(res[i].old_id);
+    // }
+    // let reswp = await this.wpdbService.findAllWP(exclude, option, fields);
     // console.log(res[0]);
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -345,6 +344,7 @@ export class PropertiesService {
       res.web_url = `https://halorumah.id/property/${res.slug}`;
     }
 
+    
     return res;
   }
 

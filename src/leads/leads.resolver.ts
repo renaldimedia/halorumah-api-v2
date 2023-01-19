@@ -27,7 +27,7 @@ export class LeadsResolver {
 
   @ResolveField(() => UsersResponse)
   async user(@Parent() ld: Lead): Promise<UsersResponse>{
-    return await this.userService.findById(ld.user)
+    return await this.userService.findById(ld.user.id);
   }
 
   @Query(() => [LeadResponse], { name: 'leads' })

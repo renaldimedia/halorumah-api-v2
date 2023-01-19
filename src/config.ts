@@ -52,7 +52,10 @@ export const cfg = {
   disable_membership: false,
   endpoint: {
     payment: "https://api-halorumah.renaldimedia.digital"
-  }
+  },
+  tracker_code_header_name: "hlrm-tracker",
+  tracker_email_header_name: "hlrm-tracker-email",
+  disable_tracker: false
 };
 
 export const globalConfig = process.env;

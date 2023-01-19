@@ -24,7 +24,9 @@ import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.respo
 import { User, UsersResponse } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { PropertiesWPService } from './properties-wp.service';
-
+import { tracker } from 'src/matomo';
+import { uuid } from '@supercharge/strings/dist';
+import { Headers } from 'src/decorators/headers.decorator';
 @Resolver(() => Property)
 export class PropertiesResolver {
   constructor(private readonly propertiesService: PropertiesService, private readonly fileService: FilesService, private readonly countryService: CountriesService, private readonly provincesService: ProvincesService, private readonly citiesService: CitiesService, private readonly subdistrictsService: SubdistrictsService, private readonly usersService: UsersService, private readonly wpdb: PropertiesWPService) {}
@@ -89,8 +91,19 @@ export class PropertiesResolver {
   }
 
   @Query(() => PropertyResponse, { name: 'property' })
-  findOne(@Args('id', { type: () => Int }) id: number, @Info() inf: any) {
+  findOne(@Args('id', { type: () => Int }) id: number, @Info() inf: any, @Headers() headers: Record<string,string>) {
     const fields = inf.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
+    console.log(headers['x-key']);
+    // tracker.track({
+    //   url: 'https://localapi.dev/getoneprop',
+    //   action_name: 'get properti',
+    //   ua: 'NestJS GraphQL API v1',
+    //   cid: "1234567890abchdj",
+    //   cvar: JSON.stringify({
+    //     '1': ['property_id', id]
+    //   })
+    // });
+
     return this.propertiesService.findOne(id,fields);
   }
 

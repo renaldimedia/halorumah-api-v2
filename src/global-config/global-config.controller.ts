@@ -17,18 +17,4 @@ export class GlobalConfigController {
     return this.globalConfigService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.globalConfigService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGlobalConfigDto: UpdateGlobalConfigDto) {
-    return this.globalConfigService.update(+id, updateGlobalConfigDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.globalConfigService.remove(+id);
-  }
 }

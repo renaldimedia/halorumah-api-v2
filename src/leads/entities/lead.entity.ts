@@ -32,7 +32,7 @@ export class Lead {
 
   @ManyToOne(() => User, {nullable: true})
   @Field(type => User, {nullable: true})
-  user: string
+  user: User
 
   @Column({type: 'json', nullable: true})
   @Field(type => String, {nullable: true})

@@ -1,5 +1,6 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
 import { IsEmail, IsJSON, IsNotEmpty, IsOptional } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
 
 @InputType()
 export class CreateLeadInput {
@@ -27,9 +28,6 @@ export class CreateLeadInput {
 
   @Field(type => String, {nullable: true})
   lead_object_id: string
-
-  @Field(type => String, {nullable: true})
-  user: string
 }
 
 @InputType()
