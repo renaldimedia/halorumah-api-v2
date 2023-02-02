@@ -84,11 +84,11 @@ export class PropertyResponse {
   agent_rendered: User
 
   
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_bathroom_count: number
 
   
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_bedroom_count: number
 
   @Field(type => Int, {nullable: true})
@@ -193,7 +193,7 @@ export class PropertyResponse {
   created_by_user: UsersResponse
 
   
-  @Field(type => UsersResponse)
+  @Field(type => UsersResponse, {nullable: true})
   call_to_user: UsersResponse
 
   @Field(type => [PropertyMetaResponse], {nullable: true})
