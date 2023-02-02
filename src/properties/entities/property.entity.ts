@@ -20,7 +20,7 @@ export class Property extends BaseEntity  {
   @Field(() => Int, {description: 'Automatic primary id'})
   id: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, unique: true})
   @Field(() => Int, {nullable: true, description: 'Fill this with id from old system(wordpress)'})
   old_id: number;
 
@@ -72,16 +72,16 @@ export class Property extends BaseEntity  {
   @IsDecimal()
   property_building_size: string;
 
-  @Column()
-  @Field(type => Int, {nullable: false})
+  @Column({nullable: true})
+  @Field(type => Int, {nullable: true})
   property_bathroom_count: number
 
   @Column({nullable: true})
-  @Field(type => Int, {nullable: false})
+  @Field(type => Int, {nullable: true})
   property_floor_count: number
 
-  @Column()
-  @Field(type => Int, {nullable: false})
+  @Column({nullable: true})
+  @Field(type => Int, {nullable: true})
   property_bedroom_count: number
 
   @Column({nullable: true})
