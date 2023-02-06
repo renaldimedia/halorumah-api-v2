@@ -103,37 +103,27 @@ export class PropertyResponse {
   @Field(type => String, {nullable: true})
   property_electricy: string
 
-  // @Column({nullable: true, default: false, type: 'boolean'})
   @Field(type => Boolean, {nullable: true, defaultValue: false})
   property_has_heater: boolean
 
-  // @Column({nullable: true, default: false, type: 'boolean'})
   @Field(type => Boolean, {nullable: true, defaultValue: false})
   property_has_airconditioner: boolean
 
-
-  // @Column({nullable: true, default: false, type: 'boolean'})
   @Field(type => Boolean, {nullable: true, defaultValue: false})
   property_has_garage: boolean
 
   @Field(type => String, {nullable: true, defaultValue: false})
   property_has_heater_rendered: string
 
-  // @Column({nullable: true, default: false, type: 'boolean'})
   @Field(type => String, {nullable: true, defaultValue: false})
   property_has_airconditioner_rendered: string
 
-
-  // @Column({nullable: true, default: false, type: 'boolean'})
   @Field(type => String, {nullable: true, defaultValue: false})
   property_has_garage_rendered: string
-
   
   @Field(type => String, {nullable: false})
   property_certificate_type: string
-
   
-  // @ManyToOne(() => File)
   @Field(type => File, {nullable: true})
   property_featured_image: File
 
@@ -146,52 +136,41 @@ export class PropertyResponse {
   @Field(type => [File], {nullable: true})
   property_list_images_url: File[]
 
-  // @Column({nullable: true})
   @Field({nullable: true})
   property_featured_image_rendered: string
 
-  // @Column({type: 'json', nullable: true})
   @Field(type => [String], {nullable: true})
   property_list_images_rendered: string[]
   
   @Field(type => Country, {nullable: true})
   country: Country
-
   
   @Field(type => Province, {nullable: true})
   province: Province
-
   
   @Field(type => City, {nullable: true})
   city: City
 
-  
   @Field(type => Subdistrict, {nullable: true})
   subdistrict: Subdistrict
 
   @Field(type => String, {nullable: true})
   country_text: string
-
   
   @Field(type => String, {nullable: true})
   province_text: string
-
   
   @Field(type => String, {nullable: true})
   city_text: string
 
-  
   @Field(type => String, {nullable: true})
   subdistrict_text: string
 
-  
   @Field(type => String, {nullable: false})
   property_full_address: string
 
-  
   @Field(type => UsersResponse)
   created_by_user: UsersResponse
-
   
   @Field(type => UsersResponse, {nullable: true})
   call_to_user: UsersResponse
