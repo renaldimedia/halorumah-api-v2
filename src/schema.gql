@@ -2,37 +2,24 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type City {
-  city_code: String!
-  city_name: String!
-  id: Int!
-  province: Province
+input BuyPackageInput {
+  """user id"""
+  id: String
+  package_code: String
+  payment_method: String!
+  payment_total: Float = 0
+  payment_type: String!
+  payment_user_email: String
+  payment_user_name: String
+  payment_user_phone: String
 }
 
-type Company {
-  account_discord: String
-  account_lamudi: String
-  account_olx: String
-  account_rumah123: String
-  account_rumahcom: String
-  account_whatsapp_number: String
-  city: City
-  city_id: City
-  company_desc: String!
-  company_logo: File
-  company_logo_id: File
-  company_name: String!
-  company_type: String
-  country: Country
-  country_id: Country
-  full_address: String
-  id: String!
-  owner: User
-  property_count: Float
+type City {
+  city_code: String
+  city_name: String!
   province: Province
-  province_id: Province
-  subdistrict: Subdistrict
-  subdistrict_id: Subdistrict
+  search_url: String
+  subdistricts: [Subdistrict!]
 }
 
 input CompanyInput {
@@ -66,19 +53,29 @@ type CompanyResponse {
 type Country {
   country_code: String!
   country_name: String!
-  id: Int!
+  provinces: [Province!]!
+  search_url: String
 }
 
 input CreateCityInput {
   city_code: String
   city_name: String!
   id: Float
-  province_id: Float!
+  province_id: Float
+  subdistricts: [CreateSubdistrictInput!]
 }
 
 input CreateCountryInput {
   country_code: String
   country_name: String!
+  id: Float
+  province: [CreateProvinceInput!]
+}
+
+input CreateDistrictInput {
+  city_id: Float
+  district_code: String
+  district_name: String!
   id: Float
 }
 
@@ -110,25 +107,30 @@ input CreateLeadInput {
   """No Hp/Wa, required!"""
   phone: String!
   source_url: String
-  user: String
 }
 
 input CreatePackageInput {
+  credit: Int = 0
   id: Int
   is_displayed: Boolean
   is_enable: Boolean
   is_popular: Boolean
+  ord: Int = 0
   package_billing_time_unit: Int!
   package_billing_unit: String!
   package_code: String!
   package_display_name: String!
+  package_featured_listings: Int = 0
   package_features: [PackageFeaturesInput!]
   package_icon: String!
+  package_listings: Int = 0
   package_name: String!
   package_price: Int!
+  vnov_credit: Int = 0
 }
 
 input CreatePropertyInput {
+  callback: String
   metas: [PropertyMetaInput!]
   property: PropertyInput!
 }
@@ -138,14 +140,15 @@ input CreatePropertyLikeInput {
 }
 
 input CreateProvinceInput {
-  country_id: Float!
+  cities: [CreateCityInput!]
+  country_id: Float
   id: Float
   province_code: String
   province_name: String!
 }
 
 input CreateSubdistrictInput {
-  city_id: Float!
+  city_id: Float
   id: Float
   subdistrict_code: String
   subdistrict_name: String!
@@ -159,23 +162,45 @@ input CreateUserInput {
   account_rumahcom: String
   account_whatsapp_number: String
   agent_id: String
+  agent_id_old: String
   city: Float
+  city_text: String
   company_id: String
-  confirm_password: String!
+  confirm_password: String
   country: Float
+  country_text: String
   device_id: String
   display_name: String
   email: String!
   full_address: String
   full_name: String!
   id: String
-  password: String!
+  mobile: String
+  old_id: Float
+  package_banefit: PackageBanefitInput
+  package_code: String
+  package_registered: DateTime
+  package_status: Float
+  password: String
   phone: String!
   photo_profile: String
+  photo_profile_old: String
+  plainpass: Boolean = false
   property_count: Float
   province: Float
+  province_text: String
+  registered_date: DateTime
   role: String!
   subdistrict: Float
+  subdistrict_text: String
+  title: String
+  user_desc: String
+  username: String
+}
+
+input CreateUserPackageInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
 }
 
 """
@@ -183,15 +208,26 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type District {
+  city: City
+  district_code: String
+  district_name: String!
+  search_url: String
+}
+
+input FeaturesInput {
+  features: [PackageFeatureInput!]!
+}
+
 type File {
   filename: String!
   filepath: String!
   id: String!
-  mimetype: String!
+  mimetype: String
   optimize_config: String
   rendered_url: String
   rendered_urls: String
-  size: Float!
+  size: Float
   updated_by: String
   uploaded_by: String!
 }
@@ -222,8 +258,8 @@ type LeadExtraResponse {
 
 type LeadMutationResponse {
   affected: Float
-  data: LeadResponse
   errors: [String!]
+  lead: LeadResponse
   message: String
   ok: Boolean!
 }
@@ -263,9 +299,12 @@ input MetaQuery {
 }
 
 type Mutation {
+  buyPackage(package: BuyPackageInput!): UserPackages!
   company(companyInput: CompanyInput!): CompanyResponse!
   createCity(createCityInput: CreateCityInput!): City!
   createCountry(createCountryInput: CreateCountryInput!): Country!
+  createDistrict(createDistrictInput: CreateDistrictInput!): District!
+  createFeature(createFeatureInput: FeaturesInput!): [PackageFeature!]!
   createFile(createFileInput: CreateFileInput!): File!
   createLead(createLeadInput: CreateLeadInput!): LeadMutationResponse!
   createPackage(createPackageInput: CreatePackageInput!): Package!
@@ -275,22 +314,24 @@ type Mutation {
   createProvince(createProvinceInput: CreateProvinceInput!): Province!
   createSubdistrict(createSubdistrictInput: CreateSubdistrictInput!): Subdistrict!
   createUser(createUserInput: CreateUserInput!): User!
+  createUserPackage(createUserPackageInput: CreateUserPackageInput!): UserPackage!
   deleteUser(userid: String!): User!
   login(loginUserInput: LoginUserInput!): LoginResponse!
   profile(profileData: UpdateUserInput!): User!
   removeCity(id: Int!): GlobalMutationResponse!
   removeCountry(id: Int!): Country!
-  removeFile(id: String!): File!
   removeLead(id: Int!): Lead!
   removePackage(id: Int!): Package!
   removeProperty(id: Int!): GlobalMutationResponse!
   removePropertyLike(id: Int!): PropertyLike!
   removeProvince(id: Int!): GlobalMutationResponse!
   removeSubdistrict(id: Int!): GlobalMutationResponse!
+  removeUserPackage(id: Int!): UserPackage!
+  resetPassword(payload: ResetPasswordInput!): GlobalMutationResponse!
+  resetPasswordRequest(email: String!): User!
   signup(signupUserInput: CreateUserInput!): User!
   updateCity(updateCityInput: UpdateCityInput!): GlobalMutationResponse!
   updateCountry(updateCountryInput: UpdateCountryInput!): Country!
-  updateFile(updateFileInput: UpdateFileInput!): File!
   updateLead(updateLeadInput: UpdateLeadInput!): Lead!
   updatePackage(updatePackageInput: UpdatePackageInput!): Package!
   updateProperty(updatePropertyInput: UpdatePropertyInput!): GlobalMutationResponse!
@@ -298,6 +339,7 @@ type Mutation {
   updateProvince(updateProvinceInput: UpdateProvinceInput!): GlobalMutationResponse!
   updateSubdistrict(updateSubdistrictInput: UpdateSubdistrictInput!): GlobalMutationResponse!
   updateUser(profileData: UpdateUserInput!): UsersResponse!
+  updateUserPackage(updateUserPackageInput: UpdateUserPackageInput!): UserPackage!
 }
 
 input OrderByQuery {
@@ -306,30 +348,77 @@ input OrderByQuery {
 }
 
 type Package {
+  credit: Int
   id: Int!
   is_displayed: Boolean
   is_enable: Boolean
   is_popular: Boolean
+  old_id: Int
   ord: Int
   package_billing_time_unit: Int!
   package_billing_unit: String!
   package_code: String
   package_display_name: String!
+  package_featured_listings: Int
   package_icon: String!
+  package_listings: Int
   package_name: String!
   package_price: Int!
+  userpackages: [UserPackages!]!
+  vnov_credit: Int
+}
+
+type PackageBanefit {
+  package_featured_listings: Int
+  package_listings: Int!
+}
+
+input PackageBanefitInput {
+  credit: Int = 0
+  package_featured_listings: Int = 0
+  package_listings: Int!
+  vnov_credit: Int = 0
 }
 
 type PackageFeature {
-  feature_code: String!
+  feature_code: String
   feature_group: String
   feature_icon: String
   feature_name: String!
   feature_type: String
   feature_value: String
   id: Int!
+  ord: Int
   parent_feature: PackageFeature
   subfeature: [PackageFeature!]
+  value_prefix: String
+  value_suffix: String
+}
+
+input PackageFeatureInput {
+  feature_code: String
+  feature_group: String = ""
+  feature_icon: String
+  feature_name: String
+  feature_type: String = "string"
+  feature_value: String
+  id: Int
+  package_subfeatures: [PackageFeaturePriInput!]
+  package_subfeatures_input: [PackageFeaturePriInput!]
+  parent_feature: PackageFeaturePriInput
+  value_prefix: String
+  value_suffix: String
+}
+
+input PackageFeaturePriInput {
+  feature_code: String
+  feature_group: String = ""
+  feature_icon: String
+  feature_name: String
+  feature_type: String = "string"
+  feature_value: String
+  id: Int
+  parent_feature: PackageFeaturePriInput
   value_prefix: String
   value_suffix: String
 }
@@ -361,6 +450,7 @@ input PackageFeaturesInput {
 }
 
 type PackageResponse {
+  credit: Int
   id: Int!
   is_displayed: Boolean
   is_enable: Boolean
@@ -369,50 +459,78 @@ type PackageResponse {
   package_billing_unit: String!
   package_code: String!
   package_display_name: String!
+  package_featured_listings: Int
   package_features: [PackageFeatureResponse!]!
   package_icon: String!
+  package_listings: Int
   package_name: String!
   package_price: Int!
+  vnov_credit: Int
 }
 
 type Property {
   call_to_user: User!
+  call_to_user_old: Int!
   city: Float
+  city_text: String
   country: Float
+  country_text: String
   created_by_user: User!
+  created_by_user_old: Int!
+  district_text: String
+
+  """Automatic primary id"""
   id: Int!
   metas: [PropertyMetaResponse!]!
+
+  """Fill this with author_id from old system(wordpress)"""
+  old_author_id: Int
+
+  """Fill this with id from old system(wordpress)"""
   old_id: Int
-  property_area_size: Float!
-  property_bathroom_count: Int!
-  property_bedroom_count: Int!
-  property_build_years: Float!
-  property_building_size: Float!
+
+  """Fill with decimal format number"""
+  property_area_size: String
+  property_bathroom_count: Int
+  property_bedroom_count: Int
+  property_build_years: Float
+
+  """Fill with decimal format number"""
+  property_building_size: String
   property_building_type: String
-  property_certificate_type: String!
+  property_certificate_type: String
   property_code: String
-  property_condition: String!
+  property_condition: String
   property_desc: String!
   property_electricy: String
-  property_featured_image: String!
-  property_floor_count: Int!
+  property_featured_image: String
+  property_featured_image_rendered: String
+  property_floor_count: Int
   property_full_address: String!
   property_garage_bike_volume: Int!
   property_garage_car_volume: Int!
   property_has_airconditioner: Boolean
   property_has_garage: Boolean
   property_has_heater: Boolean
-  property_list_images: [String!]!
+  property_list_images: [String!]
   property_list_images_file: [File!]!
-  property_price: Int!
-  property_price_second: Int
+  property_list_images_rendered: [String!]!
+  property_price: String!
+
+  """Maximum price, fill this if property have price range"""
+  property_price_second: String
   property_title: String!
+
+  """Such as Land, House, Warehouse etc"""
   property_type: String!
   province: Float
+  province_text: String
   purchase_type: String
   sales_status: String!
   sales_type: String!
+  slug: String
   subdistrict: Float
+  subdistrict_text: String
   total_leads: Float!
   total_messages: Float!
   total_star: Float!
@@ -421,20 +539,27 @@ type Property {
 
 input PropertyInput {
   call_to_user: String
+  call_to_user_old: Int
   city: Float
+  city_text: String
   country: Float
+  country_text: String
+  created_at: String
   created_by_user: String
-  property_area_size: Float!
-  property_bathroom_count: Int!
-  property_bedroom_count: Int!
-  property_build_years: Int!
-  property_building_size: Float
-  property_certificate_type: String!
+  created_by_user_old: Int
+  old_author_id: Int
+  old_id: Int
+  property_bathroom_count: Int = 0
+  property_bedroom_count: Int = 0
+  property_build_years: Int
+  property_building_size: String
+  property_certificate_type: String
   property_code: String
-  property_condition: String!
+  property_condition: String
   property_desc: String!
   property_electricy: String
-  property_featured_image: String!
+  property_featured_image: String
+  property_featured_image_rendered: String
   property_floor_count: Int
   property_full_address: String!
   property_garage_bike_volume: Int
@@ -442,17 +567,21 @@ input PropertyInput {
   property_has_airconditioner: Boolean = false
   property_has_garage: Boolean = false
   property_has_heater: Boolean = false
-  property_land_size: Float
-  property_list_images: [String!]!
-  property_price: Int!
-  property_price_second: Int
+  property_land_size: String
+  property_list_images: [String!]
+  property_list_images_rendered: [String!]
+  property_price: String!
+  property_price_second: String
   property_title: String!
   property_type: String!
   province: Float
+  province_text: String
   purchase_type: String = "ONCE"
   sales_status: String = "ACTIVE"
   sales_type: String = "SALE"
   subdistrict: Float
+  subdistrict_text: String
+  total_views: Int
 }
 
 type PropertyLike {
@@ -493,32 +622,36 @@ input PropertyMetaUpdate {
 
 type PropertyResponse {
   agent_rendered: User
-  call_to_user: UsersResponse!
+  call_to_user: UsersResponse
   city: City
+  city_text: String
   country: Country
-  created_at: DateTime!
+  country_text: String
+  created_at: DateTime
   created_by_user: UsersResponse!
-  deleted_at: DateTime!
+  deleted_at: DateTime
   features_extra: [PropertyMetaResponse!]
   full_address_rendered: String
   id: Int!
   listing_type_rendered: String
   metas: [PropertyMetaResponse!]
-  property_area_size: Float!
+  old_id: Int!
+  property_area_size: Float
   property_area_size_rendered: String
-  property_bathroom_count: Int!
-  property_bedroom_count: Int!
-  property_build_years: Float!
-  property_building_size: Float!
+  property_bathroom_count: Int
+  property_bedroom_count: Int
+  property_build_years: Float
+  property_building_size: Float
   property_building_size_rendered: String
   property_building_type: String
   property_certificate_type: String!
   property_code: String
-  property_condition: String!
+  property_condition: String
   property_desc: String!
   property_electricy: String
-  property_featured_image: File!
-  property_featured_image_url: String!
+  property_featured_image: File
+  property_featured_image_rendered: String
+  property_featured_image_url: String
   property_floor_count: Int
   property_full_address: String!
   property_garage_bike_volume: Int
@@ -529,33 +662,38 @@ type PropertyResponse {
   property_has_garage_rendered: String
   property_has_heater: Boolean
   property_has_heater_rendered: String
-  property_list_images: [String!]!
-  property_list_images_url: [File!]!
-  property_price: Int!
+  property_list_images: [String!]
+  property_list_images_rendered: [String!]
+  property_list_images_url: [File!]
+  property_price: String!
   property_price_rendered: String
-  property_price_second: Int
+  property_price_second: String
   property_price_second_rendered: String
   property_title: String!
   property_type: String!
   property_type_rendered: String!
   province: Province
+  province_text: String
   purchase_type: String
-  sales_status: String!
-  sales_type: String!
+  sales_status: String
+  sales_type: String
+  slug: String
   subdistrict: Subdistrict
-  total_leads: Float!
-  total_messages: Float!
-  total_star: Float!
-  total_views: Float!
-  updated_at: DateTime!
+  subdistrict_text: String
+  total_leads: Float
+  total_messages: Float
+  total_star: Float
+  total_views: Float
+  updated_at: DateTime
+  web_url: String
 }
 
 type Province {
-  country: Country!
-  country_id: Float!
-  id: Int!
-  province_code: String!
+  cities: [City!]!
+  country: Country
+  province_code: String
   province_name: String!
+  search_url: String
 }
 
 type Query {
@@ -564,35 +702,50 @@ type Query {
   city(id: Int!): City!
   countries(keyword: String): [Country!]!
   country(id: Int!): Country!
+  district(id: Int!): District!
+  districts(city_id: Float, keyword: String): [District!]!
   file(id: String!): File!
   files(userid: String): [File!]!
   lead(id: Int!): LeadResponse!
   leads(option: MetaQuery): [LeadResponse!]!
   members(role: String!): [UsersResponse!]!
   package(id: Int!): Package!
+  packageFeatures: [PackageFeatureResponse!]!
   packages: [PackageResponse!]!
   packagess: [PackageFeatures!]!
   profile: UsersResponse!
   propFeatures: [PropertyMetaMaster!]!
   properties(option: MetaQuery): [PropertyResponse!]!
   property(id: Int!): PropertyResponse!
+
+  """get property by slug"""
+  propertyBySlug(slug: String!): PropertyResponse!
   propertyLike(id: Int!): PropertyLike!
   province(id: Int!): Province!
   provinces(country_id: Float, keyword: String): [Province!]!
+  searchUsers(option: MetaQuery): [UsersResponse!]!
   subdistrict(id: Int!): Subdistrict!
   subdistricts(city_id: Float, keyword: String): [Subdistrict!]!
   user(userid: String!): UsersResponse!
   userByDevice(deviceid: String!): UsersResponse!
   userByEmail(email: String!): UsersResponse!
+  userPackage(id: Int!): UserPackage!
+  userPackages: [UserPackage!]!
   userdetail(userid: String!): UsersResponse!
   users: [UsersResponse!]!
 }
 
+input ResetPasswordInput {
+  code: String
+  confirm_password: String
+  password: String
+}
+
 type Subdistrict {
   city: City
-  city_id: Float!
   id: Int!
-  subdistrict_code: String!
+  search_url: String
+  subdistrict_code: String
   subdistrict_name: String!
 }
 
@@ -607,17 +760,7 @@ input UpdateCountryInput {
   country_code: String
   country_name: String
   id: Int!
-}
-
-input UpdateFileInput {
-  filename: String
-  filepath: String
-  id: String!
-  mimetype: String
-  rendered_url: String
-  size: Float
-  uniquekey: String
-  uploaded_by: String
+  province: [CreateProvinceInput!]
 }
 
 input UpdateLeadInput {
@@ -633,57 +776,32 @@ input UpdateLeadInput {
   """No Hp/Wa, required!"""
   phone: String
   source_url: String
-  user: String
 }
 
 input UpdatePackageInput {
+  credit: Int = 0
   id: Int
   is_displayed: Boolean
   is_enable: Boolean
   is_popular: Boolean
+  ord: Int = 0
   package_billing_time_unit: Int
   package_billing_unit: String
   package_code: String
   package_display_name: String
+  package_featured_listings: Int = 0
   package_features: [PackageFeaturesInput!]
   package_icon: String
+  package_listings: Int = 0
   package_name: String
   package_price: Int
+  vnov_credit: Int = 0
 }
 
 input UpdateProperty {
-  call_to_user: String
-  city: Float
-  country: Float
-  created_by_user: String
-  property_bathroom_count: Int
-  property_bedroom_count: Int
-  property_build_years: Int
-  property_building_size: Float
-  property_certificate_type: String
-  property_code: String
-  property_condition: String
-  property_desc: String
-  property_electricy: String
-  property_featured_image: String
-  property_floor_count: Int
-  property_full_address: String
-  property_garage_bike_volume: Int
-  property_garage_car_volume: Int
-  property_has_airconditioner: Boolean = false
-  property_has_garage: Boolean = false
-  property_has_heater: Boolean = false
-  property_land_size: Float
-  property_list_images: [String!]
-  property_price: Int
-  property_price_second: Int
-  property_title: String
-  property_type: String
-  province: Float
-  purchase_type: String = "ONCE"
-  sales_status: String = "ACTIVE"
-  sales_type: String = "SALE"
-  subdistrict: Float
+  callback: String
+  metas: [PropertyMetaInput!]
+  property: PropertyInput
 }
 
 input UpdatePropertyInput {
@@ -698,6 +816,7 @@ input UpdatePropertyLikeInput {
 }
 
 input UpdateProvinceInput {
+  cities: [CreateCityInput!]
   country_id: Float
   id: Int!
   province_code: String
@@ -727,21 +846,34 @@ input UpdateUserInput {
   device_id: String
   display_name: String
   email: String
+  email_confirm_code: String
   email_confirmed_at: DateTime
   extra: String
   full_address: String
   full_name: String
   id: String
+  last_reset_password: DateTime
   notification_id: String
+  package_code: String
   password: String
   phone: String
+  phone_confirm_code: String
   phone_confirmed_at: DateTime
   photo_profile: String
   property_count: Float
   province: Float
+  reset_password_code: String
+  reset_password_count: Int
   resetpasswordkey: String
   role: String
   subdistrict: Float
+  user_desc: String
+}
+
+input UpdateUserPackageInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
 
 type User {
@@ -752,15 +884,19 @@ type User {
   account_rumahcom: String
   account_whatsapp_number: String
   agent_id: String
+  agent_id_old: String
   city: City
-  company: Company!
+  city_text: String
   company_id: String
+  company_old: String
   country: Country
+  country_text: String
   created_at: DateTime!
   device_id: String!
   discord_link: String
   display_name: String
   email: String!
+  email_confirm_code: String
   email_confirmed_at: DateTime!
   errors: [String!]
   extra: String
@@ -768,21 +904,57 @@ type User {
   full_name: String
   id: String!
   lamudi_link: String
+  last_reset_password: DateTime
   messages: String
+  mobile: String
   notification_id: String!
+  old_id: Int
   olx_link: String
-  phone: String!
+  package: Package
+  phone: String
+  phone_confirm_code: String
   phone_confirmed_at: DateTime!
   photo_profile: File
+  photo_profile_old: String
   property_count: Float
   province: Province
+  province_text: String
+  registered_date: DateTime!
+  reset_password_code: String
+  reset_password_count: Int
   resetpasswordkey: String
   role: String!
   rumah123_link: String
   rumahcom_link: String
   subdistrict: Subdistrict
+  subdistrict_text: String
+  title: String
   updated_at: DateTime!
+  user_desc: String
+  username: String
+  userpackages: [UserPackages!]
   whatsapp_link: String
+}
+
+type UserPackage {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type UserPackages {
+  banefit: PackageBanefit
+  credit: Int
+  expired_date: DateTime
+  id: Float!
+  invoice_url: String
+  package: Package!
+  package_featured_listings: Int
+  package_listings: Int
+  payment_status: Float
+  registered_date: DateTime!
+  status: Float
+  user: User!
+  vnov_credit: Int
 }
 
 type UsersResponse {
@@ -793,8 +965,10 @@ type UsersResponse {
   account_rumahcom: String
   account_whatsapp_number: String
   city: City
+  city_text: String
   company: CompanyResponse
   country: Country
+  country_text: String
   device_id: String
   discord_link: String
   display_name: String
@@ -807,17 +981,26 @@ type UsersResponse {
   id: String
   lamudi_link: String
   messages: String
+  mobile: String
   olx_link: String
+  package: Package
+  password: String
   phone: String
   photo_profile: File
   photo_profile_file: File
+  photo_profile_old: String
   property_count: Float
   province: Province
   province_resolve: Province
+  province_text: String
   role: String
   rumah123_link: String
   rumahcom_link: String
   subdistrict: Subdistrict
+  subdistrict_text: String
+  title: String
+  user_desc: String
+  username: String
   whatsapp_link: String
 }
 

@@ -17,6 +17,12 @@ import { GlobalMutationResponse } from 'src/formatResponse/global-mutation.respo
 import { PropertyResponse } from './entities/get-all-props.response';
 import { HttpService } from '@nestjs/axios';
 import { PropertiesWPService } from './properties-wp.service';
+import { User } from 'src/users/entities/user.entity';
+import { type } from 'os';
+import { City } from 'src/cities/entities/city.entity';
+import { Province } from 'src/provinces/entities/province.entity';
+import { Country } from 'src/countries/entities/country.entity';
+import { District } from 'src/district/entities/district.entity';
 var slugify = require('slugify');
 
 @Injectable()
@@ -43,13 +49,13 @@ export class PropertiesService {
     const pr = this.repos.create(property);
     let slug = slugify(property.property_title);
     let slugExs = await this.repos.createQueryBuilder("prop").where(`prop.slug ILike '${slug}%'`).getCount();
-    if(slugExs > 0){
-      slug = slug + "-" + (slugExs+1);
+    if (slugExs > 0) {
+      slug = slug + "-" + (slugExs + 1);
     }
     pr.slug = slug;
     const propSaved = await this.repos.insert(pr);
 
-    
+
 
     if (typeof property.property_list_images != 'undefined' && propSaved.identifiers.length > 0) {
       let ls = [];
@@ -77,32 +83,68 @@ export class PropertiesService {
   }
 
   async findAll(option: MetaQuery = null, fields: string[] = null): Promise<any> {
-    const query = this.repos.createQueryBuilder('prop').select("prop.id", "prop_id");
-    let select = [];
+    // const query = this.repos.createQueryBuilder('prop').select("prop.id", "prop_id");
+    let query = "";
+    // let select = [];
+
+    let selectArr = [];
+    let whereArr = [];
+    let joinArr = [];
+    let orderArr = [];
+    let limitArr = [];
+
+    let schema = "api"
 
     if (fields != null && fields.length > 0) {
       fields.forEach(val => {
         switch (val) {
           case 'property_featured_image':
-            query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
+            joinArr.push(`LEFT JOIN "${schema}"."file" "property_featured_image" ON "prop"."propertyFeaturedImageId" = "property_featured_image"."id"`);
+            selectArr.push(`"property_featured_image"."rendered_url" AS "property_featured_image_rendered_url"`)
+            // query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
             break;
           case 'property_featured_image_url':
             // query.leftJoinAndSelect(`prop.${val}`, `prop_property_featured_image`).addSelect([`prop_${val}.id`]);
             break;
           case 'country':
-            query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
+            joinArr.push(`LEFT JOIN "${schema}"."country" "country" ON "prop"."countryId" = "country"."id"`)
+            selectArr.push(`"country"."id" AS "country_id"`)
+            selectArr.push(`"country"."country_name" AS "country_country_name"`)
+            selectArr.push(`"prop"."country_text" AS "prop_country_text"`)
+            // query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
             break;
           case 'province':
-            query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
+            joinArr.push(`LEFT JOIN "${schema}"."province" "province" ON "prop"."provinceId" = "province"."id"`)
+            selectArr.push(`"province"."id" AS "p_province_id"`)
+            selectArr.push(`"province"."province_name" AS "province_province_name"`)
+            selectArr.push(`"prop"."province_text" AS "prop_province_text"`)
+            // query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
             break;
           case 'city':
-            query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
+            joinArr.push(`LEFT JOIN "${schema}"."city" "city" ON "prop"."cityId" = "city"."id"`)
+            selectArr.push(`"city"."id" AS "p_city_id"`)
+            selectArr.push(`"city"."city_name" AS "city_city_name"`)
+            selectArr.push(`"prop"."city_text" AS "prop_city_text"`)
+            // query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
             break;
           case 'subdistrict':
-            query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
+            joinArr.push(`LEFT JOIN "${schema}"."subdistrict" "${val}" ON "prop"."subdistrictId" = "${val}"."id"`)
+            selectArr.push(`"${val}"."id" AS "p_${val}_id"`)
+            selectArr.push(`"${val}"."subdistrict_name" AS "${val}_${val}_name"`)
+            selectArr.push(`"prop"."${val}_text" AS "prop_${val}_text"`)
+            // query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
+            break;
+          case 'created_by_user':
+            joinArr.push(`LEFT JOIN "${schema}"."user" "${val}" ON "prop"."createdByUserId" = "${val}"."id"`)
+            selectArr.push(`"${val}"."id" AS "p_${val}_id"`)
+            selectArr.push(`"${val}"."full_name" AS "p_${val}_full_name"`)
+            // query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
             break;
           case 'call_to_user':
-            query.leftJoinAndSelect(`prop.${val}`, `prop_${val}`).addSelect([`prop_${val}.id`]);
+            joinArr.push(`LEFT JOIN "${schema}"."user" "call_to_user" ON "prop"."callToUserId" = "call_to_user"."id"`)
+            selectArr.push(`"call_to_user"."id" AS "p_call_to_user_id"`)
+            selectArr.push(`"call_to_user"."full_name" AS "p_call_to_user_full_name"`)
+            // query.leftJoinAndSelect(`prop.${val}`, `${val}`).addSelect([`${val}.id`]);
             break;
           case 'property_price_rendered':
             break;
@@ -114,46 +156,53 @@ export class PropertiesService {
             break;
           case 'property_type_rendered':
             break;
-          case 'id':
-            break;
           default:
-            select.push(`prop.${val}`);
+            // select.push(`prop.${val}`);
+            selectArr.push(`"prop"."${val}" AS "${val}"`)
             break;
         }
       });
 
-      if (select.length > 0) {
-        query.addSelect(select);
-      }
+      // if (select.length > 0) {
+      //   query.addSelect(select);
+      // }
     }
     if (option != null) {
       if (typeof option.take != 'undefined') {
-        query.limit(option.take);
+        // query.limit(option.take);
+        limitArr.push(`LIMIT ${option.take}`)
       }
       if (typeof option.page != 'undefined') {
-        query.offset((option.page - 1) * option.take);
+        // query.offset((option.page - 1) * option.take);
+        limitArr.push(`OFFSET ${(option.page - 1) * option.take}`)
       }
 
       if (typeof option.where != 'undefined' && option.where.length > 0) {
         for (let index = 0; index < option.where.length; index++) {
           let obj = {};
+          let wr = "";
           let tbl = "prop";
           if (typeof option.where[index].table != 'undefined') {
             tbl = option.where[index].table;
           }
           if (option.where[index].operator == 'LIKE') {
-            obj[option.where[index].key] = `ILike '%${option.where[index].value}%'`;
+            // obj[option.where[index].key] = `ILike '%${option.where[index].value}%'`;
+            wr = `${option.where[index].key} ILike '%${option.where[index].value}%'`
           } else {
-            obj[option.where[index].key] = `= '${option.where[index].value}'`;
+            wr = `${option.where[index].key} = '${option.where[index].value}'`
+            // obj[option.where[index].key] = `= '${option.where[index].value}'`;
           }
 
           if (index == 0) {
-            query.where(`${tbl}.${option.where[index].key} ${obj[option.where[index].key]}`);
+            whereArr.push(wr)
+            // query.where(`${tbl}.${option.where[index].key} ${obj[option.where[index].key]}`);
           } else if (index > 0) {
             if (option.where[index].nextOperator == 'OR') {
-              query.orWhere(`${tbl}.${option.where[index].key} ${obj[option.where[index].key]}`);
+              // query.orWhere(`${tbl}.${option.where[index].key} ${obj[option.where[index].key]}`);
+              whereArr.push(`OR ${wr}`)
             } else {
-              query.andWhere(`${tbl}.${option.where[index].key} ${obj[option.where[index].key]}`);
+              whereArr.push(`AND ${wr}`)
+              // query.andWhere(`${tbl}.${option.where[index].key} ${obj[option.where[index].key]}`);
             }
           }
         }
@@ -162,18 +211,26 @@ export class PropertiesService {
       if (typeof option.sortBy != 'undefined' && option.sortBy.length > 0) {
         for (let index = 0; index < option.sortBy.length; index++) {
           // const element = array[index];
-          query.addOrderBy(`prop.${option.sortBy[index].key}`, option.sortBy[index].isAsc ? "ASC" : "DESC");
+          orderArr.push(`prop.${option.sortBy[index].key} ${option.sortBy[index].isAsc ? "ASC" : "DESC"}`)
+          // query.addOrderBy(`prop.${option.sortBy[index].key}`, option.sortBy[index].isAsc ? "ASC" : "DESC");
         }
       }
     }
-    const res = await query.getMany();
-    // let res = [];
-    // let exclude = [];
-    // for(let i = 0 ; i < res.length ; i++){
-    //   exclude.push(res[i].old_id);
-    // }
-    // let reswp = await this.wpdbService.findAllWP(exclude, option, fields);
-    // console.log(res[0]);
+      
+    let select = selectArr.join(",")
+    if(selectArr.length == 0){
+      select = "*"
+    }
+    let joins = joinArr.join("\n")
+    let where = whereArr.join(" ")
+    let order = orderArr.join(",")
+    let limit = limitArr.join(" ")
+
+    query = `SELECT ${select} FROM "${schema}"."property" as prop ${joins} ${where} ${order != "" ? "ORDER BY " + order : ""} ${limit}`
+
+    // console.log(query)
+    let res = await this.datasource.query(query)
+    console.log(res)
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
@@ -227,21 +284,53 @@ export class PropertiesService {
         if (e.property_featured_image != null) {
           e['property_featured_image_url'] = e.property_featured_image['rendered_url'];
         }
-        // if (e.call_to_user.photo_profile != null && typeof e.call_to_user.photo_profile == 'string') {
-        //   e.call_to_user.photo_profile = await this.fileService.findOne(e.call_to_user.photo_profile);
-        // }
-        // if(e.call_to_user.province != null && typeof e.call_to_user.province == 'number'){
-        //   e.call_to_user.province = await this.provincesService.findOne(e.call_to_user.province);
-        // }
-        // if(e.call_to_user.country != null && typeof e.call_to_user.country == 'number'){
-        //   e.call_to_user.country = await this.countryService.findOne(e.call_to_user.country);
-        // }
-        // if(e.call_to_user.city != null && typeof e.call_to_user.city == 'number'){
-        //   e.call_to_user.city = await this.citiesService.findOne(e.call_to_user.city);
-        // }
-        // if(e.call_to_user.subdistrict != null && typeof e.call_to_user.subdistrict == 'number'){
-        //   e.call_to_user.subdistrict = await this.subdistrictsService.findOne(e.call_to_user.subdistrict);
-        // }
+
+        if(typeof e.p_created_by_user_id != 'undefined'){
+          let cbu = new User()
+          cbu.id = e.p_created_by_user_id;
+          cbu.full_name = e.p_created_by_user_full_name;
+          e['created_by_user'] = cbu;
+        }
+
+        if(typeof e.p_call_to_user_id != 'undefined'){
+          let cbu = new User()
+          cbu.id = e.p_call_to_user_id;
+          cbu.full_name = e.p_call_to_user_full_name;
+          e['call_to_user'] = cbu;
+        }
+
+        if(typeof e.p_city_id != 'undefined'){
+          let ct = new City()
+          ct.id = e.p_city_id;
+          ct.city_name = e.city_city_name == null ? e.city_text : e.city_city_name;
+          ct.search_url = ""
+          e.city = ct;
+        }
+
+        if(typeof e.p_province_id != 'undefined'){
+          let ct = new Province()
+          ct.id = e.p_province_id;
+          ct.province_name = e.province_province_name == null ? e.prop_province_text : e.province_province_name;
+          ct.search_url = "";
+          e.province = ct;
+        }
+
+        if(typeof e.p_country_id != 'undefined'){
+          let ct = new Country()
+          ct.id = e.p_country_id;
+          ct.country_name = e.country_country_name == null ? e.country_text : e.country_country_name;
+          ct.search_url = "";
+          e.country = ct;
+        }
+
+        if(typeof e.p_district_id != 'undefined'){
+          let ct = new District()
+          ct.id = e.p_district_id;
+          ct.district_name = e.district_district_name == null ? e.district_text : e.district_district_name;
+          ct.search_url = "";
+          e.district = ct;
+        }
+       
         result.push(e)
       }
       return result;
@@ -249,9 +338,9 @@ export class PropertiesService {
 
     return [];
   }
-  
+
   async formatOne(fnd: Property, res: PropertyResponse) {
-  
+
     Object.entries(fnd).forEach(([key, val]) => {
       res[key] = val;
     });
@@ -328,23 +417,23 @@ export class PropertiesService {
     if (res.call_to_user.photo_profile != null && typeof res.call_to_user.photo_profile == 'string') {
       res.call_to_user.photo_profile = await this.fileService.findOne(res.call_to_user.photo_profile);
     }
-    if(res.call_to_user.province != null && typeof res.call_to_user.province == 'number'){
+    if (res.call_to_user.province != null && typeof res.call_to_user.province == 'number') {
       res.call_to_user.province = await this.provincesService.findOne(res.call_to_user.province);
     }
-    if(res.call_to_user.country != null && typeof res.call_to_user.country == 'number'){
+    if (res.call_to_user.country != null && typeof res.call_to_user.country == 'number') {
       res.call_to_user.country = await this.countryService.findOne(res.call_to_user.country);
     }
-    if(res.call_to_user.city != null && typeof res.call_to_user.city == 'number'){
+    if (res.call_to_user.city != null && typeof res.call_to_user.city == 'number') {
       res.call_to_user.city = await this.citiesService.findOne(res.call_to_user.city);
     }
-    if(res.call_to_user.subdistrict != null && typeof res.call_to_user.subdistrict == 'number'){
+    if (res.call_to_user.subdistrict != null && typeof res.call_to_user.subdistrict == 'number') {
       res.call_to_user.subdistrict = await this.subdistrictsService.findOne(res.call_to_user.subdistrict);
-    }  
-    if(res.slug != null && res.slug != ""){
+    }
+    if (res.slug != null && res.slug != "") {
       res.web_url = `https://halorumah.id/property/${res.slug}`;
     }
 
-    
+
     return res;
   }
 
@@ -357,20 +446,20 @@ export class PropertiesService {
       ]
     });
 
-    res = await this.formatOne(fnd,res);
+    res = await this.formatOne(fnd, res);
     return res;
   }
 
   async findOneSlug(slug: string, fields: string[] = null, restApi: boolean = false): Promise<PropertyResponse> {
     let res = new PropertyResponse();
     const fnd = await this.repos.findOne({
-      where: { slug:slug },
+      where: { slug: slug },
       relations: [
         'province', 'country', 'city', 'subdistrict', 'call_to_user'
       ]
     });
 
-    res = await this.formatOne(fnd,res);
+    res = await this.formatOne(fnd, res);
     return res;
   }
 

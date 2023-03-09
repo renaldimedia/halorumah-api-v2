@@ -5,18 +5,17 @@ import { Expose } from 'class-transformer';
 import { City } from 'src/cities/entities/city.entity';
 // import { Paginated } from 'src/pagination';
 @Entity()
-@Unique('province_unique',['province_code'])
+@Unique('province_unique', ['province_code'])
 @ObjectType()
 @Expose()
-export class Province extends BaseEntity  {
+export class Province extends BaseEntity {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
   id: number;
 
   @Column({
     nullable: true
   })
-  @Field({nullable: true})
+  @Field({ nullable: true })
   province_code: string
 
   @Column({
@@ -26,8 +25,8 @@ export class Province extends BaseEntity  {
   province_name: string
 
   @ManyToOne(() => Country, (country) => country.provinces)
-  @JoinColumn({name: 'country_id'})
-  @Field({nullable: true})
+  @JoinColumn({ name: 'country_id' })
+  @Field({ nullable: true })
   country: Country;
 
   @OneToMany(() => City, (city) => city.province, {
@@ -37,6 +36,9 @@ export class Province extends BaseEntity  {
   })
   @Field(() => [City])
   cities: City[]
+
+  @Field(() => String, { nullable: true })
+  search_url: string
 
   // @Field(type => Country)
   // country: Country

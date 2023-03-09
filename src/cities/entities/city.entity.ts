@@ -8,7 +8,6 @@ import { Subdistrict } from 'src/subdistricts/entities/subdistrict.entity';
 @ObjectType()
 export class City extends BaseEntity {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
   id: number;
 
   @Column({nullable: true})
@@ -20,6 +19,9 @@ export class City extends BaseEntity {
   })
   @Field()
   city_name: string
+
+  @Field(() => String, {nullable: true})
+  search_url: string
 
   @ManyToOne(() => Province, (province) => province.cities)
   @JoinColumn({name: 'province_id'})

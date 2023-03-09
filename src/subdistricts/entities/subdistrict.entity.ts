@@ -23,4 +23,7 @@ export class Subdistrict extends BaseEntity  {
   @JoinColumn({name: 'city_id'})
   @Field(type => City, {nullable: true})
   city: City
+
+  @Field(() => String, {nullable: true})
+  search_url: string
 }

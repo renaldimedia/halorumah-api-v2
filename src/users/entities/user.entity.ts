@@ -11,6 +11,7 @@ import { File } from 'src/files/entities/file.entity';
 import { Company, CompanyResponse } from './company.entity';
 import { UserPackages } from '../../user-packages/entities/user-packages.entity';
 import { Package } from 'src/packages/entities/package.entity';
+import { Property } from 'src/properties/entities/property.entity';
 
 @Entity()
 @Unique('user_unique',['email', 'phone', 'device_id', 'username'])
@@ -291,7 +292,8 @@ export class UsersResponse{
   @Field({nullable: true})
   password: string;
 
-  
+  @Field(type => Int, {nullable: true})
+  old_id: number;
 
   @Field(type => CompanyResponse, {nullable: true})
   company: CompanyResponse
@@ -440,4 +442,10 @@ export class UsersResponse{
 
   @Field({nullable: true})
   title: string;
+
+  @OneToMany(() => Property, prop => prop.call_to_user)
+  property_call: Property
+
+  @OneToMany(() => Property, prop => prop.created_by_user)
+  property_owner: Property
 }

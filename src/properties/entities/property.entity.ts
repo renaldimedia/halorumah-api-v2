@@ -175,7 +175,7 @@ export class Property extends BaseEntity  {
   @Field(type => String, {nullable: false})
   property_full_address: string
 
-  @Column({type: 'uuid'})
+  @ManyToOne(() => User)
   @Field(type => User)
   created_by_user: string
 
@@ -183,7 +183,6 @@ export class Property extends BaseEntity  {
   @Field(type => Int)
   created_by_user_old: number
 
-  @Column({type: 'uuid'})
   @ManyToOne(() => User)
   @Field(type => User)
   call_to_user: string

@@ -7,7 +7,6 @@ import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique }
 @ObjectType()
 export class Country extends BaseEntity {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
   id: number;
 
   @Column({
@@ -27,4 +26,7 @@ export class Country extends BaseEntity {
   })
   @Field(() => [Province])
   provinces: Province[]
+
+  @Field(() => String, {nullable: true})
+  search_url: string
 }

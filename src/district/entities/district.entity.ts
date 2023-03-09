@@ -7,7 +7,6 @@ import { City } from 'src/cities/entities/city.entity';
 @ObjectType()
 export class District extends BaseEntity  {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
   id: number;
 
   @Column({nullable: true})
@@ -24,4 +23,7 @@ export class District extends BaseEntity  {
   @JoinColumn({name: 'city_id'})
   @Field(type => City, {nullable: true})
   city: City
+
+  @Field(() => String, {nullable: true})
+  search_url: string
 }
